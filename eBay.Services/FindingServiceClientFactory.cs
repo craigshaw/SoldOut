@@ -15,7 +15,6 @@ using System.Text;
 using System.ServiceModel;
 using eBay.Services.Finding;
 using eBay.Services.Common;
-using Slf;
 
 namespace eBay.Services
 {

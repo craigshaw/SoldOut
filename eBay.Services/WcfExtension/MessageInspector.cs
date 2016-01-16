@@ -14,7 +14,6 @@ using System.Text;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Channels;
 using System.ServiceModel;
-using Slf;
 using eBay.Services.Common;
 
 namespace eBay.Services.WcfExtension
@@ -25,8 +24,6 @@ namespace eBay.Services.WcfExtension
     class MessageInspector : IClientMessageInspector
     {
         #region IClientMessageInspector Members
-
-        private ILogger logger = LoggerService.GetLogger();
 
         private ClientConfig config;
         private string serviceName;
@@ -57,12 +54,13 @@ namespace eBay.Services.WcfExtension
                         httpHeaderMessage += headerName + " : " + httpResponse.Headers[headerName] + "\r\n";
 
                     }
-                    logger.Info(httpHeaderMessage);
+
+                    //logger.Info(httpHeaderMessage);
 
                 }
                 else
                 {
-                    logger.Info("HTTP Response Headers is not available!");
+                    //logger.Info("HTTP Response Headers is not available!");
                 }
             }
 
@@ -70,7 +68,7 @@ namespace eBay.Services.WcfExtension
             {
                 //logging soap message
                 string soapMessage = "receiving soap request message ...\r\n" + reply.ToString();
-                logger.Info(soapMessage);
+                //logger.Info(soapMessage);
             }
 
         }
@@ -95,7 +93,7 @@ namespace eBay.Services.WcfExtension
             {
                 //logging soap message
                 string soapMessage = "sending soap request message ...\r\n" + strMessage;
-                logger.Info(soapMessage);
+                //logger.Info(soapMessage);
             }
 
             HttpRequestMessageProperty httpRequest;
@@ -164,7 +162,7 @@ namespace eBay.Services.WcfExtension
                     httpHeaderMessage += headerName + " : " + httpRequest.Headers[headerName] + "\r\n";
 
                 }
-                logger.Info(httpHeaderMessage);
+                //logger.Info(httpHeaderMessage);
             }
 
             return null;
