@@ -1,18 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SoldOutBusiness.Models
 {
     [Serializable]
     public class SoldItem
     {
-        public double FinalValue { get; set; }
-        public DateTime EndTime { get; set; }
         public string ItemID { get; set; }
-        public string Description { get; set; }
+        public string Title { get; set; }
         public string ItemURL { get; set; }
+        public string GalleryURL { get; set; }
+        public double FinalValue { get; set; }
+        public string Currency { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public string Location { get; set; }
+        public string SiteId { get; set; }
+        public string Type { get; set; }
+        public int NumberOfBidders { get; set; }
     }
 }

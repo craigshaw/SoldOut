@@ -138,11 +138,18 @@ namespace SoldOutHarness
         {
             return items.Select(i => new SoldItem()
             {
-                FinalValue = i.sellingStatus.currentPrice.Value,
-                EndTime = i.listingInfo.endTime,
                 ItemID = i.itemId,
-                Description = i.title,
-                ItemURL = i.viewItemURL
+                Title = i.title,
+                ItemURL = i.viewItemURL,
+                GalleryURL = i.galleryURL,
+                FinalValue = i.sellingStatus.currentPrice.Value,
+                Currency = i.sellingStatus.currentPrice.currencyId,
+                StartTime = i.listingInfo.endTime,
+                EndTime = i.listingInfo.endTime,
+                Location = i.location,
+                SiteId = i.globalId,
+                Type = i.listingInfo.listingType,
+                NumberOfBidders = i.listingInfo.listingType.ToLowerInvariant() == "auction" ? i.sellingStatus.bidCount : 0
             });
         }
 
