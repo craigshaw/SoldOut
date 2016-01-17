@@ -40,6 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Builders\CatalogueBuilder.cs" />
+    <Compile Include="Builders\ICatalogueBuilder.cs" />
+    <Compile Include="Models\Catalogue.cs" />
+    <Compile Include="Models\Search.cs" />
     <Compile Include="Models\SoldItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

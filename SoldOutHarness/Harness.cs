@@ -1,5 +1,6 @@
 ﻿using eBay.Services;
 using eBay.Services.Finding;
+using SoldOutBusiness.Builders;
 using SoldOutBusiness.Models;
 using System;
 using System.Collections.Generic;
@@ -38,12 +39,12 @@ namespace SoldOutHarness
 
         private void Run(string searchTerm)
         {
-            _searchTerm = searchTerm;
-
             try
             {
-                // Load data for the current search term if we've gathered results previously
-                LoadItemsFromFile();
+                // Create the search catalogue
+                var catalogue = new CatalogueBuilder()
+                    .AddFromConfigFile("searches.cfg")
+                    .Build();
 
                 // Create the config
                 var config = CreateClientConfig();
@@ -51,55 +52,65 @@ namespace SoldOutHarness
                 // Create a service client
                 FindingServicePortTypeClient client = FindingServiceClientFactory.getServiceClient(config);
 
-                // Create a request to get our completed items
-                var request = CreateCompletedItemsRequest(_lastUpdatedTime);
-
-                Console.WriteLine("Requesting completed items for '{0}' {1}",
-                    _searchTerm,
-                    (_lastUpdatedTime != null) ? "since " + _lastUpdatedTime.Value.ToString() : string.Empty);
-
-                // Now make the request
-                var response = client.findCompletedItems(request);
-
-                // Show output
-                if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
+                foreach (var search in catalogue.Searches)
                 {
-                    Console.WriteLine("Found " + response.searchResult.count + " new items");
+                    _searchTerm = search.Keywords;
+                    _soldItems = null;
+                    _lastUpdatedTime = null;
 
-                    _lastUpdatedTime = response.timestamp;
+                    // Load data for the current search term if we've gathered results previously
+                    LoadItemsFromFile();
 
-                    if (response.searchResult.count > 0)
+                    // Create a request to get our completed items
+                    var request = CreateCompletedItemsRequest(_lastUpdatedTime);
+
+                    Console.WriteLine("Requesting completed items for '{0}' {1}",
+                        _searchTerm,
+                        (_lastUpdatedTime != null) ? "since " + _lastUpdatedTime.Value.ToString() : string.Empty);
+
+                    // Now make the request
+                    var response = client.findCompletedItems(request);
+
+                    // Show output
+                    if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
                     {
-                        foreach (var item in response.searchResult.item)
+                        Console.WriteLine("Found " + response.searchResult.count + " new items");
+
+                        _lastUpdatedTime = response.timestamp;
+
+                        if (response.searchResult.count > 0)
                         {
-                            Console.WriteLine(string.Format("{0}: {1}", item.itemId, item.title));
+                            //foreach (var item in response.searchResult.item)
+                            //{
+                            //    Console.WriteLine(string.Format("{0}: {1}", item.itemId, item.title));
+                            //}
+
+                            // Map returned items to our SoldItems model
+                            var newItems = MapSoldItems(response.searchResult.item);
+
+                            // Combine with existing results if there are any
+                            if (_soldItems != null)
+                            {
+                                _soldItems = newItems.Concat(_soldItems);
+                            }
+                            else
+                            {
+                                _soldItems = newItems;
+                            }
                         }
 
-                        // Map returned items to our SoldItems model
-                        var newItems = MapSoldItems(response.searchResult.item);
+                        // Write everything out to file
+                        WriteItemsToFile();
 
-                        // Combine with existing results if there are any
-                        if(_soldItems != null)
-                        {
-                            _soldItems = newItems.Concat(_soldItems);
-                        }
-                        else
-                        {
-                            _soldItems = newItems;
-                        }
+                        // Output some basic stats
+                        ShowSoldItemsTrend();
                     }
+                    else
+                    {
+                        Console.WriteLine(string.Format("Request failed: {0}", response.ack.ToString()));
 
-                    // Write everything out to file
-                    WriteItemsToFile();
-
-                    // Output some basic stats
-                    ShowSoldItemsTrend();
-                }
-                else
-                {
-                    Console.WriteLine(string.Format("Request failed: {0}", response.ack.ToString()));
-
-                    response.errorMessage.ToList().ForEach(e => Console.WriteLine(e.message));
+                        response.errorMessage.ToList().ForEach(e => Console.WriteLine(e.message));
+                    }
                 }
             }
             catch (Exception ex)
