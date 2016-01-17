@@ -2,6 +2,7 @@
 using eBay.Services.Finding;
 using SoldOutBusiness.Builders;
 using SoldOutBusiness.Models;
+using SoldOutBusiness.Services;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -46,11 +47,15 @@ namespace SoldOutHarness
                     .AddFromConfigFile("searches.cfg")
                     .Build();
 
-                // Create the config
-                var config = CreateClientConfig();
-
-                // Create a service client
-                FindingServicePortTypeClient client = FindingServiceClientFactory.getServiceClient(config);
+                var finder = new EbayFinder()
+                    .Configure(c =>
+                   {
+                       // Initialize service end-point configuration
+                       c.EndPointAddress = "http://svcs.ebay.com/services/search/FindingService/v1";
+                       c.GlobalId = "EBAY-GB";
+                       // set eBay developer account AppID here!
+                       c.ApplicationId = ConfigurationManager.AppSettings["eBayApplicationId"];
+                   });
 
                 foreach (var search in catalogue.Searches)
                 {
@@ -61,15 +66,12 @@ namespace SoldOutHarness
                     // Load data for the current search term if we've gathered results previously
                     LoadItemsFromFile();
 
-                    // Create a request to get our completed items
-                    var request = CreateCompletedItemsRequest(_lastUpdatedTime);
-
                     Console.WriteLine("Requesting completed items for '{0}' {1}",
                         _searchTerm,
                         (_lastUpdatedTime != null) ? "since " + _lastUpdatedTime.Value.ToString() : string.Empty);
 
-                    // Now make the request
-                    var response = client.findCompletedItems(request);
+                    // Create a request to get our completed items
+                    var response = finder.GetCompletedItems(_searchTerm, _lastUpdatedTime);
 
                     // Show output
                     if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
@@ -219,17 +221,6 @@ namespace SoldOutHarness
             {
                 File.AppendAllText(csvFileName, csvContents.ToString());
             }
-        }
-
-        private ClientConfig CreateClientConfig()
-        {
-            ClientConfig config = new ClientConfig();
-            // Initialize service end-point configuration
-            config.EndPointAddress = "http://svcs.ebay.com/services/search/FindingService/v1";
-            config.GlobalId = "EBAY-GB";
-            // set eBay developer account AppID here!
-            config.ApplicationId = ConfigurationManager.AppSettings["eBayApplicationId"];
-            return config;
         }
 
         private void ShowSoldItemsTrend()
