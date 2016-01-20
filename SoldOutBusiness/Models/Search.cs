@@ -1,8 +1,19 @@
-﻿namespace SoldOutBusiness.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace SoldOutBusiness.Models
 {
     public class Search
     {
-        public string Keywords { get; set; }
-        public string Description { get; set; }
+        public Search()
+        {
+            SearchResults = new List<SearchResult>();
+        }
+
+        public long SearchId { get; set; }
+        public string Name { get; set; }
+        public DateTime LastRun { get; set; }
+
+        public ICollection<SearchResult> SearchResults { get; set; }
     }
 }

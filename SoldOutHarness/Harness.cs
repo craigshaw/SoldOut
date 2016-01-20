@@ -2,6 +2,7 @@
 using eBay.Services.Finding;
 using SoldOutBusiness.Builders;
 using SoldOutBusiness.Models;
+using SoldOutBusiness.Repository;
 using SoldOutBusiness.Services;
 using System;
 using System.Collections.Generic;
@@ -59,7 +60,7 @@ namespace SoldOutHarness
 
                 foreach (var search in catalogue.Searches)
                 {
-                    _searchTerm = search.Keywords;
+                    //_searchTerm = search.Keywords;
                     _soldItems = null;
                     _lastUpdatedTime = null;
 
