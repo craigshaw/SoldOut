@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SoldOutBusiness.Models
 {
@@ -16,9 +12,13 @@ namespace SoldOutBusiness.Models
         public string ItemNumber { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
-        public int? NumberofBidders { get; set; }
+        public int? NumberOfBidders { get; set; }
         public string ImageURL { get; set; }
         public long SearchID { get; set; }
+        public string Currency { get; set; }
+        public string Location { get; set; }
+        public string SiteID { get; set; }
+        public string Type { get; set; }
 
         public virtual Search Search { get; set; }
     }

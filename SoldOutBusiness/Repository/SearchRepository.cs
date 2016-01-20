@@ -24,6 +24,17 @@ namespace SoldOutBusiness.Repository
             _context.SearchResults.Add(result);
         }
 
+        public void AddSearchResults(long searchID, IEnumerable<SearchResult> results)
+        {
+            var search = GetSearchByID(searchID);
+
+            foreach (var result in results)
+            {
+                search.SearchResults.Add(result);
+                _context.SearchResults.Add(result);
+            }
+        }
+
         public IEnumerable<Search> GetAllSearches()
         {
             return _context.Searches.Select(s => s)
@@ -38,9 +49,15 @@ namespace SoldOutBusiness.Repository
                 .OrderBy(s => s.SearchId).ToList();
         }
 
-        public IEnumerable<SearchResult> GetResultsForSearch(long searchId)
+        public IEnumerable<Search> GetAllSearchesWithSearchCriteria()
         {
-            throw new NotImplementedException();
+            return _context.Searches.Include(s => s.SearchCriteria)
+                .OrderBy(s => s.SearchId).ToList();
+        }
+
+        public IEnumerable<SearchResult> GetSearchResults(long searchId)
+        {
+            return _context.SearchResults.Where(r => r.SearchID == searchId);
         }
 
         public Search GetSearchByID(long searchID)

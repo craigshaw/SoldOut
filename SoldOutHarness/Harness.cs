@@ -1,6 +1,4 @@
-﻿using eBay.Services;
-using eBay.Services.Finding;
-using SoldOutBusiness.Builders;
+﻿using eBay.Services.Finding;
 using SoldOutBusiness.Models;
 using SoldOutBusiness.Repository;
 using SoldOutBusiness.Services;
@@ -11,42 +9,28 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace SoldOutHarness
 {
     class Harness
     {
-        private string _searchTerm;
-        private IEnumerable<SoldItem> _soldItems;
-        private DateTime? _lastUpdatedTime;
-
         static void Main(string[] args)
         {
-            if (args.Length < 1)
-            {
-                Console.WriteLine("Usage:{0}Harness.exe <search term>", Environment.NewLine);
-                Console.WriteLine("Example:{0}Harness.exe \"Lego 76001\"{1}", Environment.NewLine, Environment.NewLine);
-            }
-            else
-            {
-                new Harness().Run(args[0]);
-            }
+            new Harness().Run();
 
             Console.WriteLine("Press any key to close the program.");
             Console.ReadKey();
 
         }
 
-        private void Run(string searchTerm)
+        private void Run()
         {
             try
             {
+                var repo = new SearchRepository();
+
                 // Create the search catalogue
-                var catalogue = new CatalogueBuilder()
-                    .AddFromConfigFile("searches.cfg")
-                    .Build();
+                var searches = repo.GetAllSearchesWithSearchCriteria();
 
                 var finder = new EbayFinder()
                     .Configure(c =>
@@ -58,55 +42,33 @@ namespace SoldOutHarness
                        c.ApplicationId = ConfigurationManager.AppSettings["eBayApplicationId"];
                    });
 
-                foreach (var search in catalogue.Searches)
+                foreach (var search in searches)
                 {
-                    //_searchTerm = search.Keywords;
-                    _soldItems = null;
-                    _lastUpdatedTime = null;
-
-                    // Load data for the current search term if we've gathered results previously
-                    LoadItemsFromFile();
-
                     Console.WriteLine("Requesting completed items for '{0}' {1}",
-                        _searchTerm,
-                        (_lastUpdatedTime != null) ? "since " + _lastUpdatedTime.Value.ToString() : string.Empty);
+                        search.Name,
+                        (search.LastRun != null) ? "since " + search.LastRun.ToString() : string.Empty);
 
                     // Create a request to get our completed items
-                    var response = finder.GetCompletedItems(_searchTerm, _lastUpdatedTime);
+                    var response = finder.GetCompletedItems(search.Name, search.LastRun);
 
                     // Show output
                     if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
                     {
                         Console.WriteLine("Found " + response.searchResult.count + " new items");
 
-                        _lastUpdatedTime = response.timestamp;
+                        // Set the last ran time
+                        search.LastRun = response.timestamp;
 
                         if (response.searchResult.count > 0)
                         {
-                            //foreach (var item in response.searchResult.item)
-                            //{
-                            //    Console.WriteLine(string.Format("{0}: {1}", item.itemId, item.title));
-                            //}
-
                             // Map returned items to our SoldItems model
-                            var newItems = MapSoldItems(response.searchResult.item);
+                            var newItems = MapSearchResults(response.searchResult.item);
 
-                            // Combine with existing results if there are any
-                            if (_soldItems != null)
-                            {
-                                _soldItems = newItems.Concat(_soldItems);
-                            }
-                            else
-                            {
-                                _soldItems = newItems;
-                            }
+                            // Add them to the relevant search
+                            repo.AddSearchResults(search.SearchId, newItems);
                         }
 
-                        // Write everything out to file
-                        WriteItemsToFile();
-
-                        // Output some basic stats
-                        ShowSoldItemsTrend();
+                        repo.SaveAll();
                     }
                     else
                     {
@@ -123,57 +85,57 @@ namespace SoldOutHarness
 
         }
 
-        private void WriteItemsToFile()
+        private void WriteItemsToFile(string fileName, DateTime updateTime, IEnumerable<SoldItem> items)
         {
             MemoryStream memorystream = new MemoryStream();
             BinaryFormatter bf = new BinaryFormatter();
 
-            bf.Serialize(memorystream, _lastUpdatedTime);
-            bf.Serialize(memorystream, _soldItems.ToList());
+            bf.Serialize(memorystream, updateTime);
+            bf.Serialize(memorystream, items.ToList());
 
-            File.WriteAllBytes(_searchTerm + ".bin", memorystream.ToArray());
+            File.WriteAllBytes(fileName, memorystream.ToArray());
         }
 
-        private void LoadItemsFromFile()
+        private IEnumerable<SoldItem> LoadItemsFromFile(string fileName)
         {
-            string fileName = _searchTerm + ".bin";
-
             if(File.Exists(fileName))
             {
-                MemoryStream memorystream = new MemoryStream(File.ReadAllBytes(_searchTerm + ".bin"));
+                MemoryStream memorystream = new MemoryStream(File.ReadAllBytes(fileName));
                 BinaryFormatter bf = new BinaryFormatter();
-                _lastUpdatedTime = (DateTime)bf.Deserialize(memorystream);
-                _soldItems = (List<SoldItem>)bf.Deserialize(memorystream);
+                //_lastUpdatedTime = (DateTime)bf.Deserialize(memorystream);
+                return (List<SoldItem>)bf.Deserialize(memorystream);
             }
 
+            return null;
         }
 
-        private IEnumerable<SoldItem> MapSoldItems(SearchItem[] items)
+        private IEnumerable<SoldOutBusiness.Models.SearchResult> MapSearchResults(SearchItem[] items)
         {
-            return items.Select(i => new SoldItem()
+            return items.Select(i => new SoldOutBusiness.Models.SearchResult()
             {
-                ItemID = i.itemId,
+                DateOfMatch = DateTime.Now,
+                Link = i.viewItemURL,
                 Title = i.title,
-                ItemURL = i.viewItemURL,
-                GalleryURL = i.galleryURL,
-                FinalValue = i.sellingStatus.currentPrice.Value,
-                Currency = i.sellingStatus.currentPrice.currencyId,
+                Price = i.sellingStatus.currentPrice.Value,
+                ItemNumber = i.itemId,
                 StartTime = i.listingInfo.endTime,
                 EndTime = i.listingInfo.endTime,
+                NumberOfBidders = i.listingInfo.listingType.ToLowerInvariant() == "auction" ? i.sellingStatus.bidCount : 0,
+                ImageURL = i.galleryURL,
+                Currency = i.sellingStatus.currentPrice.currencyId,
                 Location = i.location,
-                SiteId = i.globalId,
-                Type = i.listingInfo.listingType,
-                NumberOfBidders = i.listingInfo.listingType.ToLowerInvariant() == "auction" ? i.sellingStatus.bidCount : 0
+                SiteID = i.globalId,
+                Type = i.listingInfo.listingType,                
             });
         }
 
-        private FindCompletedItemsRequest CreateCompletedItemsRequest(DateTime? lastUpdated)
+        private FindCompletedItemsRequest CreateCompletedItemsRequest(string keywords, DateTime? lastUpdated)
         {
             // Completed items, new only
             var request = new FindCompletedItemsRequest();
 
             // Search term
-            request.keywords = _searchTerm;
+            request.keywords = keywords;
 
             // Filters to specify new, sold and GBP
             List<ItemFilter> filters = new List<ItemFilter>()
@@ -197,10 +159,9 @@ namespace SoldOutHarness
             return request;
         }
 
-        private void WriteItemsToCSV(SearchItem[] items)
+        private void WriteItemsToCSV(string fileName, SearchItem[] items)
         {
             StringBuilder csvContents = new StringBuilder();
-            string csvFileName = _searchTerm + ".csv";
 
             foreach (var item in items)
             {
@@ -214,21 +175,21 @@ namespace SoldOutHarness
                 );
             }
 
-            if (!File.Exists(csvFileName))
+            if (!File.Exists(fileName))
             {
-                File.WriteAllText(csvFileName, csvContents.ToString());
+                File.WriteAllText(fileName, csvContents.ToString());
             }
             else
             {
-                File.AppendAllText(csvFileName, csvContents.ToString());
+                File.AppendAllText(fileName, csvContents.ToString());
             }
         }
 
-        private void ShowSoldItemsTrend()
+        private void ShowSoldItemsTrend(IEnumerable<SoldItem> items)
         {
             Console.WriteLine("Recent price trend:");
 
-            var avgs = from item in _soldItems
+            var avgs = from item in items
                        group item by new { item.EndTime.Month, item.EndTime.Year } into grp
                        select new { Date = new DateTime(grp.Key.Year, grp.Key.Month, 1), Average = grp.Average(i => i.FinalValue) };
 

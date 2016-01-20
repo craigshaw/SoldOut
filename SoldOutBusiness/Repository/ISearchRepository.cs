@@ -8,8 +8,10 @@ namespace SoldOutBusiness.Repository
         Search GetSearchByID(long searchID);
         IEnumerable<Search> GetAllSearches();
         IEnumerable<Search> GetAllSearchesWithResults();
-        IEnumerable<SearchResult> GetResultsForSearch(long searchId);
+        IEnumerable<Search> GetAllSearchesWithSearchCriteria();
+        IEnumerable<SearchResult> GetSearchResults(long searchId);
         void AddSearchResult(long searchID, SearchResult result);
+        void AddSearchResults(long searchID, IEnumerable<SearchResult> results);
         bool SaveAll();
     }
 }
