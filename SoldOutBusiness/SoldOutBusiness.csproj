@@ -71,7 +71,6 @@
     <Compile Include="Models\Search.cs" />
     <Compile Include="Models\SearchCriteria.cs" />
     <Compile Include="Models\SearchResult.cs" />
-    <Compile Include="Models\SoldItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\ISearchRepository.cs" />
     <Compile Include="Repository\SearchRepository.cs" />

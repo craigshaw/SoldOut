@@ -85,7 +85,7 @@ namespace SoldOutHarness
 
         }
 
-        private void WriteItemsToFile(string fileName, DateTime updateTime, IEnumerable<SoldItem> items)
+        private void WriteItemsToFile(string fileName, DateTime updateTime, IEnumerable<SoldOutBusiness.Models.SearchResult> items)
         {
             MemoryStream memorystream = new MemoryStream();
             BinaryFormatter bf = new BinaryFormatter();
@@ -96,14 +96,14 @@ namespace SoldOutHarness
             File.WriteAllBytes(fileName, memorystream.ToArray());
         }
 
-        private IEnumerable<SoldItem> LoadItemsFromFile(string fileName)
+        private IEnumerable<SoldOutBusiness.Models.SearchResult> LoadItemsFromFile(string fileName)
         {
             if(File.Exists(fileName))
             {
                 MemoryStream memorystream = new MemoryStream(File.ReadAllBytes(fileName));
                 BinaryFormatter bf = new BinaryFormatter();
                 //_lastUpdatedTime = (DateTime)bf.Deserialize(memorystream);
-                return (List<SoldItem>)bf.Deserialize(memorystream);
+                return (List<SoldOutBusiness.Models.SearchResult>)bf.Deserialize(memorystream);
             }
 
             return null;
@@ -185,13 +185,13 @@ namespace SoldOutHarness
             }
         }
 
-        private void ShowSoldItemsTrend(IEnumerable<SoldItem> items)
+        private void ShowSoldItemsTrend(IEnumerable<SoldOutBusiness.Models.SearchResult> items)
         {
             Console.WriteLine("Recent price trend:");
 
             var avgs = from item in items
-                       group item by new { item.EndTime.Month, item.EndTime.Year } into grp
-                       select new { Date = new DateTime(grp.Key.Year, grp.Key.Month, 1), Average = grp.Average(i => i.FinalValue) };
+                       group item by new { item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
+                       select new { Date = new DateTime(grp.Key.Year, grp.Key.Month, 1), Average = grp.Average(i => i.Price) };
 
             foreach (var g in avgs)
             {
