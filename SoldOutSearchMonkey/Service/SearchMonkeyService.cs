@@ -54,34 +54,42 @@ namespace SoldOutSearchMonkey.Service
 
         private void ExecuteSearch(Search search)
         {
-            if ((DateTime.Now - search.LastRun).Hours < 24) return;
-
-            using (var repo = new SearchRepository())
+            try
             {
-                _log.Info($"Processing {search.Name}");
 
-                // Create a request to get our completed items
-                var response = finder.GetCompletedItems(search.Name, search.LastRun);
+                if ((DateTime.Now - search.LastRun).TotalHours < 24) return;
 
-                // Show output
-                if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
+                using (var repo = new SearchRepository())
                 {
-                    _log.Info("Found " + response.searchResult.count + " new items");
+                    _log.Info($"Processing {search.Name}");
 
-                    // Set the last ran time
-                    search.LastRun = response.timestamp;
+                    // Create a request to get our completed items
+                    var response = finder.GetCompletedItems(search.Name, search.LastRun);
 
-                    if (response.searchResult.count > 0)
+                    // Show output
+                    if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
                     {
-                        // Map returned items to our SoldItems model
-                        var newItems = MapSearchResults(response.searchResult.item);
+                        _log.Info("Found " + response.searchResult.count + " new items");
 
-                        // Add them to the relevant search
-                        repo.AddSearchResults(search.SearchId, newItems);
+                        // Set the last ran time
+                        search.LastRun = response.timestamp;
+
+                        if (response.searchResult.count > 0)
+                        {
+                            // Map returned items to our SoldItems model
+                            var newItems = MapSearchResults(response.searchResult.item);
+
+                            // Add them to the relevant search
+                            repo.AddSearchResults(search.SearchId, newItems);
+                        }
+
+                        repo.SaveAll();
                     }
-
-                    repo.SaveAll();
                 }
+            }
+            catch(Exception ex)
+            {
+                _log.ErrorFormat("Error: ", ex);
             }
         }
 
