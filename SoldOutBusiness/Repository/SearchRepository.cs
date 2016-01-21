@@ -7,7 +7,7 @@ using System.Data.Entity;
 
 namespace SoldOutBusiness.Repository
 {
-    public class SearchRepository : ISearchRepository
+    public class SearchRepository : ISearchRepository, IDisposable
     {
         private SearchContext _context;
 
@@ -69,5 +69,25 @@ namespace SoldOutBusiness.Repository
         {
             return _context.SaveChanges() > 0;
         }
+
+        #region IDisposable Support
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_context != null)
+                {
+                    _context.Dispose();
+                    _context = null;
+                }
+            }
+        }
+        #endregion
     }
 }
