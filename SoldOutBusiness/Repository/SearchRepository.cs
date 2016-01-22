@@ -43,7 +43,9 @@ namespace SoldOutBusiness.Repository
 
         public IEnumerable<Search> GetAllSearchesWithResults()
         {
+#if DEBUG
             _context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
+#endif
 
             return _context.Searches.Include(s => s.SearchResults)
                 .OrderBy(s => s.SearchId).ToList();
@@ -67,6 +69,10 @@ namespace SoldOutBusiness.Repository
 
         public bool SaveAll()
         {
+#if DEBUG
+            _context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
+#endif
+
             return _context.SaveChanges() > 0;
         }
 

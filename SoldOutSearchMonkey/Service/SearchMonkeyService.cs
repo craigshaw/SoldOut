@@ -23,6 +23,7 @@ namespace SoldOutSearchMonkey.Service
         private int _currentSearchIdx;
         private TimeSpan _delay;
         private IEbayFinder finder;
+        private ISearchRepository _repo;
 
 
         public SearchMonkeyService()
@@ -30,6 +31,8 @@ namespace SoldOutSearchMonkey.Service
             _cts = new CancellationTokenSource();
 
             _currentSearchIdx = 0;
+
+            _repo = new SearchRepository();
 
             _searchTask = t =>
             {
@@ -56,38 +59,38 @@ namespace SoldOutSearchMonkey.Service
         {
             try
             {
-
-                if ((DateTime.Now - search.LastRun).TotalHours < 24) return;
-
-                using (var repo = new SearchRepository())
+                if ((DateTime.Now - search.LastRun).TotalHours < 24)
                 {
-                    _log.Info($"Processing {search.Name}");
+                    _log.Debug($"No update for {search.Name} required. Last ran at {search.LastRun}");
+                    return;
+                }
 
-                    // Create a request to get our completed items
-                    var response = finder.GetCompletedItems(search.Name, search.LastRun);
+                _log.Info($"Running search for {search.Name}...");
 
-                    // Show output
-                    if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
+                // Create a request to get our completed items
+                var response = finder.GetCompletedItems(search.Name, search.LastRun);
+
+                // Show output
+                if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
+                {
+                    _log.Info($"Found {response.searchResult.count} new items");
+
+                    // Set the last ran time
+                    search.LastRun = response.timestamp;
+
+                    if (response.searchResult.count > 0)
                     {
-                        _log.Info("Found " + response.searchResult.count + " new items");
+                        // Map returned items to our SoldItems model
+                        var newItems = MapSearchResults(response.searchResult.item);
 
-                        // Set the last ran time
-                        search.LastRun = response.timestamp;
-
-                        if (response.searchResult.count > 0)
-                        {
-                            // Map returned items to our SoldItems model
-                            var newItems = MapSearchResults(response.searchResult.item);
-
-                            // Add them to the relevant search
-                            repo.AddSearchResults(search.SearchId, newItems);
-                        }
-
-                        repo.SaveAll();
+                        // Add them to the relevant search
+                        _repo.AddSearchResults(search.SearchId, newItems);
                     }
+
+                    _repo.SaveAll();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _log.ErrorFormat("Error: ", ex);
             }
@@ -103,7 +106,7 @@ namespace SoldOutSearchMonkey.Service
             // Kick off a search
             Task.Delay(100, _cts.Token).ContinueWith(_searchTask, _cts.Token);
 
-            // When the search has completed, schedule the next one based on a calculated delay
+            _log.Info("Service Started");
         }
 
         private TimeSpan CalculateDelay()
@@ -113,17 +116,14 @@ namespace SoldOutSearchMonkey.Service
 
         private List<Search> GetSearches()
         {
-            using (var repo = new SearchRepository())
-            {
-                return (List<Search>)repo.GetAllSearches();
-            }
+            return (List<Search>)_repo.GetAllSearches();
         }
 
         public void Stop()
         {
             _cts.Cancel();
             _cts.Token.WaitHandle.WaitOne();
-            _log.Info("Stopped");
+            _log.Info("Service Stopped");
         }
 
         private IEnumerable<SoldOutBusiness.Models.SearchResult> MapSearchResults(SearchItem[] items)
