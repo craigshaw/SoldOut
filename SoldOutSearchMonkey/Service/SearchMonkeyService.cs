@@ -15,31 +15,21 @@ namespace SoldOutSearchMonkey.Service
     public class SearchMonkeyService
     {
         private static readonly ILog _log = LogManager.GetLogger(typeof(SearchMonkeyService));
-        //(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private CancellationTokenSource _cts;
         private Action<Task> _searchTask;
-        private List<Search> _searches;
-        private int _currentSearchIdx;
+        private long _currentSearchId;
         private TimeSpan _delay;
         private IEbayFinder finder;
-        private ISearchRepository _repo;
 
 
         public SearchMonkeyService()
         {
             _cts = new CancellationTokenSource();
 
-            _currentSearchIdx = 0;
-
-            _repo = new SearchRepository();
-
             _searchTask = t =>
             {
-                ExecuteSearch(_searches[_currentSearchIdx++]);
-
-                if (_currentSearchIdx == _searches.Count)
-                    _currentSearchIdx = 0;
+                ExecuteSearch();
 
                 Task.Delay(_delay, _cts.Token).ContinueWith(ta => _searchTask(t), _cts.Token);
             };
@@ -55,39 +45,45 @@ namespace SoldOutSearchMonkey.Service
                             });
         }
 
-        private void ExecuteSearch(Search search)
+        private void ExecuteSearch()
         {
             try
             {
-                if ((DateTime.Now - search.LastRun).TotalHours < 24)
+                using (var repo = new SearchRepository())
                 {
-                    _log.Debug($"No update for {search.Name} required. Last ran at {search.LastRun}");
-                    return;
-                }
+                    var search = repo.GetNextSearch(_currentSearchId);
+                    _currentSearchId = search.SearchId;
 
-                _log.Info($"Running search for {search.Name}...");
-
-                // Create a request to get our completed items
-                var response = finder.GetCompletedItems(search.Name, search.LastRun);
-
-                // Show output
-                if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
-                {
-                    _log.Info($"Found {response.searchResult.count} new items");
-
-                    // Set the last ran time
-                    search.LastRun = response.timestamp;
-
-                    if (response.searchResult.count > 0)
+                    if ((DateTime.Now - search.LastRun).TotalHours < 24)
                     {
-                        // Map returned items to our SoldItems model
-                        var newItems = MapSearchResults(response.searchResult.item);
-
-                        // Add them to the relevant search
-                        _repo.AddSearchResults(search.SearchId, newItems);
+                        _log.Debug($"No update for {search.Name} required. Last ran at {search.LastRun}");
+                        return;
                     }
 
-                    _repo.SaveAll();
+                    _log.Info($"Running search for {search.Name}...");
+
+                    // Create a request to get our completed items
+                    var response = finder.GetCompletedItems(search.Name, search.LastRun);
+
+                    // Show output
+                    if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
+                    {
+                        _log.Info($"Found {response.searchResult.count} new items");
+
+                        // Set the last ran time
+                        search.LastRun = response.timestamp;
+
+                        if (response.searchResult.count > 0)
+                        {
+                            // Map returned items to our SoldItems model
+                            var newItems = MapSearchResults(response.searchResult.item);
+
+                            // Add them to the relevant search
+                            repo.AddSearchResults(search.SearchId, newItems);
+                        }
+
+                        repo.SaveAll();
+                    }
                 }
             }
             catch (Exception ex)
@@ -98,12 +94,13 @@ namespace SoldOutSearchMonkey.Service
 
         public void Start()
         {
-            // Get all searches
-            _searches = GetSearches();
+            // Reset the search we last ran
+            _currentSearchId = 0;
 
+            // Calculate the delay between searches
             _delay = CalculateDelay();
 
-            // Kick off a search
+            // Kick off the first search
             Task.Delay(100, _cts.Token).ContinueWith(_searchTask, _cts.Token);
 
             _log.Info("Service Started");
@@ -112,11 +109,6 @@ namespace SoldOutSearchMonkey.Service
         private TimeSpan CalculateDelay()
         {
             return TimeSpan.FromMilliseconds(10000);
-        }
-
-        private List<Search> GetSearches()
-        {
-            return (List<Search>)_repo.GetAllSearches();
         }
 
         public void Stop()
