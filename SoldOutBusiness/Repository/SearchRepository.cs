@@ -67,6 +67,15 @@ namespace SoldOutBusiness.Repository
             return _context.Searches.Where(s => s.SearchId == searchID).FirstOrDefault();
         }
 
+        public Search GetNextSearch(long searchID)
+        {
+            long maxID = _context.Searches.Max(s => s.SearchId);
+
+            var currentID = (maxID == searchID) ? 0 : searchID;
+
+            return _context.Searches.Where(s => s.SearchId > currentID).FirstOrDefault();
+        }
+
         public bool SaveAll()
         {
 #if DEBUG

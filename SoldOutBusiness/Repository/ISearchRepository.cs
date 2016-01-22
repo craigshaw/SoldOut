@@ -6,6 +6,7 @@ namespace SoldOutBusiness.Repository
     public interface ISearchRepository
     {
         Search GetSearchByID(long searchID);
+        Search GetNextSearch(long searchID);
         IEnumerable<Search> GetAllSearches();
         IEnumerable<Search> GetAllSearchesWithResults();
         IEnumerable<Search> GetAllSearchesWithSearchCriteria();
