@@ -37,9 +37,14 @@ namespace SoldOutBusiness.Services.Slack
         {
             Payload payload = new Payload()
             {
-                Username = "SearchSimian",
-                Text = message,
-                IconEmoji = ":monkey_face:"
+#if DEBUG
+                Username = "TestGibbon",
+                IconEmoji = ":monkey:",
+#else
+                Username = "SearchMonkey",
+                IconEmoji = ":monkey_face:",
+#endif
+                Text = message
             };
 
             PostMessage(payload);

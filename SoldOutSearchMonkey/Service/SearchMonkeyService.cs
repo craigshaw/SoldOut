@@ -103,7 +103,7 @@ namespace SoldOutSearchMonkey.Service
 
         private void NotifyResultsReady(Search search, int numResults)
         {
-            _notifier.PostMessage($"I've just logged {numResults} new search results for {search.Name}");
+            _notifier.PostMessage($"I've just logged {numResults} new search results for {search.Name} (<{search.Link}|{search.Description}>)");
         }
 
         public void Start()
