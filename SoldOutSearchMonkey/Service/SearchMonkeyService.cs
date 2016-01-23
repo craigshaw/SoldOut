@@ -3,6 +3,7 @@ using log4net;
 using SoldOutBusiness.Models;
 using SoldOutBusiness.Repository;
 using SoldOutBusiness.Services;
+using SoldOutBusiness.Services.Slack;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -20,12 +21,15 @@ namespace SoldOutSearchMonkey.Service
         private Action<Task> _searchTask;
         private long _currentSearchId;
         private TimeSpan _delay;
-        private IEbayFinder finder;
+        private IEbayFinder _finder;
+        private ISlackNotifier _notifier;
 
 
         public SearchMonkeyService()
         {
             _cts = new CancellationTokenSource();
+
+            _notifier = new SlackNotifier(ConfigurationManager.AppSettings["SlackServiceUri"]);
 
             _searchTask = t =>
             {
@@ -34,7 +38,7 @@ namespace SoldOutSearchMonkey.Service
                 Task.Delay(_delay, _cts.Token).ContinueWith(ta => _searchTask(t), _cts.Token);
             };
 
-            finder = new EbayFinder()
+            _finder = new EbayFinder()
                             .Configure(c =>
                             {
                                 // Initialize service end-point configuration
@@ -63,7 +67,7 @@ namespace SoldOutSearchMonkey.Service
                     _log.Info($"Running search for {search.Name}...");
 
                     // Create a request to get our completed items
-                    var response = finder.GetCompletedItems(search.Name, search.LastRun);
+                    var response = _finder.GetCompletedItems(search.Name, search.LastRun);
 
                     // Show output
                     if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
@@ -73,13 +77,18 @@ namespace SoldOutSearchMonkey.Service
                         // Set the last ran time
                         search.LastRun = response.timestamp;
 
-                        if (response.searchResult.count > 0)
+                        int numResults = response.searchResult.count;
+
+                        if (numResults > 0)
                         {
                             // Map returned items to our SoldItems model
                             var newItems = MapSearchResults(response.searchResult.item);
 
                             // Add them to the relevant search
                             repo.AddSearchResults(search.SearchId, newItems);
+
+                            // Send a notification out
+                            NotifyResultsReady(search, numResults);
                         }
 
                         repo.SaveAll();
@@ -90,6 +99,11 @@ namespace SoldOutSearchMonkey.Service
             {
                 _log.ErrorFormat("Error: ", ex);
             }
+        }
+
+        private void NotifyResultsReady(Search search, int numResults)
+        {
+            _notifier.PostMessage($"I've just logged {numResults} new search results for {search.Name}");
         }
 
         public void Start()
@@ -103,7 +117,8 @@ namespace SoldOutSearchMonkey.Service
             // Kick off the first search
             Task.Delay(100, _cts.Token).ContinueWith(_searchTask, _cts.Token);
 
-            _log.Info("Service Started");
+            _log.Info("SearchMonkey Started");
+            _notifier.PostMessage("SearchMonkey Started");
         }
 
         private TimeSpan CalculateDelay()
@@ -115,7 +130,8 @@ namespace SoldOutSearchMonkey.Service
         {
             _cts.Cancel();
             _cts.Token.WaitHandle.WaitOne();
-            _log.Info("Service Stopped");
+            _log.Info("SearchMonkey Stopped");
+            _notifier.PostMessage("SearchMonkey Stopped");
         }
 
         private IEnumerable<SoldOutBusiness.Models.SearchResult> MapSearchResults(SearchItem[] items)
