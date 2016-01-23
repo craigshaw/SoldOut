@@ -1,9 +1,6 @@
-﻿using SoldOutSearchMonkey.Service;
+﻿using log4net;
+using SoldOutSearchMonkey.Service;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Topshelf;
 
 namespace SoldOutSearchMonkey
@@ -14,6 +11,8 @@ namespace SoldOutSearchMonkey
         private const string ServiceDisplayName = "SoldOut Search Monkey";
         private const string ServiceName = "SoldOutSearchMonkey";
 
+        private static readonly ILog _log = LogManager.GetLogger(typeof(SoldOutSearchMonkey));
+
         static void Main(string[] args)
         {
             new SoldOutSearchMonkey().Startup();
@@ -21,19 +20,24 @@ namespace SoldOutSearchMonkey
 
         private void Startup()
         {
-            HostFactory.Run(x =>
+            AppDomain.CurrentDomain.UnhandledException += (o, e) =>
             {
-                x.Service<SearchMonkeyService>(s =>
-                {
-                    s.ConstructUsing(name => new SearchMonkeyService());
-                    s.WhenStarted(tc => tc.Start());
-                    s.WhenStopped(tc => tc.Stop());
-                });
-                x.RunAsLocalSystem();
+                _log.Fatal($"Unhandled exception thrown: {e.ExceptionObject}");
+            };
 
-                x.SetDescription(ServiceDescription);
-                x.SetDisplayName(ServiceDisplayName);
-                x.SetServiceName(ServiceName);
+            HostFactory.Run(config =>
+            {
+                config.Service<SearchMonkeyService>(service =>
+                {
+                    service.ConstructUsing(name => new SearchMonkeyService());
+                    service.WhenStarted(svc => svc.Start());
+                    service.WhenStopped(svc => svc.Stop());
+                });
+                config.RunAsLocalSystem();
+
+                config.SetDescription(ServiceDescription);
+                config.SetDisplayName(ServiceDisplayName);
+                config.SetServiceName(ServiceName);
             });
         }
     }
