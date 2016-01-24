@@ -56,7 +56,7 @@ namespace SoldOutHarness
                     }
 
                     html.Replace("%%PRICES%%", priceSummary.ToString());
-                    html.Replace("%%TITLE%%", HttpUtility.HtmlEncode($"{search.Name} {search.Description}"));
+                    html.Replace("%%TITLE%%", $"{search.Name} {search.Description.Replace("'", @"\'").Replace("\"", "\\\"")}");
 
                     File.WriteAllText($"{search.Name}.html", html.ToString());
                 }
