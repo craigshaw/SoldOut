@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Web;
 
 namespace SoldOutHarness
 {
@@ -16,11 +17,52 @@ namespace SoldOutHarness
     {
         static void Main(string[] args)
         {
-            new Harness().Run();
+            //new Harness().Run();
+            new Harness().CreatePriceSummaries();
 
             Console.WriteLine("Press any key to close the program.");
             Console.ReadKey();
 
+        }
+
+        private void CreatePriceSummaries()
+        {
+            using (var repo = new SearchRepository())
+            {
+                // Get the current searches
+                var searches = repo.GetAllSearchesWithResults();
+
+                // Generate the stats
+                foreach (var search in searches)
+                {
+                    var avgs = from item in search.SearchResults
+                               group item by new { item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
+                               orderby grp.Key.Year, grp.Key.Month
+                               select new { Date = new DateTime(grp.Key.Year, grp.Key.Month, 1), Average = grp.Average(it => it.Price) };
+
+                    StringBuilder html = new StringBuilder(File.ReadAllText("SummaryTemplate.html"));
+
+                    StringBuilder priceSummary = new StringBuilder();
+                    int i = 0;
+
+                    foreach (var g in avgs)
+                    {
+                        if (i++ > 0)
+                            priceSummary.AppendLine(",");
+
+                        //['10/15',  38.06]
+                        priceSummary.Append($"['{g.Date.Month:D2}/{g.Date.Year}', {g.Average:F2}]");
+                        //Console.WriteLine(string.Format("{0:D2}/{1}: {2:C2}", g.Date.Month, g.Date.Year, g.Average));
+                    }
+
+                    html.Replace("%%PRICES%%", priceSummary.ToString());
+                    html.Replace("%%TITLE%%", HttpUtility.HtmlEncode($"{search.Name} {search.Description}"));
+
+                    File.WriteAllText($"{search.Name}.html", html.ToString());
+                }
+
+                // Write to output HTML
+            }
         }
 
         private void Run()
