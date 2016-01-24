@@ -1,5 +1,4 @@
 ﻿using eBay.Services.Finding;
-using SoldOutBusiness.Models;
 using SoldOutBusiness.Repository;
 using SoldOutBusiness.Services;
 using System;
@@ -9,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Web;
 
 namespace SoldOutHarness
 {
