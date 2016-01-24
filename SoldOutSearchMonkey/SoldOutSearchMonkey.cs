@@ -1,6 +1,9 @@
 ﻿using log4net;
+using SoldOutBusiness.Services;
+using SoldOutBusiness.Services.Notifiers.Slack;
 using SoldOutSearchMonkey.Service;
 using System;
+using System.Configuration;
 using Topshelf;
 
 namespace SoldOutSearchMonkey
@@ -29,7 +32,22 @@ namespace SoldOutSearchMonkey
             {
                 config.Service<SearchMonkeyService>(service =>
                 {
-                    service.ConstructUsing(name => new SearchMonkeyService());
+                    service.ConstructUsing(name =>
+                    {
+                        var notifier = new SlackNotifier(ConfigurationManager.AppSettings["SlackServiceUri"]);
+
+                        var finder = new EbayFinder()
+                                        .Configure(c =>
+                                        {
+                                            // Initialize service end-point configuration
+                                            c.EndPointAddress = "http://svcs.ebay.com/services/search/FindingService/v1";
+                                            c.GlobalId = "EBAY-GB";
+                                            // set eBay developer account AppID here!
+                                            c.ApplicationId = ConfigurationManager.AppSettings["eBayApplicationId"];
+                                        });
+
+                        return new SearchMonkeyService(finder, notifier);
+                    });
                     service.WhenStarted(svc => svc.Start());
                     service.WhenStopped(svc => svc.Stop());
                 });

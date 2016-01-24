@@ -4,9 +4,9 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Text;
 
-namespace SoldOutBusiness.Services.Slack
+namespace SoldOutBusiness.Services.Notifiers.Slack
 {
-    public class SlackNotifier : ISlackNotifier
+    public class SlackNotifier : INotifier
     {
         private readonly Uri _uri;
         private readonly Encoding _encoding = new UTF8Encoding();

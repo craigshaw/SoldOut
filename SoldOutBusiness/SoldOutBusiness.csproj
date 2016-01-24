@@ -80,8 +80,8 @@
     <Compile Include="Repository\SearchRepository.cs" />
     <Compile Include="Services\EbayFinder.cs" />
     <Compile Include="Services\IEbayFinder.cs" />
-    <Compile Include="Services\Slack\ISlackNotifier.cs" />
-    <Compile Include="Services\Slack\SlackNotifier.cs" />
+    <Compile Include="Services\Notifiers\INotifier.cs" />
+    <Compile Include="Services\Notifiers\Slack\SlackNotifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\eBay.Services\eBay.Services.csproj">

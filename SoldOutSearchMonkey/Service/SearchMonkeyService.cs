@@ -3,10 +3,9 @@ using log4net;
 using SoldOutBusiness.Models;
 using SoldOutBusiness.Repository;
 using SoldOutBusiness.Services;
-using SoldOutBusiness.Services.Slack;
+using SoldOutBusiness.Services.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,14 +21,14 @@ namespace SoldOutSearchMonkey.Service
         private long _currentSearchId;
         private TimeSpan _delay;
         private IEbayFinder _finder;
-        private ISlackNotifier _notifier;
+        private INotifier _notifier;
 
-
-        public SearchMonkeyService()
+        public SearchMonkeyService(IEbayFinder finder, INotifier notifier)
         {
             _cts = new CancellationTokenSource();
 
-            _notifier = new SlackNotifier(ConfigurationManager.AppSettings["SlackServiceUri"]);
+            _finder = finder;
+            _notifier = notifier;
 
             _searchTask = t =>
             {
@@ -37,16 +36,6 @@ namespace SoldOutSearchMonkey.Service
 
                 Task.Delay(_delay, _cts.Token).ContinueWith(ta => _searchTask(t), _cts.Token);
             };
-
-            _finder = new EbayFinder()
-                            .Configure(c =>
-                            {
-                                // Initialize service end-point configuration
-                                c.EndPointAddress = "http://svcs.ebay.com/services/search/FindingService/v1";
-                                c.GlobalId = "EBAY-GB";
-                                // set eBay developer account AppID here!
-                                c.ApplicationId = ConfigurationManager.AppSettings["eBayApplicationId"];
-                            });
         }
 
         private void ExecuteSearch()

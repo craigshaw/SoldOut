@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SoldOutBusiness.Services.Slack
+namespace SoldOutBusiness.Services.Notifiers
 {
-    public interface ISlackNotifier
+    public interface INotifier
     {
         void PostMessage(string message);
     }
