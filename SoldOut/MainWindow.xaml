@@ -8,6 +8,30 @@
         mc:Ignorable="d"
         Title="SoldOut" Height="350" Width="525">
     <Grid>
-        
+        <StackPanel Name="Display">
+            <DataGrid Name="Searches">
+                
+            </DataGrid>
+
+
+            <DataGrid Name="SearchResults" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Ended"
+                                        Binding="{Binding EndTime}" Width="Auto" />
+                    <DataGridTextColumn Header="Price"
+                                        Binding="{Binding Price, StringFormat=C}" Width="Auto" />
+                    <DataGridTextColumn Header="Title"
+                                        Binding="{Binding Title}" Width="5*" />
+                    <DataGridHyperlinkColumn Header="Listing"
+                                             Binding="{Binding Link}" Width="5*">
+                        <DataGridHyperlinkColumn.ElementStyle>
+                            <Style>
+                                <EventSetter Event="Hyperlink.Click" Handler="HandleListingClick"/>
+                            </Style>
+                        </DataGridHyperlinkColumn.ElementStyle>
+                    </DataGridHyperlinkColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
     </Grid>
 </Controls:MetroWindow>

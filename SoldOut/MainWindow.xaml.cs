@@ -1,6 +1,9 @@
 ﻿using MahApps.Metro.Controls;
+using SoldOutBusiness.Models;
+using SoldOutBusiness.Repository;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +27,30 @@ namespace SoldOut
         public MainWindow()
         {
             InitializeComponent();
+
+            InitialiseSearchGrid();
+        }
+
+        private void InitialiseSearchGrid()
+        {
+            using (var repo = new SearchRepository())
+            {
+                // Bind data to the search grid
+                Searches.ItemsSource = repo.GetAllSearches().OrderByDescending(s => s.LastCleansed);
+
+                // Select the first item
+                Searches.SelectedIndex = 0;
+
+                // Now load the results for that search
+                SearchResults.SelectionMode = DataGridSelectionMode.Extended;
+                SearchResults.ItemsSource = repo.GetSearchResults(((Search)Searches.SelectedItem).SearchId).ToList();
+            }
+        }
+
+        private void HandleListingClick(object sender, RoutedEventArgs e)
+        {
+            Hyperlink link = (Hyperlink)e.OriginalSource;
+            Process.Start(link.NavigateUri.AbsoluteUri);
         }
     }
 }
