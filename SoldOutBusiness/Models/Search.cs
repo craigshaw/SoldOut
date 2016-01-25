@@ -15,6 +15,7 @@ namespace SoldOutBusiness.Models
         public DateTime LastRun { get; set; }
         public string Description { get; set; }
         public string Link { get; set; }
+        public DateTime LastCleansed { get; set; }
 
         public ICollection<SearchResult> SearchResults { get; set; }
         public ICollection<SearchCriteria> SearchCriteria { get; set; }
