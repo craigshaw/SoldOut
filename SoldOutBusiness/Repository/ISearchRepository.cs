@@ -1,9 +1,10 @@
 ﻿using SoldOutBusiness.Models;
+using System;
 using System.Collections.Generic;
 
 namespace SoldOutBusiness.Repository
 {
-    public interface ISearchRepository
+    public interface ISearchRepository : IDisposable
     {
         Search GetSearchByID(long searchID);
         Search GetNextSearch(long searchID);

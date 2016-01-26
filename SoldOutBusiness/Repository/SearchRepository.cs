@@ -7,7 +7,7 @@ using System.Data.Entity;
 
 namespace SoldOutBusiness.Repository
 {
-    public class SearchRepository : ISearchRepository, IDisposable
+    public class SearchRepository : ISearchRepository
     {
         private SearchContext _context;
 
