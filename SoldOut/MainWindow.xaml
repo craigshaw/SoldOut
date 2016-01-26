@@ -6,15 +6,33 @@
         xmlns:local="clr-namespace:SoldOut"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="SoldOut" Height="350" Width="525">
-    <Grid>
-        <StackPanel Name="Display">
-            <DataGrid Name="Searches">
-                
+        Title="SoldOut" Height="350" Width="525" WindowState="Maximized"
+        Closing="MetroWindow_Closing">
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="6*"/>
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+
+        <!-- Searches -->
+        <ScrollViewer Grid.Row="0" Grid.Column="0">
+            <DataGrid  Name="Searches" AutoGenerateColumns="False"
+                       SelectionChanged="Searches_SelectionChanged">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Last Cleansed"
+                                        Binding="{Binding LastCleansed}" Width="Auto" />
+                    <DataGridTextColumn Header="Last Ran"
+                                        Binding="{Binding LastRun}" Width="Auto" />
+                    <DataGridTextColumn Header="Description"
+                                        Binding="{Binding Description}" Width="5*" />
+                </DataGrid.Columns>
             </DataGrid>
+        </ScrollViewer>
 
-
-            <DataGrid Name="SearchResults" AutoGenerateColumns="False">
+        <!-- Search Results -->
+        <ScrollViewer Grid.Row="1" Grid.Column="0">
+            <DataGrid Name="SearchResults" AutoGenerateColumns="False" SelectionMode="Extended">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Ended"
                                         Binding="{Binding EndTime}" Width="Auto" />
@@ -32,6 +50,9 @@
                     </DataGridHyperlinkColumn>
                 </DataGrid.Columns>
             </DataGrid>
-        </StackPanel>
+        </ScrollViewer>
+        
+        <!-- Controls -->
+        <Button Grid.Row="2" Grid.Column="0" Click="Button_Click">Cleanse Selected Results</Button>
     </Grid>
 </Controls:MetroWindow>
