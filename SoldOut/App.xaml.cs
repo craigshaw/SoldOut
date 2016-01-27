@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using MahApps.Metro;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Markup;
 
@@ -17,6 +18,12 @@ namespace SoldOut
                 new FrameworkPropertyMetadata(
                     XmlLanguage.GetLanguage(
                     CultureInfo.CurrentCulture.IetfLanguageTag)));
+
+            // Set theme
+            ThemeManager.ChangeAppStyle(Application.Current,
+                                        ThemeManager.GetAccent("Purple"),
+                                        ThemeManager.GetAppTheme("BaseDark"));
+
             base.OnStartup(e);
         }
     }

@@ -16,42 +16,38 @@
         </Grid.RowDefinitions>
 
         <!-- Searches -->
-        <ScrollViewer Grid.Row="0" Grid.Column="0">
-            <DataGrid  Name="Searches" AutoGenerateColumns="False"
+        <DataGrid Grid.Row="0" Name="Searches" AutoGenerateColumns="False"
                        SelectionChanged="Searches_SelectionChanged">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Last Cleansed"
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Last Cleansed"
                                         Binding="{Binding LastCleansed}" Width="Auto" />
-                    <DataGridTextColumn Header="Last Ran"
+                <DataGridTextColumn Header="Last Ran"
                                         Binding="{Binding LastRun}" Width="Auto" />
-                    <DataGridTextColumn Header="Description"
+                <DataGridTextColumn Header="Description"
                                         Binding="{Binding Description}" Width="5*" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </ScrollViewer>
+            </DataGrid.Columns>
+        </DataGrid>
 
         <!-- Search Results -->
-        <ScrollViewer Grid.Row="1" Grid.Column="0">
-            <DataGrid Name="SearchResults" AutoGenerateColumns="False" SelectionMode="Extended">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Ended"
+        <DataGrid Grid.Row="1" Name="SearchResults" AutoGenerateColumns="False" SelectionMode="Extended">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Ended"
                                         Binding="{Binding EndTime}" Width="Auto" />
-                    <DataGridTextColumn Header="Price"
+                <DataGridTextColumn Header="Price"
                                         Binding="{Binding Price, StringFormat=C}" Width="Auto" />
-                    <DataGridTextColumn Header="Title"
+                <DataGridTextColumn Header="Title"
                                         Binding="{Binding Title}" Width="5*" />
-                    <DataGridHyperlinkColumn Header="Listing"
+                <DataGridHyperlinkColumn Header="Listing"
                                              Binding="{Binding Link}" Width="5*">
-                        <DataGridHyperlinkColumn.ElementStyle>
-                            <Style>
-                                <EventSetter Event="Hyperlink.Click" Handler="HandleListingClick"/>
-                            </Style>
-                        </DataGridHyperlinkColumn.ElementStyle>
-                    </DataGridHyperlinkColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </ScrollViewer>
-        
+                    <DataGridHyperlinkColumn.ElementStyle>
+                        <Style>
+                            <EventSetter Event="Hyperlink.Click" Handler="HandleListingClick"/>
+                        </Style>
+                    </DataGridHyperlinkColumn.ElementStyle>
+                </DataGridHyperlinkColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
         <!-- Controls -->
         <Button Grid.Row="2" Grid.Column="0" Click="Button_Click">Cleanse Selected Results</Button>
     </Grid>

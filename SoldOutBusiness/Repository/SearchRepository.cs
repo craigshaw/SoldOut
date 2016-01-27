@@ -76,6 +76,18 @@ namespace SoldOutBusiness.Repository
             return _context.Searches.Where(s => s.SearchId > currentID).FirstOrDefault();
         }
 
+        public void DeleteSearchResults(IEnumerable<SearchResult> results)
+        {
+            // NOTE - assumes the entities are attached, i.e. _context.Entry(results.FirstOrDefault()).State != EntityState.Detached;
+            _context.SearchResults.RemoveRange(results);
+        }
+
+        public void UpdateSearchLastCleansedTime(long searchID, DateTime lastCleansed)
+        {
+            var search = GetSearchByID(searchID);
+            search.LastCleansed = lastCleansed;
+        }
+
         public bool SaveAll()
         {
             return _context.SaveChanges() > 0;

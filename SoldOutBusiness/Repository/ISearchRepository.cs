@@ -14,6 +14,8 @@ namespace SoldOutBusiness.Repository
         IEnumerable<SearchResult> GetSearchResults(long searchId);
         void AddSearchResult(long searchID, SearchResult result);
         void AddSearchResults(long searchID, IEnumerable<SearchResult> results);
+        void DeleteSearchResults(IEnumerable<SearchResult> results);
+        void UpdateSearchLastCleansedTime(long searchID, DateTime lastCleansed);
         bool SaveAll();
     }
 }

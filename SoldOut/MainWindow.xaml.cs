@@ -2,20 +2,11 @@
 using SoldOutBusiness.Models;
 using SoldOutBusiness.Repository;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SoldOut
 {
@@ -53,9 +44,19 @@ namespace SoldOut
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             // Get the selected items
-            var items = SearchResults.SelectedItems;
+            var items = SearchResults.SelectedItems.Cast<SearchResult>();
 
-            // TODO: Now remove them via the repository
+            // Now remove them via the repository
+            _repo.DeleteSearchResults(items);
+
+            // Update the last cleansed time
+            _repo.UpdateSearchLastCleansedTime(((Search)Searches.SelectedItem).SearchId, DateTime.Now);
+
+            // Commit
+            _repo.SaveAll();
+
+            // Reload the content
+            SearchResults.ItemsSource = _repo.GetSearchResults(((Search)Searches.SelectedItem).SearchId).ToList();
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
