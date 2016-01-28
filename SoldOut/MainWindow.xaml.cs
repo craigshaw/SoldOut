@@ -1,4 +1,5 @@
-﻿using MahApps.Metro.Controls;
+﻿using log4net;
+using MahApps.Metro.Controls;
 using SoldOutBusiness.Models;
 using SoldOutBusiness.Repository;
 using System;
@@ -15,6 +16,7 @@ namespace SoldOut
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        private static readonly ILog _log = LogManager.GetLogger(typeof(Application));
         private ISearchRepository _repo;
 
         public MainWindow()
