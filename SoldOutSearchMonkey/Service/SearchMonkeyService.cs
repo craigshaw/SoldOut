@@ -7,6 +7,7 @@ using SoldOutBusiness.Services.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -106,8 +107,13 @@ namespace SoldOutSearchMonkey.Service
             // Kick off the first search
             Task.Delay(100, _cts.Token).ContinueWith(_searchTask, _cts.Token);
 
-            _log.Info("SearchMonkey Started");
+            _log.Info($"SearchMonkey v{Version} Started");
             _notifier.PostMessage("SearchMonkey Started");
+        }
+
+        private Version Version
+        {
+            get { return Assembly.GetEntryAssembly().GetName().Version; }
         }
 
         private TimeSpan CalculateDelay()
