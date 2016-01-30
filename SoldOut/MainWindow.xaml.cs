@@ -31,7 +31,7 @@ namespace SoldOut
         private void InitialiseSearchGrid()
         {
             // Bind data to the search grid
-            Searches.ItemsSource = _repo.GetAllSearches().OrderByDescending(s => s.LastCleansed);
+            Searches.ItemsSource = _repo.GetAllSearches().OrderByDescending(s => s.LastRun).ThenBy(s => s.LastCleansed);
 
             // Select the first item
             Searches.SelectedIndex = 0;

@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="SoldOut" Height="350" Width="525" WindowState="Maximized"
         Closing="MetroWindow_Closing">
-    <Grid Margin="8">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"/>
             <RowDefinition Height="6*"/>
@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
 
         <!-- Searches -->
-        <DataGrid Grid.Row="0" Name="Searches" AutoGenerateColumns="False"
+        <DataGrid Grid.Row="0" Margin="8,8,8,4" Name="Searches" AutoGenerateColumns="False"
                        SelectionChanged="Searches_SelectionChanged">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Last Cleansed"
@@ -29,7 +29,7 @@
         </DataGrid>
 
         <!-- Search Results -->
-        <DataGrid Grid.Row="1" Name="SearchResults" AutoGenerateColumns="False" SelectionMode="Extended">
+        <DataGrid Grid.Row="1" Margin="8,4,8,4" Name="SearchResults" AutoGenerateColumns="False" SelectionMode="Extended">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Ended"
                                         Binding="{Binding EndTime}" Width="Auto" />
@@ -49,6 +49,6 @@
         </DataGrid>
 
         <!-- Controls -->
-        <Button Grid.Row="2" Grid.Column="0" Click="Button_Click">Cleanse Selected Results</Button>
+        <Button Grid.Row="2" Grid.Column="0" Margin="8,4,8,8" Click="Button_Click">Cleanse Selected Results</Button>
     </Grid>
 </Controls:MetroWindow>
