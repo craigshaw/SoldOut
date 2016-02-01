@@ -1,4 +1,7 @@
 ﻿using SoldOutBusiness.Repository;
+using SoldOutWeb.Models;
+using System;
+using System.Linq;
 using System.Web.Mvc;
 
 namespace SoldOutWeb.Controllers
@@ -20,9 +23,16 @@ namespace SoldOutWeb.Controllers
 
         public ActionResult Search(int id)
         {
-            var search = _repository.GetSearchByID(id);
+            var results = _repository.GetSearchResults(id).ToList();
 
-            return View(id);
+            var avgs = from item in results
+                       group item by new { item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
+                       orderby grp.Key.Year, grp.Key.Month
+                       select new PriceHistory (){ PricePeriod = new DateTime(grp.Key.Year, grp.Key.Month, 1), AveragePrice = (double)(grp.Average(it => it.Price)) };
+
+            
+
+            return View(avgs);
         }
 
         //public ActionResult About()
