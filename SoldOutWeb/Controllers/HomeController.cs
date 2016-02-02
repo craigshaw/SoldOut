@@ -23,6 +23,7 @@ namespace SoldOutWeb.Controllers
 
         public ActionResult Search(int id)
         {
+            var search = _repository.GetSearchByID(id);
             var results = _repository.GetSearchResults(id).ToList();
 
             var avgs = from item in results
@@ -30,9 +31,16 @@ namespace SoldOutWeb.Controllers
                        orderby grp.Key.Year, grp.Key.Month
                        select new PriceHistory (){ PricePeriod = new DateTime(grp.Key.Year, grp.Key.Month, 1), AveragePrice = (double)(grp.Average(it => it.Price)) };
 
-            
+            SearchSummary summary = new SearchSummary()
+            {
+                Name = search.Name,
+                Description = search.Description,
+                LastRun = search.LastRun,
+                PriceHistory = avgs,
+                TotalResults = results.Count
+            };
 
-            return View(avgs);
+            return View(summary);
         }
 
         //public ActionResult About()
