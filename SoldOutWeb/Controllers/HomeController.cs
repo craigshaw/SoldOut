@@ -1,6 +1,7 @@
 ﻿using SoldOutBusiness.Repository;
 using SoldOutWeb.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -24,23 +25,36 @@ namespace SoldOutWeb.Controllers
         public ActionResult Search(int id)
         {
             var search = _repository.GetSearchByID(id);
-            var results = _repository.GetSearchResults(id).ToList();
-
-            var avgs = from item in results
-                       group item by new { item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
-                       orderby grp.Key.Year, grp.Key.Month
-                       select new PriceHistory (){ PricePeriod = new DateTime(grp.Key.Year, grp.Key.Month, 1), AveragePrice = (double)(grp.Average(it => it.Price)) };
+            var priceHistory = CreatePriceHistory(id);
 
             SearchSummary summary = new SearchSummary()
             {
                 Name = search.Name,
                 Description = search.Description,
+                SearchID = id,
                 LastRun = search.LastRun,
-                PriceHistory = avgs,
-                TotalResults = results.Count
+                PriceHistory = priceHistory,
+                TotalResults = 0
             };
 
             return View(summary);
+        }
+
+        public JsonResult SearchSummary(int id)
+        {
+            var priceHistory = CreatePriceHistory(id);
+
+            return Json(priceHistory, JsonRequestBehavior.AllowGet);
+        }
+
+        private IEnumerable<PriceHistory> CreatePriceHistory(int searchId)
+        {
+            var results = _repository.GetSearchResults(searchId).ToList();
+
+            return from item in results
+                       group item by new { item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
+                       orderby grp.Key.Year, grp.Key.Month
+                       select new PriceHistory() { PricePeriod = new DateTime(grp.Key.Year, grp.Key.Month, 1), AveragePrice = (double)(grp.Average(it => it.Price)) };
         }
 
         //public ActionResult About()

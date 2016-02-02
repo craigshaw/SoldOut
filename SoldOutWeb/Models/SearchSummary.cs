@@ -7,6 +7,7 @@ namespace SoldOutWeb.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public int SearchID { get; set; }
         public DateTime LastRun { get; set; }
         public int TotalResults { get; set; }
         public IEnumerable<PriceHistory> PriceHistory { get; set; }

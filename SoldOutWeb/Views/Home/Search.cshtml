@@ -6,30 +6,75 @@
 
 @section jsFunctions{
     <script type="text/javascript">
-        google.load('visualization', '1');   // Don't need to specify chart libraries!
-        google.setOnLoadCallback(drawVisualization);
+        google.load('visualization', '1', {
+            'packages': ['corechart', 'controls']
+        });
 
-        function drawVisualization() {
-            var wrapper = new google.visualization.ChartWrapper({
-                chartType: 'LineChart',
-                dataTable: google.visualization.arrayToDataTable([
-                ['Date', 'Price'],
 
-            @foreach (var ph in Model.PriceHistory)
-            {
-                <text>
-                    @Html.Raw(string.Format("['{0:D2}/{1}', {2:F2}],", ph.PricePeriod.Month, ph.PricePeriod.Year, ph.AveragePrice))
-                </text>
-            }
+        $(function () {
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                url: '@Url.Action("SearchSummary", new { id = Model.SearchID })',
+                data: '{}',
+                success: function (chartsdata) {
 
-                //['01/2015', 20.99]
-                ]),
-                options: { 'title': '@Model.Name @Model.Description' },
-                containerId: 'vis_div'
+                    // Callback that creates and populates a data table,
+                    // instantiates the pie chart, passes in the data and
+                    // draws it.
+
+                    var data = new google.visualization.DataTable();
+
+                    data.addColumn('string', 'Date');
+                    data.addColumn('number', 'Price');
+
+                    for (var i = 0; i < chartsdata.length; i++) {
+                        data.addRow([chartsdata[i].PricePeriod, chartsdata[i].AveragePrice]);
+                    }
+
+                    // Instantiate and draw our chart, passing in some options
+                    var chart = new google.visualization.LineChart(document.getElementById('vis_div'));
+
+                    chart.draw(data,
+                      {
+                          title: "TEST MOFO"
+                      });
+                },
+                error: function () {
+                    alert("Error loading data! Please try again.");
+                }
             });
-            wrapper.draw();
-        }
+        })
+
     </script>
+
+
+
+
+    @*<script type="text/javascript">
+            google.load('visualization', '1');
+            google.setOnLoadCallback(drawVisualization);
+
+            function drawVisualization() {
+                var wrapper = new google.visualization.ChartWrapper({
+                    chartType: 'LineChart',
+                    dataTable: google.visualization.arrayToDataTable([
+                    ['Date', 'Price'],
+
+                    @foreach (var ph in Model.PriceHistory)
+                    {
+                        <text>
+                            @Html.Raw(string.Format("['{0:D2}/{1}', {2:F2}],", ph.PricePeriod.Month, ph.PricePeriod.Year, ph.AveragePrice))
+                        </text>
+                    }
+                    ]),
+                    options: { 'title': '@Model.Name @Model.Description' },
+                    containerId: 'vis_div'
+                });
+                wrapper.draw();
+            }
+        </script>*@
 }
 
 <div class="row">
