@@ -32,8 +32,8 @@
                   });
             },
             error: function () {
-                // TODO: Make this better - show an error message inline or something
-                alert("Couldn't get chart data");
+                $('#chartContainer').hide();
+                $('#warningMessage').show();
             }
         });
     })

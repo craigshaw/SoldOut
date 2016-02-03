@@ -1,7 +1,7 @@
 ﻿@model SoldOutWeb.Models.SearchSummary
 
 @{
-    ViewBag.Title = "Search";
+    ViewBag.Title = "Search Summary";
 }
 
 @section scripts{
@@ -17,5 +17,8 @@
 </div>
 
 <div class="row">
-    <div id="chartContainer" class="col-md-6 col-md-offset-3" style="width: 600px; height: 400px;" data-search-id="@Model.SearchID"></div>
+    <div id="chartContainer" class="col-md-3" style="width: 600px; height: 400px;" data-search-id="@Model.SearchID"></div>
+    <div id="warningMessage" class="col-md-3" style="display: none">
+        <p  class="text-danger">Sorry, we couldn't get your search results</p>
+    </div>
 </div>
