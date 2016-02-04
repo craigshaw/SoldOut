@@ -3,6 +3,11 @@
         'packages': ['corechart', 'controls']
     });
 
+    // Courtesy of Jack Moore, http://www.jacklmoore.com/notes/rounding-in-javascript/
+    function round(value, decimals) {
+        return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+    }
+
     $(function () {
         var searchId = $('#chartContainer').attr('data-search-id');
 
@@ -20,7 +25,7 @@
                 data.addColumn('number', 'Price');
 
                 for (var i = 0; i < chartsdata.length; i++) {
-                    data.addRow([chartsdata[i].PricePeriod, chartsdata[i].AveragePrice]);
+                    data.addRow([chartsdata[i].PricePeriod, round(chartsdata[i].AveragePrice, 2)]);
                 }
 
                 // Create and draw the chart
