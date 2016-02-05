@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using eBay.Services;
 using eBay.Services.Finding;
+using SoldOutBusiness.Models;
 
 namespace SoldOutBusiness.Services
 {
@@ -27,45 +28,73 @@ namespace SoldOutBusiness.Services
             return this;
         }
 
-        public FindCompletedItemsResponse GetCompletedItems(string keywords, DateTime? since)
+        public FindCompletedItemsResponse GetCompletedItems(SoldOutBusiness.Models.Search search)
         {
             // Create a request to get our completed items
-            var request = CreateCompletedItemsRequest(keywords, since); 
+            var request = CreateCompletedItemsRequest(search); 
 
             return _client.findCompletedItems(request);
         }
 
-        public FindCompletedItemsResponse GetCompletedItems(string keywords, DateTime? since, Action<FindCompletedItemsRequest> embellishRequest)
+        public FindCompletedItemsResponse GetCompletedItems(SoldOutBusiness.Models.Search searchItem, Action<FindCompletedItemsRequest> embellishRequest)
         {
             // Create a request to get our completed items
-            var request = CreateCompletedItemsRequest(keywords, since);
+            var request = CreateCompletedItemsRequest(searchItem);
 
             embellishRequest(request);
 
             return _client.findCompletedItems(request);
         }
 
-        private FindCompletedItemsRequest CreateCompletedItemsRequest(string keywords, DateTime? since)
+        private FindCompletedItemsRequest CreateCompletedItemsRequest(Search searchItem)
         {
             // Completed items, new only
             var request = new FindCompletedItemsRequest();
+            List<ItemFilter> filters = new List<ItemFilter>();
 
             // Search term
-            request.keywords = keywords;
+            foreach (SearchCriteria criteria in searchItem.SearchCriteria)
+            {
+                switch (criteria.Criteria)
+                {
+                    case "Title":
+                        request.keywords = criteria.Value;
+                        break;
+
+                    case "Condition":
+                        filters.Add(new ItemFilter() { name = ItemFilterType.Condition, value = new string[] { criteria.Value, "1000" } });
+                        break;
+
+                    case "SoldItemsOnly":
+                        filters.Add(new ItemFilter() { name = ItemFilterType.SoldItemsOnly, value = new string[] { criteria.Value } });
+                        break;
+
+                    case "Currency":
+                        filters.Add(new ItemFilter() { name = ItemFilterType.Currency, value = new string[] { criteria.Value } });
+                        break;
+                }
+            }
 
             // Filters to specify new, sold and GBP
-            List<ItemFilter> filters = new List<ItemFilter>()
-            {
-                    new ItemFilter() { name = ItemFilterType.Condition, value = new string[] { "New", "1000" } },
-                    new ItemFilter() { name = ItemFilterType.SoldItemsOnly, value = new string[] { "True" } },
-                    new ItemFilter() { name = ItemFilterType.Currency, value = new string[] { "GBP" } }
-            };
+            // Wire up default values
+
+            if (String.IsNullOrEmpty(request.keywords))
+                request.keywords = searchItem.Name;
+
+            if (filters.Find(f => f.name == ItemFilterType.Currency) == null)
+                filters.Add(new ItemFilter() { name = ItemFilterType.Currency, value = new string[] { "GBP" } });
+
+            if (filters.Find(f => f.name == ItemFilterType.Condition) == null)
+                filters.Add(new ItemFilter() { name = ItemFilterType.Condition, value = new string[] { "New" , "1000"} });
+
+            if (filters.Find(f => f.name == ItemFilterType.SoldItemsOnly) == null)
+                filters.Add(new ItemFilter() { name = ItemFilterType.SoldItemsOnly, value = new string[] { "True" } });
 
             // Have we recently updated ... if so, ask for items since we last updated
-            if (since != null)
+            if (searchItem.LastRun != null)
             {
                 filters.Add(
-                    new ItemFilter() { name = ItemFilterType.EndTimeFrom, value = new string[] { since.Value.ToString("s") } }
+                    new ItemFilter() { name = ItemFilterType.EndTimeFrom, value = new string[] { searchItem.LastRun.ToString("s") } }
                     );
             }
 

@@ -73,7 +73,7 @@ namespace SoldOutBusiness.Repository
 
             var currentID = (maxID == searchID) ? 0 : searchID;
 
-            return _context.Searches.Where(s => s.SearchId > currentID).FirstOrDefault();
+            return _context.Searches.Where(s => s.SearchId > currentID).Include(s => s.SearchCriteria).FirstOrDefault();
         }
 
         public void DeleteSearchResults(IEnumerable<SearchResult> results)

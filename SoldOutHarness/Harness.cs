@@ -15,8 +15,8 @@ namespace SoldOutHarness
     {
         static void Main(string[] args)
         {
-            //new Harness().Run();
-            new Harness().CreatePriceSummaries();
+            new Harness().Run();
+            //new Harness().CreatePriceSummaries();
 
             Console.WriteLine("Press any key to close the program.");
             Console.ReadKey();
@@ -89,7 +89,7 @@ namespace SoldOutHarness
                         (search.LastRun != null) ? "since " + search.LastRun.ToString() : string.Empty);
 
                     // Create a request to get our completed items
-                    var response = finder.GetCompletedItems(search.Name, search.LastRun);
+                    var response = finder.GetCompletedItems(search);
 
                     // Show output
                     if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
@@ -167,36 +167,6 @@ namespace SoldOutHarness
                 SiteID = i.globalId,
                 Type = i.listingInfo.listingType,                
             });
-        }
-
-        private FindCompletedItemsRequest CreateCompletedItemsRequest(string keywords, DateTime? lastUpdated)
-        {
-            // Completed items, new only
-            var request = new FindCompletedItemsRequest();
-
-            // Search term
-            request.keywords = keywords;
-
-            // Filters to specify new, sold and GBP
-            List<ItemFilter> filters = new List<ItemFilter>()
-            {
-                    new ItemFilter() { name = ItemFilterType.Condition, value = new string[] { "New", "1000" } },
-                    new ItemFilter() { name = ItemFilterType.SoldItemsOnly, value = new string[] { "True" } },
-                    new ItemFilter() { name = ItemFilterType.Currency, value = new string[] { "GBP" } }
-            };
-
-            // Have we recently updated ... if so, ask for items since we last updated
-            if (lastUpdated != null)
-            {
-                filters.Add(
-                    new ItemFilter() { name = ItemFilterType.EndTimeFrom, value = new string[] { lastUpdated.Value.ToString("s") } }
-                    );
-            }
-
-            request.itemFilter = filters.ToArray();
-            request.sortOrder = SortOrderType.EndTimeSoonest;
-
-            return request;
         }
 
         private void WriteItemsToCSV(string fileName, SearchItem[] items)

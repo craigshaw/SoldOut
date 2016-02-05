@@ -57,7 +57,7 @@ namespace SoldOutSearchMonkey.Service
                     _log.Info($"Running search for {search.Name}...");
 
                     // Create a request to get our completed items
-                    var response = _finder.GetCompletedItems(search.Name, search.LastRun);
+                    var response = _finder.GetCompletedItems(search);
 
                     // Show output
                     if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
@@ -87,13 +87,15 @@ namespace SoldOutSearchMonkey.Service
             }
             catch (Exception ex)
             {
-                _log.ErrorFormat("Error: ", ex);
+                _log.ErrorFormat("Error: ", ex.Message);
             }
         }
 
         private void NotifyResultsReady(Search search, int numResults)
         {
+#if (DEBUG==false)
             _notifier.PostMessage($"I've just logged {numResults} new search results for {search.Name} (<{search.Link}|{search.Description}>)");
+#endif
         }
 
         public void Start()
@@ -108,7 +110,9 @@ namespace SoldOutSearchMonkey.Service
             Task.Delay(100, _cts.Token).ContinueWith(_searchTask, _cts.Token);
 
             _log.Info($"SearchMonkey v{Version} Started");
+#if (DEBUG == false)
             _notifier.PostMessage("SearchMonkey Started");
+#endif
         }
 
         private Version Version
@@ -126,7 +130,9 @@ namespace SoldOutSearchMonkey.Service
             _cts.Cancel();
             _cts.Token.WaitHandle.WaitOne();
             _log.Info("SearchMonkey Stopped");
+#if (DEBUG == false)
             _notifier.PostMessage("SearchMonkey Stopped");
+#endif
         }
 
         private IEnumerable<SoldOutBusiness.Models.SearchResult> MapSearchResults(SearchItem[] items)
