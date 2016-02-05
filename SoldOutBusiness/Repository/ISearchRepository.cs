@@ -17,5 +17,7 @@ namespace SoldOutBusiness.Repository
         void DeleteSearchResults(IEnumerable<SearchResult> results);
         void UpdateSearchLastCleansedTime(long searchID, DateTime lastCleansed);
         bool SaveAll();
+
+        int ResultCount(long searchID);
     }
 }

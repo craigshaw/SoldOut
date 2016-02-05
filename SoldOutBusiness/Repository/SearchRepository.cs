@@ -93,6 +93,11 @@ namespace SoldOutBusiness.Repository
             return _context.SaveChanges() > 0;
         }
 
+        public int ResultCount(long searchID)
+        {
+            return _context.SearchResults.Where(s => s.SearchID == searchID).Count();
+        }
+
         #region IDisposable Support
         public void Dispose()
         {
