@@ -10,6 +10,7 @@
 
     $(function () {
         var searchId = $('#chartContainer').attr('data-search-id');
+        var chartTitle = $('#chartContainer').attr('data-search-title');
 
         $.ajax({
             type: 'GET',
@@ -36,7 +37,7 @@
 
                 chart.draw(data,
                   {
-                      title: "TODO: Chart Title"
+                      title: chartTitle
                   });
             },
             error: function () {
