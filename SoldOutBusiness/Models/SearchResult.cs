@@ -20,6 +20,8 @@ namespace SoldOutBusiness.Models
         public string SiteID { get; set; }
         public string Type { get; set; }
 
+        public double? ShippingCost { get; set; }
+
         public virtual Search Search { get; set; }
     }
 }
