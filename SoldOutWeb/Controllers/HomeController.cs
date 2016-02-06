@@ -34,7 +34,8 @@ namespace SoldOutWeb.Controllers
                 SearchID = id,
                 LastRun = search.LastRun,
                 PriceHistory = priceHistory,
-                TotalResults = _repository.ResultCount(id)
+                TotalResults = _repository.ResultCount(id),
+                Link = search.Link
             };
 
             return View(summary);
