@@ -53,23 +53,9 @@ namespace SoldOutWeb.Controllers
             var results = _repository.GetSearchResults(searchId).ToList();
 
             return from item in results
-                       group item by new { item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
-                       orderby grp.Key.Year, grp.Key.Month
-                       select new PriceHistory() { PricePeriod = new DateTime(grp.Key.Year, grp.Key.Month, 1), AveragePrice = (double)(grp.Average(it => it.Price)) };
+                   group item by new { item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
+                   orderby grp.Key.Year, grp.Key.Month
+                   select new PriceHistory() { PricePeriod = $"{grp.Key.Month:D2}/{grp.Key.Year}", AveragePrice = (double)(grp.Average(it => it.Price)) };
         }
-
-        //public ActionResult About()
-        //{
-        //    ViewBag.Message = "Your application description page.";
-
-        //    return View();
-        //}
-
-        //public ActionResult Contact()
-        //{
-        //    ViewBag.Message = "Your contact page.";
-
-        //    return View();
-        //}
     }
 }
