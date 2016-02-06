@@ -165,7 +165,8 @@ namespace SoldOutHarness
                 Currency = i.sellingStatus.currentPrice.currencyId,
                 Location = i.location,
                 SiteID = i.globalId,
-                Type = i.listingInfo.listingType,                
+                Type = i.listingInfo.listingType,  
+                ShippingCost = i.shippingInfo.shippingServiceCost.Value,              
             });
         }
 
