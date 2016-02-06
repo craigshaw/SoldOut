@@ -11,5 +11,6 @@ namespace SoldOutWeb.Models
         public DateTime LastRun { get; set; }
         public int TotalResults { get; set; }
         public IEnumerable<PriceHistory> PriceHistory { get; set; }
+        public string Link { get; set; }
     }
 }

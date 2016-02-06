@@ -10,15 +10,19 @@
 
 <div class="row">
     <div class="col-md-12">
-        <h2>@Model.Name (@Model.Description)</h2>
+        <h2>@Model.Name (<a href="@Model.Link">@Model.Description</a>)</h2>
         <div>Last Ran: @Model.LastRun</div>
         <div>Total Results: @Model.TotalResults</div>
     </div>
 </div>
 
 <div class="row">
-    <div id="chartContainer" class="col-md-3" style="width: 600px; height: 400px;" data-search-id="@Model.SearchID"></div>
+    <div id="chartContainer" class="col-md-3 chart-container" data-search-id="@Model.SearchID" data-search-title="@Model.Description">
+        <div id="loader" class="loader">
+            <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
+        </div>
+    </div>
     <div id="warningMessage" class="col-md-3" style="display: none">
-        <p  class="text-danger">Sorry, we couldn't get your search results</p>
+        <p class="text-danger">Sorry, we couldn't get your search results</p>
     </div>
 </div>

@@ -10,6 +10,7 @@
 
     $(function () {
         var searchId = $('#chartContainer').attr('data-search-id');
+        var chartTitle = $('#chartContainer').attr('data-search-title');
 
         $.ajax({
             type: 'GET',
@@ -28,12 +29,15 @@
                     data.addRow([chartsdata[i].PricePeriod, round(chartsdata[i].AveragePrice, 2)]);
                 }
 
+                // Hide the loader
+                $('#loader').hide();
+
                 // Create and draw the chart
                 var chart = new google.visualization.LineChart(document.getElementById('chartContainer'));
 
                 chart.draw(data,
                   {
-                      title: "TODO: Chart Title"
+                      title: chartTitle
                   });
             },
             error: function () {
