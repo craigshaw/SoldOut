@@ -22,3 +22,17 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.chart-container {
+    width: 600px; 
+    height: 400px;
+}
+
+.loader {
+    position:absolute;
+    top:50%;
+    left: 50%;
+    height:10em;
+    margin-top:-2em;
+    margin-left: -3em;
+}

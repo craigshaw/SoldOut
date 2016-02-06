@@ -17,8 +17,12 @@
 </div>
 
 <div class="row">
-    <div id="chartContainer" class="col-md-3" style="width: 600px; height: 400px;" data-search-id="@Model.SearchID"></div>
+    <div id="chartContainer" class="col-md-3 chart-container" data-search-id="@Model.SearchID">
+        <div id="loader" class="loader">
+            <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
+        </div>
+    </div>
     <div id="warningMessage" class="col-md-3" style="display: none">
-        <p  class="text-danger">Sorry, we couldn't get your search results</p>
+        <p class="text-danger">Sorry, we couldn't get your search results</p>
     </div>
 </div>

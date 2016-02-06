@@ -28,6 +28,9 @@
                     data.addRow([chartsdata[i].PricePeriod, round(chartsdata[i].AveragePrice, 2)]);
                 }
 
+                // Hide the loader
+                $('#loader').hide();
+
                 // Create and draw the chart
                 var chart = new google.visualization.LineChart(document.getElementById('chartContainer'));
 
