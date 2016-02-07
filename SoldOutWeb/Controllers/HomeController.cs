@@ -1,6 +1,5 @@
 ﻿using SoldOutBusiness.Repository;
 using SoldOutWeb.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -22,19 +21,24 @@ namespace SoldOutWeb.Controllers
             return View(searches);
         }
 
-        public ActionResult Search(int id)
+        public ActionResult Search(int? id)
         {
-            var search = _repository.GetSearchByID(id);
-            var priceHistory = CreatePriceHistory(id);
+            int searchId = 1;
+
+            if (id.HasValue)
+                searchId = id.Value; 
+
+            var search = _repository.GetSearchByID(searchId);
+            var priceHistory = CreatePriceHistory(searchId);
 
             SearchSummary summary = new SearchSummary()
             {
                 Name = search.Name,
                 Description = search.Description,
-                SearchID = id,
+                SearchID = searchId,
                 LastRun = search.LastRun,
                 PriceHistory = priceHistory,
-                TotalResults = _repository.ResultCount(id),
+                TotalResults = _repository.ResultCount(searchId),
                 Link = search.Link
             };
 
