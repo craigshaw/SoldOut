@@ -152,6 +152,7 @@ namespace SoldOutSearchMonkey.Service
                 Location = i.location,
                 SiteID = i.globalId,
                 Type = i.listingInfo.listingType,
+                ShippingCost = i.shippingInfo.shippingServiceCost.Value,
             });
         }
     }
