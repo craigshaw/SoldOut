@@ -15,6 +15,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoldOutSearchMonkey", "Sold
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoldOutWeb", "SoldOutWeb\SoldOutWeb.csproj", "{90E9ACF2-3040-488B-A29A-2CCD0B750640}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB Scripts", "DB Scripts", "{B7112A32-DD59-4FB8-BC29-805D6E9707B1}"
+	ProjectSection(SolutionItems) = preProject
+		DB Scripts\SoldOut.sql = DB Scripts\SoldOut.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
