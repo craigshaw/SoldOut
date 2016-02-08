@@ -87,7 +87,7 @@ namespace SoldOutSearchMonkey.Service
             }
             catch (Exception ex)
             {
-                _log.ErrorFormat("Error: ", ex.Message);
+                _log.ErrorFormat("Error: {0}", ex);
             }
         }
 
@@ -152,7 +152,7 @@ namespace SoldOutSearchMonkey.Service
                 Location = i.location,
                 SiteID = i.globalId,
                 Type = i.listingInfo.listingType,
-                ShippingCost = i.shippingInfo.shippingServiceCost.Value,
+                ShippingCost = (i.shippingInfo.shippingServiceCost != null) ? i.shippingInfo.shippingServiceCost.Value : 0.0f
             });
         }
     }
