@@ -16,7 +16,7 @@
             type: 'GET',
             dataType: 'json',
             contentType: 'application/json',
-            url: '/Home/SearchSummary/' + searchId,
+            url: '/PriceHistory/' + searchId,
             success: function (chartsdata) {
 
                 // Create the chart data from the API response

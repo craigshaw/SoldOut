@@ -6,22 +6,22 @@ using System.Web.Mvc;
 
 namespace SoldOutWeb.Controllers
 {
-    public class HomeController : Controller
+    public class ItemController : Controller
     {
         private ISearchRepository _repository;
 
-        public HomeController()
+        public ItemController()
         {
             _repository = new SearchRepository();
         }
 
-        public ActionResult Index()
+        public ActionResult All()
         {
             var searches = _repository.GetAllSearches();
             return View(searches);
         }
 
-        public ActionResult Search(int? id)
+        public ActionResult Item(int? id)
         {
             int searchId = 1;
 
@@ -45,7 +45,7 @@ namespace SoldOutWeb.Controllers
             return View(summary);
         }
 
-        public JsonResult SearchSummary(int id)
+        public JsonResult PriceHistory(int id)
         {
             var priceHistory = CreatePriceHistory(id);
 

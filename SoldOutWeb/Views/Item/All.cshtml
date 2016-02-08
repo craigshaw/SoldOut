@@ -18,7 +18,7 @@
                 @foreach (var search in Model)
                 {
                     <tr>
-                        <td>@Html.ActionLink(search.Name, "Search", new { Id = search.SearchId })</td>
+                        <td>@Html.ActionLink(search.Name, "Item", new { Id = search.SearchId })</td>
                         <td>@search.Description</td>
                         <td>@search.LastRun</td>
                     </tr>
