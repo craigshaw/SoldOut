@@ -158,7 +158,7 @@ namespace SoldOutHarness
                 Title = i.title,
                 Price = i.sellingStatus.currentPrice.Value,
                 ItemNumber = i.itemId,
-                StartTime = i.listingInfo.endTime,
+                StartTime = i.listingInfo.startTime,
                 EndTime = i.listingInfo.endTime,
                 NumberOfBidders = i.listingInfo.listingType.ToLowerInvariant() == "auction" ? i.sellingStatus.bidCount : 0,
                 ImageURL = i.galleryURL,
