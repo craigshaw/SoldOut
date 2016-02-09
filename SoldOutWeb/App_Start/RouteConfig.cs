@@ -10,9 +10,9 @@ namespace SoldOutWeb
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
-                name: "Items",
+                name: "Search",
                 url: "{action}/{id}",
-                defaults: new { controller = "Item", action = "All", id = UrlParameter.Optional }
+                defaults: new { controller = "Search", action = "All", id = UrlParameter.Optional }
             );
         }
     }

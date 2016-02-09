@@ -6,11 +6,11 @@ using System.Web.Mvc;
 
 namespace SoldOutWeb.Controllers
 {
-    public class ItemController : Controller
+    public class SearchController : Controller
     {
         private ISearchRepository _repository;
 
-        public ItemController()
+        public SearchController()
         {
             _repository = new SearchRepository();
         }
@@ -21,7 +21,7 @@ namespace SoldOutWeb.Controllers
             return View(searches);
         }
 
-        public ActionResult Item(int? id)
+        public ActionResult Summary(int? id)
         {
             int searchId = 1;
 
