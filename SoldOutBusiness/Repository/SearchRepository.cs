@@ -7,6 +7,12 @@ using System.Data.Entity;
 
 namespace SoldOutBusiness.Repository
 {
+    public class UncleansedCount
+    {
+        public long SearchId { get; set; }
+        public int Count { get; set; }
+    }
+
     public class SearchRepository : ISearchRepository
     {
         private SearchContext _context;
@@ -70,6 +76,23 @@ namespace SoldOutBusiness.Repository
         public Search GetSearchByID(long searchID)
         {
             return _context.Searches.Where(s => s.SearchId == searchID).FirstOrDefault();
+        }
+
+        public IDictionary<long, int> GetUncleansedCounts()
+        {
+            var uncleansedCounts = new Dictionary<long, int>();
+
+            var counts = _context.Database.SqlQuery<UncleansedCount>("select s.SearchId, Count(SearchResultID) as 'Count' from SearchResult sr" +
+                                                                    " Join Search s on s.SearchId = sr.SearchID" +
+                                                                    " where sr.dateofmatch > s.LastCleansed" +
+                                                                    " group by s.SearchId");
+
+            foreach (var counter in counts)
+            {
+                uncleansedCounts[counter.SearchId] = counter.Count;
+            }
+
+            return uncleansedCounts;
         }
 
         public Search GetNextSearch(long searchID)

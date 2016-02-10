@@ -19,6 +19,8 @@
         <DataGrid Grid.Row="0" Margin="8,8,8,4" Name="Searches" AutoGenerateColumns="False"
                        SelectionChanged="Searches_SelectionChanged">
             <DataGrid.Columns>
+                <DataGridTextColumn Header="Uncleansed"
+                                        Binding="{Binding UncleansedCount}" Width="Auto" />
                 <DataGridTextColumn Header="Last Cleansed"
                                         Binding="{Binding LastCleansed}" Width="Auto" />
                 <DataGridTextColumn Header="Last Ran"

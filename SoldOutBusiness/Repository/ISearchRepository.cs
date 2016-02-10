@@ -19,5 +19,6 @@ namespace SoldOutBusiness.Repository
         void UpdateSearchLastCleansedTime(long searchID, DateTime lastCleansed);
         bool SaveAll();
         int ResultCount(long searchID);
+        IDictionary<long, int> GetUncleansedCounts();
     }
 }

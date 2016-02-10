@@ -1,8 +1,10 @@
 ﻿using log4net;
 using MahApps.Metro.Controls;
+using SoldOut.Models;
 using SoldOutBusiness.Models;
 using SoldOutBusiness.Repository;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -31,10 +33,31 @@ namespace SoldOut
         private void InitialiseSearchGrid()
         {
             // Bind data to the search grid
-            Searches.ItemsSource = _repo.GetAllSearches().OrderByDescending(s => s.LastRun).ThenBy(s => s.LastCleansed);
+            Searches.ItemsSource = BuildSearchSummary();
 
             // Select the first item
             Searches.SelectedIndex = 0;
+        }
+
+        private IEnumerable<SearchOverview> BuildSearchSummary()
+        {
+            var searchOverviews = new List<SearchOverview>();
+            var searches = _repo.GetAllSearches().OrderByDescending(s => s.LastRun).ThenBy(s => s.LastCleansed);
+            var counts = _repo.GetUncleansedCounts();
+
+            foreach (var search in searches)
+            {
+                searchOverviews.Add(new SearchOverview()
+                {
+                    SearchId = search.SearchId,
+                    Description = search.Description,
+                    LastCleansed = search.LastCleansed,
+                    LastRun = search.LastRun,
+                    UncleansedCount = counts.ContainsKey(search.SearchId) ? counts[search.SearchId] : 0
+                });
+            }
+
+            return searchOverviews.OrderByDescending(s => s.UncleansedCount);
         }
 
         private void HandleListingClick(object sender, RoutedEventArgs e)
@@ -74,7 +97,7 @@ namespace SoldOut
         private void Searches_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Now load the results for that search
-            SearchResults.ItemsSource = _repo.GetSearchResults(((Search)Searches.SelectedItem).SearchId).ToList();
+            SearchResults.ItemsSource = _repo.GetSearchResults(((SearchOverview)Searches.SelectedItem).SearchId).ToList();
         }
     }
 }
