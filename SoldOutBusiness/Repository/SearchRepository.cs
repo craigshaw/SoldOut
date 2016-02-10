@@ -62,6 +62,11 @@ namespace SoldOutBusiness.Repository
             return _context.SearchResults.Where(r => r.SearchID == searchId);
         }
 
+        public IEnumerable<SearchCriteria> GetSearchCriteria()
+        {
+            return _context.SearchCriteria.Select(sc => sc).ToList();
+        }
+
         public Search GetSearchByID(long searchID)
         {
             return _context.Searches.Where(s => s.SearchId == searchID).FirstOrDefault();

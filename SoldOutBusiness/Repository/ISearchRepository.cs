@@ -12,12 +12,12 @@ namespace SoldOutBusiness.Repository
         IEnumerable<Search> GetAllSearchesWithResults();
         IEnumerable<Search> GetAllSearchesWithSearchCriteria();
         IEnumerable<SearchResult> GetSearchResults(long searchId);
+        IEnumerable<SearchCriteria> GetSearchCriteria();
         void AddSearchResult(long searchID, SearchResult result);
         void AddSearchResults(long searchID, IEnumerable<SearchResult> results);
         void DeleteSearchResults(IEnumerable<SearchResult> results);
         void UpdateSearchLastCleansedTime(long searchID, DateTime lastCleansed);
         bool SaveAll();
-
         int ResultCount(long searchID);
     }
 }

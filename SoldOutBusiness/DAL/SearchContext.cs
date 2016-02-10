@@ -8,6 +8,7 @@ namespace SoldOutBusiness.DAL
     {
         public DbSet<Search> Searches { get; set; }
         public DbSet<SearchResult> SearchResults { get; set; }
+        public DbSet<SearchCriteria> SearchCriteria { get; set; }
 
         public SearchContext()
         {
