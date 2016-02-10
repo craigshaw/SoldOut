@@ -60,6 +60,7 @@
     <Compile Include="Builders\ICatalogueBuilder.cs" />
     <Compile Include="DAL\SearchContext.cs" />
     <Compile Include="DAL\SoldOutDbInitialiser.cs" />
+    <Compile Include="Mappers\eBayMapper.cs" />
     <Compile Include="Models\Catalogue.cs" />
     <Compile Include="Models\Search.cs" />
     <Compile Include="Models\SearchCriteria.cs" />

@@ -1,5 +1,6 @@
 ﻿using eBay.Services.Finding;
 using log4net;
+using SoldOutBusiness.Mappers;
 using SoldOutBusiness.Models;
 using SoldOutBusiness.Repository;
 using SoldOutBusiness.Services;
@@ -72,7 +73,7 @@ namespace SoldOutSearchMonkey.Service
                         if (numResults > 0)
                         {
                             // Map returned items to our SoldItems model
-                            var newItems = MapSearchResults(response.searchResult.item);
+                            var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item);
 
                             // Add them to the relevant search
                             repo.AddSearchResults(search.SearchId, newItems);
@@ -133,27 +134,6 @@ namespace SoldOutSearchMonkey.Service
 #if (DEBUG == false)
             _notifier.PostMessage("SearchMonkey Stopped");
 #endif
-        }
-
-        private IEnumerable<SoldOutBusiness.Models.SearchResult> MapSearchResults(SearchItem[] items)
-        {
-            return items.Select(i => new SoldOutBusiness.Models.SearchResult()
-            {
-                DateOfMatch = DateTime.Now,
-                Link = i.viewItemURL,
-                Title = i.title,
-                Price = i.sellingStatus.currentPrice.Value,
-                ItemNumber = i.itemId,
-                StartTime = i.listingInfo.startTime,
-                EndTime = i.listingInfo.endTime,
-                NumberOfBidders = i.listingInfo.listingType.ToLowerInvariant() == "auction" ? i.sellingStatus.bidCount : 0,
-                ImageURL = i.galleryURL,
-                Currency = i.sellingStatus.currentPrice.currencyId,
-                Location = i.location,
-                SiteID = i.globalId,
-                Type = i.listingInfo.listingType,
-                ShippingCost = (i.shippingInfo.shippingServiceCost != null) ? i.shippingInfo.shippingServiceCost.Value : 0.0f
-            });
         }
     }
 }

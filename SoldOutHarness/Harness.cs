@@ -1,4 +1,5 @@
 ﻿using eBay.Services.Finding;
+using SoldOutBusiness.Mappers;
 using SoldOutBusiness.Repository;
 using SoldOutBusiness.Services;
 using System;
@@ -102,7 +103,7 @@ namespace SoldOutHarness
                         if (response.searchResult.count > 0)
                         {
                             // Map returned items to our SoldItems model
-                            var newItems = MapSearchResults(response.searchResult.item);
+                            var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item);
 
                             // Add them to the relevant search
                             repo.AddSearchResults(search.SearchId, newItems);
@@ -147,27 +148,6 @@ namespace SoldOutHarness
             }
 
             return null;
-        }
-
-        private IEnumerable<SoldOutBusiness.Models.SearchResult> MapSearchResults(SearchItem[] items)
-        {
-            return items.Select(i => new SoldOutBusiness.Models.SearchResult()
-            {
-                DateOfMatch = DateTime.Now,
-                Link = i.viewItemURL,
-                Title = i.title,
-                Price = i.sellingStatus.currentPrice.Value,
-                ItemNumber = i.itemId,
-                StartTime = i.listingInfo.startTime,
-                EndTime = i.listingInfo.endTime,
-                NumberOfBidders = i.listingInfo.listingType.ToLowerInvariant() == "auction" ? i.sellingStatus.bidCount : 0,
-                ImageURL = i.galleryURL,
-                Currency = i.sellingStatus.currentPrice.currencyId,
-                Location = i.location,
-                SiteID = i.globalId,
-                Type = i.listingInfo.listingType,  
-                ShippingCost = i.shippingInfo.shippingServiceCost.Value,              
-            });
         }
 
         private void WriteItemsToCSV(string fileName, SearchItem[] items)
