@@ -14,18 +14,26 @@ namespace SoldOut.ViewModels
         // Commands
         private DelegateCommand<IList> _deleteSearchResultsCommand;
         private DelegateCommand _windowClosingCommand;
+        private DelegateCommand _markAsCleansedCommand;
 
         // Fields
         private ISearchRepository _repo;
         private SearchOverview _selectedSearchOverview;
         private bool _initialising;
+        private IEnumerable<SearchOverview> _searches;
 
         public CleanserViewModel()
         {
+            _repo = new SearchRepository();
+
             _initialising = true;
 
             _deleteSearchResultsCommand = new DelegateCommand<IList>(
                 DeleteSelectedSearchResults
+                );
+
+            _markAsCleansedCommand = new DelegateCommand(
+                MarkSelectedSearchAsCleansed
                 );
 
             _windowClosingCommand = new DelegateCommand(
@@ -40,7 +48,9 @@ namespace SoldOut.ViewModels
                 }
                 );
 
-            _repo = new SearchRepository();
+            Searches = GetSearches();
+
+            SelectedSearchOverview = _searches.First();
         }
 
         #region Commands
@@ -49,6 +59,14 @@ namespace SoldOut.ViewModels
             get
             {
                 return _windowClosingCommand;
+            }
+        }
+
+        public DelegateCommand MarkAsCleansedCommand
+        {
+            get
+            {
+                return _markAsCleansedCommand;
             }
         }
 
@@ -66,32 +84,13 @@ namespace SoldOut.ViewModels
         {
             get
             {
-                var searchOverviews = new List<SearchOverview>();
-                var searches = _repo.GetAllSearches();
-                var counts = _repo.GetUncleansedCounts();
+                return _searches;
+            }
 
-                foreach (var search in searches)
-                {
-                    searchOverviews.Add(new SearchOverview()
-                    {
-                        SearchId = search.SearchId,
-                        Description = search.Description,
-                        LastCleansed = search.LastCleansed,
-                        LastRun = search.LastRun,
-                        UncleansedCount = counts.ContainsKey(search.SearchId) ? counts[search.SearchId] : 0
-                    });
-                }
-
-                var orderedSearches = searchOverviews.OrderByDescending(s => s.UncleansedCount);
-
-                // TODO: Do something about this hack
-                if (_initialising)
-                {
-                    SelectedSearchOverview = orderedSearches.First();
-                    _initialising = false;
-                }
-
-                return orderedSearches;
+            set
+            {
+                _searches = value;
+                RaisePropertyChangedEvent("Searches");
             }
         }
 
@@ -113,8 +112,12 @@ namespace SoldOut.ViewModels
             set
             {
                 _selectedSearchOverview = value;
-                RaisePropertyChangedEvent("SelectedSearchOverview"); // Select the item
-                RaisePropertyChangedEvent("SearchResults"); // Refresh the results view
+
+                if(_selectedSearchOverview != null)
+                {
+                    RaisePropertyChangedEvent("SelectedSearchOverview"); // Select the item
+                    RaisePropertyChangedEvent("SearchResults"); // Refresh the results view
+                }
             }
         }
         #endregion
@@ -129,13 +132,61 @@ namespace SoldOut.ViewModels
             _repo.DeleteSearchResults(items);
 
             // Update the last cleansed time
-            _repo.UpdateSearchLastCleansedTime(_selectedSearchOverview.SearchId, DateTime.Now);
+            UpdateCleansedTimeOnSelectedSearch();
 
             // Commit
             _repo.SaveAll();
 
             // Reload the content
             RaisePropertyChangedEvent("SearchResults");
+        }
+
+        private void MarkSelectedSearchAsCleansed()
+        {
+            // Remember which search was selected
+            var selectedSearchId = _selectedSearchOverview.SearchId;
+
+            // Update the last cleansed time
+            UpdateCleansedTimeOnSelectedSearch();
+
+            // Commit
+            _repo.SaveAll();
+
+            // Reload searches
+            Searches = GetSearches();
+
+            // Select the saved search
+            SelectedSearchOverview = _searches.Where(so => so.SearchId == selectedSearchId).Single();
+        }
+
+        private void UpdateCleansedTimeOnSelectedSearch()
+        {
+            var currentTime = DateTime.Now;
+
+            // Update the last cleansed time (remote and local)
+            _repo.UpdateSearchLastCleansedTime(_selectedSearchOverview.SearchId, currentTime);
+            _selectedSearchOverview.LastCleansed = currentTime;
+        }
+
+        private IEnumerable<SearchOverview> GetSearches()
+        {
+            var searchOverviews = new List<SearchOverview>();
+            var searches = _repo.GetAllSearches();
+            var counts = _repo.GetUncleansedCounts();
+
+            foreach (var search in searches)
+            {
+                searchOverviews.Add(new SearchOverview()
+                {
+                    SearchId = search.SearchId,
+                    Description = search.Description,
+                    LastCleansed = search.LastCleansed,
+                    LastRun = search.LastRun,
+                    UncleansedCount = counts.ContainsKey(search.SearchId) ? counts[search.SearchId] : 0
+                });
+            }
+
+            return searchOverviews.OrderByDescending(s => s.UncleansedCount);
         }
         #endregion
     }
