@@ -32,32 +32,8 @@ namespace SoldOut
 
         private void InitialiseSearchGrid()
         {
-            // Bind data to the search grid
-            Searches.ItemsSource = BuildSearchSummary();
-
             // Select the first item
-            Searches.SelectedIndex = 0;
-        }
-
-        private IEnumerable<SearchOverview> BuildSearchSummary()
-        {
-            var searchOverviews = new List<SearchOverview>();
-            var searches = _repo.GetAllSearches().OrderByDescending(s => s.LastRun).ThenBy(s => s.LastCleansed);
-            var counts = _repo.GetUncleansedCounts();
-
-            foreach (var search in searches)
-            {
-                searchOverviews.Add(new SearchOverview()
-                {
-                    SearchId = search.SearchId,
-                    Description = search.Description,
-                    LastCleansed = search.LastCleansed,
-                    LastRun = search.LastRun,
-                    UncleansedCount = counts.ContainsKey(search.SearchId) ? counts[search.SearchId] : 0
-                });
-            }
-
-            return searchOverviews.OrderByDescending(s => s.UncleansedCount);
+            //Searches.SelectedIndex = 0;
         }
 
         private void HandleListingClick(object sender, RoutedEventArgs e)
