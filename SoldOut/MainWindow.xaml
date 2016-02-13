@@ -8,8 +8,12 @@
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
-        Title="SoldOut" Height="350" Width="525" WindowState="Maximized"
-        Closing="MetroWindow_Closing">
+        Title="SoldOut" Height="350" Width="525" WindowState="Maximized">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing" >
+            <i:InvokeCommandAction Command="{Binding WindowClosingCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Window.DataContext>
         <ViewModels:CleanserViewModel/>
     </Window.DataContext>
@@ -23,11 +27,6 @@
         <!-- Searches -->
         <DataGrid Grid.Row="0" Margin="8,8,8,4" Name="Searches" AutoGenerateColumns="False"
                        ItemsSource="{Binding Searches}" SelectedItem="{Binding SelectedSearchOverview, UpdateSourceTrigger=PropertyChanged}">
-            <!--<i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectionChanged" >
-                    <i:InvokeCommandAction Command="{Binding SearchSelectionChangedCommand}" CommandParameter="{Binding ElementName=Searches, Path=SelectedItem}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>-->
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Uncleansed"
                                         Binding="{Binding UncleansedCount}" Width="Auto" />
@@ -41,7 +40,8 @@
         </DataGrid>
 
         <!-- Search Results -->
-        <DataGrid Grid.Row="1" Margin="8,4,8,4" Name="SearchResults" AutoGenerateColumns="False" SelectionMode="Extended" ItemsSource="{Binding SearchResults, UpdateSourceTrigger=PropertyChanged}">
+        <DataGrid Grid.Row="1" Margin="8,4,8,4" Name="SearchResults" AutoGenerateColumns="False" 
+                  SelectionMode="Extended" ItemsSource="{Binding SearchResults, UpdateSourceTrigger=PropertyChanged}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Ended"
                                         Binding="{Binding EndTime}" Width="Auto" />
@@ -61,6 +61,6 @@
         </DataGrid>
 
         <!-- Controls -->
-        <Button Grid.Row="2" Grid.Column="0" Margin="8,4,8,8" Click="Button_Click">Cleanse Selected Results</Button>
+        <Button Grid.Row="2" Grid.Column="0" Margin="8,4,8,8" Command="{Binding DeleteSearchResultsCommand}" CommandParameter="{Binding ElementName=SearchResults, Path=SelectedItems}">Cleanse Selected Results</Button>
     </Grid>
 </Controls:MetroWindow>

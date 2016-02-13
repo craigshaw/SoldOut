@@ -2,6 +2,8 @@
 using SoldOut.Models;
 using SoldOutBusiness.Models;
 using SoldOutBusiness.Repository;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,6 +11,11 @@ namespace SoldOut.ViewModels
 {
     internal class CleanserViewModel : ViewModel
     {
+        // Commands
+        private DelegateCommand<IList> _deleteSearchResultsCommand;
+        private DelegateCommand _windowClosingCommand;
+
+        // Fields
         private ISearchRepository _repo;
         private SearchOverview _selectedSearchOverview;
         private bool _initialising;
@@ -17,9 +24,44 @@ namespace SoldOut.ViewModels
         {
             _initialising = true;
 
+            _deleteSearchResultsCommand = new DelegateCommand<IList>(
+                DeleteSelectedSearchResults
+                );
+
+            _windowClosingCommand = new DelegateCommand(
+                () =>
+                {
+                    // Clean up the repo
+                    if (_repo != null)
+                    {
+                        _repo.Dispose();
+                        _repo = null;
+                    }
+                }
+                );
+
             _repo = new SearchRepository();
         }
 
+        #region Commands
+        public DelegateCommand WindowClosingCommand
+        {
+            get
+            {
+                return _windowClosingCommand;
+            }
+        }
+
+        public DelegateCommand<IList> DeleteSearchResultsCommand
+        {
+            get
+            {
+                return _deleteSearchResultsCommand;
+            }
+        }
+        #endregion
+
+        #region Properties
         public IEnumerable<SearchOverview> Searches
         {
             get
@@ -75,5 +117,26 @@ namespace SoldOut.ViewModels
                 RaisePropertyChangedEvent("SearchResults"); // Refresh the results view
             }
         }
+        #endregion
+
+        #region Utility Methods
+        private void DeleteSelectedSearchResults(IList selectedItems)
+        {
+            // Get the selected items
+            var items = selectedItems.Cast<SearchResult>();
+
+            // Now remove them via the repository
+            _repo.DeleteSearchResults(items);
+
+            // Update the last cleansed time
+            _repo.UpdateSearchLastCleansedTime(_selectedSearchOverview.SearchId, DateTime.Now);
+
+            // Commit
+            _repo.SaveAll();
+
+            // Reload the content
+            RaisePropertyChangedEvent("SearchResults");
+        }
+        #endregion
     }
 }
