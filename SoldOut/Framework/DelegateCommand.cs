@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace SoldOut.Framework
+namespace SoldOutCleanser.Framework
 {
     public class DelegateCommand<T> : ICommand where T : class
     {

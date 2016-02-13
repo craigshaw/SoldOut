@@ -1,5 +1,5 @@
-﻿using SoldOut.Framework;
-using SoldOut.Models;
+﻿using SoldOutCleanser.Framework;
+using SoldOutCleanser.Models;
 using SoldOutBusiness.Models;
 using SoldOutBusiness.Repository;
 using System;
@@ -7,7 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SoldOut.ViewModels
+namespace SoldOutCleanser.ViewModels
 {
     internal class CleanserViewModel : ViewModel
     {

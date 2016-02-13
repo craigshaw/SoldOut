@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SoldOut.Models
+namespace SoldOutCleanser.Models
 {
     internal class SearchOverview
     {

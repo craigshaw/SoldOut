@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Documents;
 
-namespace SoldOut
+namespace SoldOutCleanser
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

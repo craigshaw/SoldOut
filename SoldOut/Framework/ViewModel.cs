@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace SoldOut.Framework
+namespace SoldOutCleanser.Framework
 {
     internal abstract class ViewModel : INotifyPropertyChanged
     {

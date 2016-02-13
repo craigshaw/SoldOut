@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Markup;
 
-namespace SoldOut
+namespace SoldOutCleanser
 {
     /// <summary>
     /// Interaction logic for App.xaml
