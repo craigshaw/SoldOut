@@ -9,6 +9,7 @@ using SoldOutBusiness.Services.Notifiers;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,13 +17,14 @@ namespace SoldOutSearchMonkey.Service
 {
     public class SearchMonkeyService
     {
-        private const int ApiRateLimit = 5000;
+        private const int ApiDailyRateLimit = 5000;
         private static readonly ILog _log = LogManager.GetLogger(typeof(SearchMonkeyService));
 
         private CancellationTokenSource _cts;
         private Action<Task> _searchTask;
         private long _currentSearchId;
         private double _delay;
+        private int _errorCount;
         private readonly IEbayFinder _finder;
         private readonly INotifier _notifier;
 
@@ -49,11 +51,13 @@ namespace SoldOutSearchMonkey.Service
             };
 
             // Register gauges
-            //Metric.Gauge("Uptime", () => 0.0, Unit.)
+            Metric.Gauge("Error Count", () => _errorCount, Unit.Errors);
         }
 
         private void ExecuteSearch()
         {
+            FindCompletedItemsResponse response;
+
             try
             {
                 using (var repo = new SearchRepository())
@@ -61,17 +65,9 @@ namespace SoldOutSearchMonkey.Service
                     var search = repo.GetNextSearch(_currentSearchId);
                     _currentSearchId = search.SearchId;
 
-                    //if ((DateTime.Now - search.LastRun).TotalHours < 1)
-                    //{
-                    //    _log.Debug($"No update for {search.Name} required. Last ran at {search.LastRun}");
-                    //    return;
-                    //}
-
                     _log.Info($"Running search for {search.Name}...");
 
-                    FindCompletedItemsResponse response;
-
-                    // Create a request to get our completed items
+                    // Run the search
                     using (timer.NewContext())
                     {
                         response = _finder.GetCompletedItems(search);
@@ -104,11 +100,31 @@ namespace SoldOutSearchMonkey.Service
 
                         repo.SaveAll();
                     }
+                    else
+                    {
+                        LogEbayError(response);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 _log.ErrorFormat("Error: {0}", ex);
+                _errorCount++;
+            }
+        }
+
+        private void LogEbayError(FindCompletedItemsResponse response)
+        {
+            StringBuilder errorMessage = new StringBuilder("Errors occured when calling the eBay API:" + Environment.NewLine);
+
+            _errorCount++;
+
+            if(response.errorMessage != null && response.errorMessage.Length > 0)
+            {
+                foreach(var error in response.errorMessage)
+                {
+                    errorMessage.AppendLine($"{error.exceptionId}, {error.errorId} - {error.message}");
+                }
             }
         }
 
@@ -143,9 +159,8 @@ namespace SoldOutSearchMonkey.Service
 
         private double CalculateDelay()
         {
-            var frequencyInSeconds = (24 * 60 * 60) / (ApiRateLimit * 0.99);
-
-            return frequencyInSeconds * 1000;
+            // The interval that would allow us 99% of our daily allowance (in milliseconds)
+            return ((24 * 60 * 60) / (ApiDailyRateLimit * 0.99)) * 1000;
         }
 
         public void Stop()
