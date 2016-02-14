@@ -24,6 +24,9 @@ namespace SoldOutSearchMonkey
 
         private void Startup()
         {
+            // Hack - force log4net to initialise before Metrics.net
+            _log.Debug("");
+
             // Global exception handler in case anything blows
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>
             {
