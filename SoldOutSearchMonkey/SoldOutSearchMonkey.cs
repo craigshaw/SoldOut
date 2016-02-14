@@ -1,4 +1,5 @@
 ﻿using log4net;
+using Metrics;
 using SoldOutBusiness.Services;
 using SoldOutBusiness.Services.Notifiers.Slack;
 using SoldOutSearchMonkey.Service;
@@ -23,11 +24,16 @@ namespace SoldOutSearchMonkey
 
         private void Startup()
         {
+            // Global exception handler in case anything blows
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>
             {
                 _log.Fatal($"Unhandled exception thrown: {e.ExceptionObject}");
             };
 
+            // Now Metrics.NET
+            Metric.Config.WithHttpEndpoint("http://localhost:14999/");
+
+            // Topshelf configuration
             HostFactory.Run(config =>
             {
                 config.Service<SearchMonkeyService>(service =>

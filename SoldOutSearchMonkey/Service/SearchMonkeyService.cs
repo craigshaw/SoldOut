@@ -1,13 +1,13 @@
 ﻿using eBay.Services.Finding;
 using log4net;
+using Metrics;
 using SoldOutBusiness.Mappers;
 using SoldOutBusiness.Models;
 using SoldOutBusiness.Repository;
 using SoldOutBusiness.Services;
 using SoldOutBusiness.Services.Notifiers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,14 +16,18 @@ namespace SoldOutSearchMonkey.Service
 {
     public class SearchMonkeyService
     {
+        private const int ApiRateLimit = 5000;
         private static readonly ILog _log = LogManager.GetLogger(typeof(SearchMonkeyService));
 
         private CancellationTokenSource _cts;
         private Action<Task> _searchTask;
         private long _currentSearchId;
-        private TimeSpan _delay;
-        private IEbayFinder _finder;
-        private INotifier _notifier;
+        private double _delay;
+        private readonly IEbayFinder _finder;
+        private readonly INotifier _notifier;
+
+        private readonly Counter resultCounter = Metric.Counter("Results Harvested", Unit.Custom("Results"));
+        private readonly Metrics.Timer timer = Metric.Timer("eBay Service Requests", Unit.Requests);
 
         public SearchMonkeyService(IEbayFinder finder, INotifier notifier)
         {
@@ -34,10 +38,18 @@ namespace SoldOutSearchMonkey.Service
 
             _searchTask = t =>
             {
+                Stopwatch timer = Stopwatch.StartNew();
+
                 ExecuteSearch();
 
-                Task.Delay(_delay, _cts.Token).ContinueWith(ta => _searchTask(t), _cts.Token);
+                timer.Stop();
+
+                Task.Delay(TimeSpan.FromMilliseconds(_delay - timer.ElapsedMilliseconds), _cts.Token)
+                            .ContinueWith(ta => _searchTask(t), _cts.Token);
             };
+
+            // Register gauges
+            //Metric.Gauge("Uptime", () => 0.0, Unit.)
         }
 
         private void ExecuteSearch()
@@ -49,16 +61,21 @@ namespace SoldOutSearchMonkey.Service
                     var search = repo.GetNextSearch(_currentSearchId);
                     _currentSearchId = search.SearchId;
 
-                    if ((DateTime.Now - search.LastRun).TotalHours < 24)
-                    {
-                        _log.Debug($"No update for {search.Name} required. Last ran at {search.LastRun}");
-                        return;
-                    }
+                    //if ((DateTime.Now - search.LastRun).TotalHours < 1)
+                    //{
+                    //    _log.Debug($"No update for {search.Name} required. Last ran at {search.LastRun}");
+                    //    return;
+                    //}
 
                     _log.Info($"Running search for {search.Name}...");
 
+                    FindCompletedItemsResponse response;
+
                     // Create a request to get our completed items
-                    var response = _finder.GetCompletedItems(search);
+                    using (timer.NewContext())
+                    {
+                        response = _finder.GetCompletedItems(search);
+                    }
 
                     // Show output
                     if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
@@ -80,6 +97,9 @@ namespace SoldOutSearchMonkey.Service
 
                             // Send a notification out
                             NotifyResultsReady(search, numResults);
+
+                            // Add to the total harvested
+                            resultCounter.Increment(search.Description, numResults);
                         }
 
                         repo.SaveAll();
@@ -121,9 +141,11 @@ namespace SoldOutSearchMonkey.Service
             get { return Assembly.GetEntryAssembly().GetName().Version; }
         }
 
-        private TimeSpan CalculateDelay()
+        private double CalculateDelay()
         {
-            return TimeSpan.FromMilliseconds(10000);
+            var frequencyInSeconds = (24 * 60 * 60) / (ApiRateLimit * 0.99);
+
+            return frequencyInSeconds * 1000;
         }
 
         public void Stop()
