@@ -20,5 +20,6 @@ namespace SoldOutBusiness.Models
 
         public ICollection<SearchResult> SearchResults { get; set; }
         public ICollection<SearchCriteria> SearchCriteria { get; set; }
+        public virtual ICollection<SearchSuspiciousPhrase> SuspiciousPhrases { get; set; } // Lazy loaded
     }
 }

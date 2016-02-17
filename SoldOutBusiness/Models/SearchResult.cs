@@ -21,6 +21,7 @@ namespace SoldOutBusiness.Models
         public string Type { get; set; }
 
         public double? ShippingCost { get; set; }
+        public bool Suspicious { get; set; }
 
         public virtual Search Search { get; set; }
     }

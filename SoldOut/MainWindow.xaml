@@ -8,7 +8,7 @@
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
-        Title="SoldOutCleanser" Height="350" Width="525" WindowState="Maximized">
+        Title="SoldOut Cleanser" Height="350" Width="525" WindowState="Maximized">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing" >
             <i:InvokeCommandAction Command="{Binding WindowClosingCommand}" />
@@ -42,6 +42,16 @@
         <!-- Search Results -->
         <DataGrid Grid.Row="1" Margin="8,4,8,4" Name="SearchResults" AutoGenerateColumns="False" IsReadOnly="True"
                   SelectionMode="Extended" ItemsSource="{Binding SearchResults, UpdateSourceTrigger=PropertyChanged}">
+            <DataGrid.RowStyle>
+                <!-- Override the standard grid style to give a different highlight to the suspicious rows -->
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource MetroDataGridRow}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Suspicious}" Value="true">
+                            <Setter Property="Foreground" Value="IndianRed"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Ended"
                                         Binding="{Binding EndTime}" Width="Auto" />
@@ -67,8 +77,8 @@
                 <ColumnDefinition Width="5*" />
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Margin="4,0,4,0" Command="{Binding DeleteSearchResultsCommand}" CommandParameter="{Binding ElementName=SearchResults, Path=SelectedItems}">Cleanse Selected Results</Button>
-            <Button Grid.Column="1" Margin="4,0,4,0" Command="{Binding MarkAsCleansedCommand}">Mark as Cleansed</Button>
+            <Button Grid.Column="0" Margin="4,0,4,0" Command="{Binding DeleteSearchResultsCommand}" CommandParameter="{Binding ElementName=SearchResults, Path=SelectedItems}">Delete Selected Results</Button>
+            <Button Grid.Column="1" Margin="4,0,4,0" Command="{Binding MarkAsCleansedCommand}" CommandParameter="{Binding ElementName=SearchResults, Path=ItemsSource}">Mark as Cleansed</Button>
         </Grid>
     </Grid>
 </Controls:MetroWindow>

@@ -71,7 +71,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Service\SearchMonkeyService.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Factories\ISearchRepositoryFactory.cs" />
+    <Compile Include="Factories\SearchRepositoryFactory.cs" />
+    <Compile Include="Model\ItemReviewSummary.cs" />
+    <Compile Include="Services\CompletedItemReviewer.cs" />
+    <Compile Include="Services\ICompletedItemReviewer.cs" />
+    <Compile Include="Services\SearchMonkeyService.cs" />
     <Compile Include="SoldOutSearchMonkey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
+using System.Data.SqlClient;
 
 namespace SoldOutBusiness.Repository
 {
@@ -104,6 +105,17 @@ namespace SoldOutBusiness.Repository
             return _context.Searches.Where(s => s.SearchId > currentID).Include(s => s.SearchCriteria).FirstOrDefault();
         }
 
+        public bool ResetSuspiciousSearchResults(IEnumerable<SearchResult> results)
+        {
+            // For every remaining suspicious entry, reset the suspicious flag and commit back to the DB
+            foreach (var result in results.Where(sr => sr.Suspicious == true))
+            {
+                result.Suspicious = false;
+            }
+
+            return SaveAll();
+        }
+
         public void DeleteSearchResults(IEnumerable<SearchResult> results)
         {
             // NOTE - assumes the entities are attached, i.e. _context.Entry(results.FirstOrDefault()).State != EntityState.Detached;
@@ -124,6 +136,21 @@ namespace SoldOutBusiness.Repository
         public int ResultCount(long searchID)
         {
             return _context.SearchResults.Where(s => s.SearchID == searchID).Count();
+        }
+
+        public PriceStats GetPriceStatsForSearch(long searchId)
+        {
+            return _context.Database.SqlQuery<PriceStats>("dbo.GetPriceStatsForSearch @SearchId", new SqlParameter("SearchId", searchId)).Single();
+        }
+
+        public IEnumerable<SuspiciousPhrase> GetBasicSuspiciousPhrases()
+        {
+            return _context.SuspiciousPhrases.Select(p => p);
+        }
+
+        public IEnumerable<SearchSuspiciousPhrase> GetSuspiciousPhrasesForSearch(long searchId)
+        {
+            return _context.SearchSuspiciousPhrases.Where(sp => sp.SearchId == searchId).Select(p => p);
         }
 
         #region IDisposable Support

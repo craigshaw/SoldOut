@@ -14,7 +14,7 @@ namespace SoldOutCleanser.ViewModels
         // Commands
         private DelegateCommand<IList> _deleteSearchResultsCommand;
         private DelegateCommand _windowClosingCommand;
-        private DelegateCommand _markAsCleansedCommand;
+        private DelegateCommand<IList> _markAsCleansedCommand;
 
         // Fields
         private ISearchRepository _repo;
@@ -32,7 +32,7 @@ namespace SoldOutCleanser.ViewModels
                 DeleteSelectedSearchResults
                 );
 
-            _markAsCleansedCommand = new DelegateCommand(
+            _markAsCleansedCommand = new DelegateCommand<IList>(
                 MarkSelectedSearchAsCleansed
                 );
 
@@ -62,7 +62,7 @@ namespace SoldOutCleanser.ViewModels
             }
         }
 
-        public DelegateCommand MarkAsCleansedCommand
+        public DelegateCommand<IList> MarkAsCleansedCommand
         {
             get
             {
@@ -98,7 +98,8 @@ namespace SoldOutCleanser.ViewModels
         {
             get
             {
-                return _repo.GetSearchResults(_selectedSearchOverview.SearchId).ToList();
+                return _repo.GetSearchResults(_selectedSearchOverview.SearchId).
+                    OrderByDescending(sr => sr.Suspicious).ThenByDescending(sr => sr.DateOfMatch).ToList();
             }
         }
 
@@ -141,16 +142,18 @@ namespace SoldOutCleanser.ViewModels
             RaisePropertyChangedEvent("SearchResults");
         }
 
-        private void MarkSelectedSearchAsCleansed()
+        private void MarkSelectedSearchAsCleansed(IList results)
         {
+            var searchResults = results.Cast<SearchResult>();
+
             // Remember which search was selected
             var selectedSearchId = _selectedSearchOverview.SearchId;
 
+            // Mark any suspicious results as not
+            _repo.ResetSuspiciousSearchResults(searchResults);
+
             // Update the last cleansed time
             UpdateCleansedTimeOnSelectedSearch();
-
-            // Commit
-            _repo.SaveAll();
 
             // Reload searches
             Searches = GetSearches();
@@ -161,11 +164,11 @@ namespace SoldOutCleanser.ViewModels
 
         private void UpdateCleansedTimeOnSelectedSearch()
         {
-            var currentTime = DateTime.Now;
+            // Update the last cleansed time (remote)
+            _repo.UpdateSearchLastCleansedTime(_selectedSearchOverview.SearchId, DateTime.Now);
 
-            // Update the last cleansed time (remote and local)
-            _repo.UpdateSearchLastCleansedTime(_selectedSearchOverview.SearchId, currentTime);
-            _selectedSearchOverview.LastCleansed = currentTime;
+            // Commit
+            _repo.SaveAll();
         }
 
         private IEnumerable<SearchOverview> GetSearches()

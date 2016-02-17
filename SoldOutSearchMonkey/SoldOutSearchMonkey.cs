@@ -1,10 +1,13 @@
 ﻿using log4net;
 using Metrics;
+using SoldOutBusiness.Repository;
 using SoldOutBusiness.Services;
 using SoldOutBusiness.Services.Notifiers.Slack;
-using SoldOutSearchMonkey.Service;
+using SoldOutSearchMonkey.Factories;
+using SoldOutSearchMonkey.Services;
 using System;
 using System.Configuration;
+using System.Linq;
 using Topshelf;
 
 namespace SoldOutSearchMonkey
@@ -55,7 +58,14 @@ namespace SoldOutSearchMonkey
                                             c.ApplicationId = ConfigurationManager.AppSettings["eBayApplicationId"];
                                         });
 
-                        return new SearchMonkeyService(finder, notifier);
+                        var factory = new SearchRepositoryFactory();
+                        
+                        using (var repo = factory.CreateSearchRepository())
+                        {
+                            var reviewer = new CompletedItemReviewer(repo.GetBasicSuspiciousPhrases().ToList());
+
+                            return new SearchMonkeyService(finder, notifier, factory, reviewer);
+                        }
                     });
                     service.WhenStarted(svc => svc.Start());
                     service.WhenStopped(svc => svc.Stop());
