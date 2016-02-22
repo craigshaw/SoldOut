@@ -11,6 +11,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Description</th>
+                    <th>Number of results</th>
                     <th>Last Run</th>
                 </tr>
             </thead>
@@ -20,6 +21,7 @@
                     <tr>
                         <td>@Html.ActionLink(search.Name, "Summary", new { Id = search.SearchId })</td>
                         <td>@search.Description</td>
+                        <td>@search.SearchResults.Count()</td>
                         <td>@search.LastRun</td>
                     </tr>
                 }

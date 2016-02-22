@@ -17,7 +17,7 @@ namespace SoldOutWeb.Controllers
 
         public ActionResult All()
         {
-            var searches = _repository.GetAllSearches();
+            var searches = _repository.GetAllSearchesWithResults();
             return View(searches);
         }
 
@@ -26,7 +26,7 @@ namespace SoldOutWeb.Controllers
             int searchId = 1;
 
             if (id.HasValue)
-                searchId = id.Value; 
+                searchId = id.Value;
 
             var search = _repository.GetSearchByID(searchId);
             var priceHistory = CreatePriceHistory(searchId);
@@ -57,9 +57,15 @@ namespace SoldOutWeb.Controllers
             var results = _repository.GetSearchResults(searchId).ToList();
 
             return from item in results
-                   group item by new { item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
-                   orderby grp.Key.Year, grp.Key.Month
-                   select new PriceHistory() { PricePeriod = $"{grp.Key.Month:D2}/{grp.Key.Year}", AveragePrice = (double)(grp.Average(it => it.Price)) };
+                        group item by new { item.EndTime.Value.Day, item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
+                        orderby grp.Key.Year, grp.Key.Month, grp.Key.Day
+                        select new PriceHistory()
+                        {
+                            PricePeriod = $"{grp.Key.Day}/{grp.Key.Month:D2}/{grp.Key.Year}",
+                            AveragePrice = (double)(grp.Average(it => it.Price)),
+                            MinPrice = (double)(grp.Min(it => it.Price)),
+                            MaxPrice = (double)(grp.Max(it => it.Price)),
+                        };
         }
     }
 }
