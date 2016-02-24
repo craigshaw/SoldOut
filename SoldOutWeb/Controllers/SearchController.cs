@@ -61,7 +61,7 @@ namespace SoldOutWeb.Controllers
                         orderby grp.Key.Year, grp.Key.Month, grp.Key.Day
                         select new PriceHistory()
                         {
-                            PricePeriod = $"{grp.Key.Day}/{grp.Key.Month:D2}/{grp.Key.Year}",
+                            PricePeriod = System.DateTime.Parse($"{grp.Key.Day}/{grp.Key.Month:D2}/{grp.Key.Year}"),
                             AveragePrice = (double)(grp.Average(it => it.Price)),
                             MinPrice = (double)(grp.Min(it => it.Price)),
                             MaxPrice = (double)(grp.Max(it => it.Price)),
