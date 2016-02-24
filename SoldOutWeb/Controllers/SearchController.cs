@@ -54,6 +54,7 @@ namespace SoldOutWeb.Controllers
 
         private IEnumerable<PriceHistory> CreatePriceHistory(int searchId)
         {
+            var search = _repository.GetSearchByID(searchId);
             var results = _repository.GetSearchResults(searchId).ToList();
 
             return from item in results
@@ -65,6 +66,8 @@ namespace SoldOutWeb.Controllers
                             AveragePrice = (double)(grp.Average(it => it.Price)),
                             MinPrice = (double)(grp.Min(it => it.Price)),
                             MaxPrice = (double)(grp.Max(it => it.Price)),
+                            Parent = search,
+                            Interval = 5,
                         };
         }
     }

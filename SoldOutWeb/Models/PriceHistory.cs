@@ -7,9 +7,21 @@ namespace SoldOutWeb.Models
     public class PriceHistory
     {
 
+        private DateTime pricePeriod;
         private SoldOutBusiness.Models.Search _parent;
 
-        public DateTime PricePeriod { get; set; }
+        public DateTime PricePeriod
+        {
+            get
+            {
+                return this.pricePeriod;
+            }
+
+            set
+            {
+                this.pricePeriod = (DateTime)value;
+            }
+        }
 
         public double MinPrice { get; set; }
 
@@ -25,6 +37,8 @@ namespace SoldOutWeb.Models
             }
 
         }
+
+        public int Interval { get; set; }
 
         public IEnumerable<PriceHistory> GetPriorPrices(int interval)
         {
@@ -57,6 +71,23 @@ namespace SoldOutWeb.Models
             }
 
             return Math.Sqrt(S / (k - 1));
+        }
+
+        public double SMA
+        {
+            get
+            {
+                double simpleMovingAverage = 0.00d;
+
+                IEnumerable<PriceHistory> priorPrices = GetPriorPrices(this.Interval);
+
+                foreach (PriceHistory price in priorPrices)
+                {
+                    simpleMovingAverage += price.AveragePrice;
+                }
+
+                return simpleMovingAverage / this.Interval;
+            }
         }
     }
 }
