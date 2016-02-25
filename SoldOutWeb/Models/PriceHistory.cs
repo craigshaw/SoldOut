@@ -4,6 +4,13 @@ using System.Collections.Generic;
 
 namespace SoldOutWeb.Models
 {
+    public class PriceSummary
+    {
+        public double Price { get; set; }
+        public DateTime PricePoint { get; set; }
+
+    }
+
     public class PriceHistory
     {
 
@@ -42,16 +49,39 @@ namespace SoldOutWeb.Models
 
         public IEnumerable<PriceHistory> GetPriorPrices(int interval)
         {
-                return from pricepoint in _parent.SearchResults
+            List<PriceHistory> prices;
+
+            prices = new List<PriceHistory>();
+
+                var allPrices =  from pricepoint in _parent.SearchResults
                        group pricepoint by new { pricepoint.EndTime.Value.Day, pricepoint.EndTime.Value.Month, pricepoint.EndTime.Value.Year } into grp
                        orderby grp.Key.Year, grp.Key.Month, grp.Key.Day
-                       where DateTime.Parse($"{grp.Key.Day}/{grp.Key.Month:D2}/{grp.Key.Year}") < this.PricePeriod // Exclude ourselves and any prices after us
-                       && DateTime.Parse($"{grp.Key.Day}/{grp.Key.Month:D2}/{grp.Key.Year}") >= this.PricePeriod.Subtract(new TimeSpan(0,interval,0))
+                       
                        select new PriceHistory()
                        {
                            PricePeriod = DateTime.Parse($"{grp.Key.Day}/{grp.Key.Month:D2}/{grp.Key.Year}"),
                            AveragePrice = (double)grp.Average(pricepoint => pricepoint.Price)
                        };
+
+            //where DateTime.Parse($"{grp.Key.Day}/{grp.Key.Month:D2}/{grp.Key.Year}") < this.PricePeriod // Exclude ourselves and any prices after us
+            //&& DateTime.Parse($"{grp.Key.Day}/{grp.Key.Month:D2}/{grp.Key.Year}") >= this.PricePeriod.Subtract(new TimeSpan(0,interval,0))
+
+
+
+            foreach (PriceHistory price in allPrices)
+            {
+                if (price.PricePeriod < this.PricePeriod && price.PricePeriod >= this.PricePeriod.Subtract(new TimeSpan(interval,0, 0, 0)))
+                {
+                    prices.Add(new PriceHistory()
+                    {
+                        PricePeriod = price.PricePeriod,
+                        AveragePrice = price.AveragePrice
+
+                    });
+                }
+            }
+
+            return prices;
         }
 
         private double CalculatePriceSTDDeviation(int interval)
@@ -79,12 +109,14 @@ namespace SoldOutWeb.Models
             {
                 double simpleMovingAverage = 0.00d;
 
-                IEnumerable<PriceHistory> priorPrices = GetPriorPrices(this.Interval);
+                IEnumerable<PriceHistory> priorPrices = GetPriorPrices(this.Interval -1); // -1 as we need to add our own price
 
                 foreach (PriceHistory price in priorPrices)
                 {
                     simpleMovingAverage += price.AveragePrice;
                 }
+
+                simpleMovingAverage += this.AveragePrice; // Add ourselves
 
                 return simpleMovingAverage / this.Interval;
             }
