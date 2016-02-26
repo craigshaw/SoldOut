@@ -120,41 +120,48 @@ namespace SoldOutWeb.Models
             }
         }
 
-        public double? EMA
+        public double? ExponentialMovingAverage
         {
             get
             {
                 double? exponentialMovingAverage = 0.00d;
                 double multiplier = 0.00d;
-                PriceHistory yesterdaysPrice;
+                IEnumerable<PriceHistory> yesterdaysPrice;
+
+                if (_parent == null)
+                    return null;
 
                 if (_parent.SearchResults.Count() - 1 < this.Interval) return null;
 
                 multiplier = 2 / this.Interval + 1;
 
-                yesterdaysPrice = (PriceHistory)GetPriorPrices(1);
+                yesterdaysPrice = GetPriorPrices(1);
 
-                exponentialMovingAverage += this.AveragePrice * multiplier + yesterdaysPrice.EMA *(1 - multiplier);
+                if (yesterdaysPrice.Count() == 0) return null;
+
+                if (((PriceHistory)yesterdaysPrice.ElementAt(0)).ExponentialMovingAverage == null) return null;
+
+                exponentialMovingAverage += this.AveragePrice * multiplier + ((PriceHistory)yesterdaysPrice.ElementAt(0)).ExponentialMovingAverage * (1 - multiplier);
 
                 return exponentialMovingAverage;
             }
         }
 
-            public double? MACD
-        {
-            get
-            {
-                double? lowerMACD = 0.00;
-                double? upperMACD = 0.00;
+        //    public double? MACD
+        //{
+        //    get
+        //    {
+        //        double? lowerMACD = 0.00;
+        //        double? upperMACD = 0.00;
 
-                this.Interval = 12;
-                lowerMACD = this.EMA;
+        //        this.Interval = 12;
+        //        lowerMACD = this.EMA;
 
-                this.Interval = 26;
-                upperMACD = this.EMA;
+        //        this.Interval = 26;
+        //        upperMACD = this.EMA;
 
-                return lowerMACD - upperMACD;
-            }
-        }
+        //        return lowerMACD - upperMACD;
+        //    }
+        //}
     }
 }
