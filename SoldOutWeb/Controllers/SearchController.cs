@@ -77,7 +77,6 @@ namespace SoldOutWeb.Controllers
 
         private IEnumerable<PriceHistory> CreatePriceHistory(int searchId)
         {
-            var search = _repository.GetSearchByID(searchId);
             var results = _repository.GetSearchResults(searchId).ToList();
 
             int interval = 5;
@@ -87,12 +86,11 @@ namespace SoldOutWeb.Controllers
                         orderby grp.Key.Year, grp.Key.Month, grp.Key.Day
                         select new PriceHistory()
                         {
-                            PricePeriod = System.DateTime.Parse($"{grp.Key.Day}/{grp.Key.Month:D2}/{grp.Key.Year}"),
+                            PricePeriod = $"{grp.Key.Day:D2}/{grp.Key.Month:D2}/{grp.Key.Year}",
                             AveragePrice = (double)(grp.Average(it => it.Price)),
                             MinPrice = (double)(grp.Min(it => it.Price)),
                             MaxPrice = (double)(grp.Max(it => it.Price)),
                         }).ToArray();
-
 
             AddSMA(basicPriceHistory, interval);
 
@@ -103,35 +101,15 @@ namespace SoldOutWeb.Controllers
 
         private void AddEMA(PriceHistory[] basicPriceHistory, int interval)
         {
-            double multiplier = 1;
-            double priorPrices = 0.00;
+            double k = 2 / ((double)interval + 1);
 
-            multiplier = 2 / (interval + 1);
+            // Start with the average of the first 'interval' worth of prices
+            basicPriceHistory[interval - 1].EMA = basicPriceHistory.Take(interval).Select(ph => ph.AveragePrice).Average();
 
-            //for (int j = 0; j < interval - 1; j++)
-            //{
-            //    priorPrices += basicPriceHistory[j].AveragePrice;
-            //}
-
-            //priorPrices = priorPrices / interval;
-
-            for (int i = 0; i < basicPriceHistory.Length; i++)
-            {
-                if (i <= interval - 2)
-                {
-                    if (i == 0)
-                    {
-                        basicPriceHistory[i].EMA = null;
-                    }
-                    else
-                    {
-                        basicPriceHistory[i].EMA = basicPriceHistory[i - 1].AveragePrice;
-                    }
-                    continue;
-                }
-
-                basicPriceHistory[i].EMA = basicPriceHistory[i].AveragePrice * multiplier + basicPriceHistory[i-1].EMA * (1 - multiplier);
-            }
+            // Then use the EMA algorithm to calculate the remaining EMAs
+            // http://www.iexplain.org/ema-how-to-calculate/
+            for (int i = interval; i < basicPriceHistory.Length; i++)
+                basicPriceHistory[i].EMA = basicPriceHistory[i].AveragePrice * k + basicPriceHistory[i - 1].EMA * (1 - k);
         }
     }
 }
