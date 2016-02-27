@@ -29,6 +29,10 @@ namespace SoldOutWeb.Models
 
         public double AveragePrice { get; set; }
 
+        public double? SMA { get; set; }
+
+        public double? EMA { get; set; }
+
         public SoldOutBusiness.Models.Search Parent
         { 
             set
@@ -48,28 +52,30 @@ namespace SoldOutWeb.Models
 
             var allPrices =  from pricepoint in _parent.SearchResults
                     group pricepoint by new { pricepoint.EndTime.Value.Day, pricepoint.EndTime.Value.Month, pricepoint.EndTime.Value.Year } into grp
-                    orderby grp.Key.Year, grp.Key.Month, grp.Key.Day                       
-                    select new PriceHistory()
+                    orderby grp.Key.Year, grp.Key.Month, grp.Key.Day
+                    where DateTime.Parse($"{grp.Key.Day}/{grp.Key.Month:D2}/{grp.Key.Year}") < this.PricePeriod // Exclude ourselves and any prices after us
+                    && DateTime.Parse($"{grp.Key.Day}/{grp.Key.Month:D2}/{grp.Key.Year}") >= this.PricePeriod.Subtract(new TimeSpan(interval,0,0,0))
+                             select new PriceHistory()
                     {
                         PricePeriod = DateTime.Parse($"{grp.Key.Day}/{grp.Key.Month:D2}/{grp.Key.Year}"),
                         AveragePrice = (double)grp.Average(pricepoint => pricepoint.Price)
                     };
 
             // Create a list of all the prices prior to ourselves that are within the required interval i.e 5 days
-            foreach (PriceHistory price in allPrices)
-            {
-                if (price.PricePeriod < this.PricePeriod && price.PricePeriod >= this.PricePeriod.Subtract(new TimeSpan(interval,0, 0, 0)))
-                {
-                    prices.Add(new PriceHistory()
-                    {
-                        PricePeriod = price.PricePeriod,
-                        AveragePrice = price.AveragePrice
+            //foreach (PriceHistory price in allPrices)
+            //{
+            //    if (price.PricePeriod < this.PricePeriod && price.PricePeriod >= this.PricePeriod.Subtract(new TimeSpan(interval,0, 0, 0)))
+            //    {
+            //        prices.Add(new PriceHistory()
+            //        {
+            //            PricePeriod = price.PricePeriod,
+            //            AveragePrice = price.AveragePrice
 
-                    });
-                }
-            }
+            //        });
+            //    }
+            //}
 
-            return prices;
+            return allPrices;
         }
 
         private double? CalculatePriceSTDDeviation(int interval)
@@ -92,60 +98,7 @@ namespace SoldOutWeb.Models
 
             return Math.Sqrt(S / (k - 1));
         }
-
-        public double? SMA
-        {
-            get
-            {
-                double simpleMovingAverage = 0.00d;
-
-                if (_parent.SearchResults.Count() - 1 < this.Interval) return null;
-
-                IEnumerable<PriceHistory> priorPrices = GetPriorPrices(this.Interval -1); // -1 as we need to add our own price
-
-                // We have no prior prices
-                if (priorPrices == null) return null;
-
-                // We don't have enough prices
-                if (priorPrices.Count() < this.Interval - 1) return null;
-
-                foreach (PriceHistory price in priorPrices)
-                {
-                    simpleMovingAverage += price.AveragePrice;
-                }
-
-                simpleMovingAverage += this.AveragePrice; // Add ourselves
-
-                return simpleMovingAverage / this.Interval;
-            }
-        }
-
-        public double? ExponentialMovingAverage
-        {
-            get
-            {
-                double? exponentialMovingAverage = 0.00d;
-                double multiplier = 0.00d;
-                IEnumerable<PriceHistory> yesterdaysPrice;
-
-                if (_parent == null)
-                    return null;
-
-                if (_parent.SearchResults.Count() - 1 < this.Interval) return null;
-
-                multiplier = 2 / this.Interval + 1;
-
-                yesterdaysPrice = GetPriorPrices(1);
-
-                if (yesterdaysPrice.Count() == 0) return null;
-
-                if (((PriceHistory)yesterdaysPrice.ElementAt(0)).ExponentialMovingAverage == null) return null;
-
-                exponentialMovingAverage += this.AveragePrice * multiplier + ((PriceHistory)yesterdaysPrice.ElementAt(0)).ExponentialMovingAverage * (1 - multiplier);
-
-                return exponentialMovingAverage;
-            }
-        }
+       
 
         //    public double? MACD
         //{

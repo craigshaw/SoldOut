@@ -3,6 +3,7 @@ using SoldOutWeb.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System;
 
 namespace SoldOutWeb.Controllers
 {
@@ -52,12 +53,36 @@ namespace SoldOutWeb.Controllers
             return Json(priceHistory, JsonRequestBehavior.AllowGet);
         }
 
+        private void AddSMA(PriceHistory[] basicPriceHistory, int interval)
+        {
+            for (int i = 0; i < basicPriceHistory.Length; i++)
+            {
+                double simpleMovingAverage = 0.00d;
+
+                if (i <= interval - 2)
+                {
+                    basicPriceHistory[i].SMA = null;
+                    continue;
+                }
+
+                for (int j = (i - (interval - 1)); j < i; j++)
+                {
+                    simpleMovingAverage += basicPriceHistory[j].AveragePrice;
+                }
+
+                simpleMovingAverage += basicPriceHistory[i].AveragePrice; // Add ourselves
+                basicPriceHistory[i].SMA = simpleMovingAverage / interval;
+            }
+        }
+
         private IEnumerable<PriceHistory> CreatePriceHistory(int searchId)
         {
             var search = _repository.GetSearchByID(searchId);
             var results = _repository.GetSearchResults(searchId).ToList();
 
-            return from item in results
+            int interval = 5;
+
+            var basicPriceHistory = (from item in results
                         group item by new { item.EndTime.Value.Day, item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
                         orderby grp.Key.Year, grp.Key.Month, grp.Key.Day
                         select new PriceHistory()
@@ -66,9 +91,47 @@ namespace SoldOutWeb.Controllers
                             AveragePrice = (double)(grp.Average(it => it.Price)),
                             MinPrice = (double)(grp.Min(it => it.Price)),
                             MaxPrice = (double)(grp.Max(it => it.Price)),
-                            Parent = search,
-                            Interval = 5,
-                        };
+                        }).ToArray();
+
+
+            AddSMA(basicPriceHistory, interval);
+
+            AddEMA(basicPriceHistory, interval);
+
+            return basicPriceHistory;
+        }
+
+        private void AddEMA(PriceHistory[] basicPriceHistory, int interval)
+        {
+            double multiplier = 1;
+            double priorPrices = 0.00;
+
+            multiplier = 2 / (interval + 1);
+
+            //for (int j = 0; j < interval - 1; j++)
+            //{
+            //    priorPrices += basicPriceHistory[j].AveragePrice;
+            //}
+
+            //priorPrices = priorPrices / interval;
+
+            for (int i = 0; i < basicPriceHistory.Length; i++)
+            {
+                if (i <= interval - 2)
+                {
+                    if (i == 0)
+                    {
+                        basicPriceHistory[i].EMA = null;
+                    }
+                    else
+                    {
+                        basicPriceHistory[i].EMA = basicPriceHistory[i - 1].AveragePrice;
+                    }
+                    continue;
+                }
+
+                basicPriceHistory[i].EMA = basicPriceHistory[i].AveragePrice * multiplier + basicPriceHistory[i-1].EMA * (1 - multiplier);
+            }
         }
     }
 }
