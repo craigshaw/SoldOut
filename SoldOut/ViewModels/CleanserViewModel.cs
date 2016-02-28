@@ -19,14 +19,11 @@ namespace SoldOutCleanser.ViewModels
         // Fields
         private ISearchRepository _repo;
         private SearchOverview _selectedSearchOverview;
-        private bool _initialising;
         private IEnumerable<SearchOverview> _searches;
 
         public CleanserViewModel()
         {
             _repo = new SearchRepository();
-
-            _initialising = true;
 
             _deleteSearchResultsCommand = new DelegateCommand<IList>(
                 DeleteSelectedSearchResults

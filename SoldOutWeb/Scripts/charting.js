@@ -25,6 +25,7 @@
                 data.addColumn('string', 'Date');
                 data.addColumn('number', 'Avg Price');
                 data.addColumn('number', 'EMA');
+                data.addColumn('number', 'SMA');
 
                 if (addMinMaxPrices) {
                     data.addColumn('number', 'Min Price');
@@ -45,7 +46,8 @@
                     else {
                         data.addRow([chartsdata[i].PricePeriod,
                                      round(chartsdata[i].AveragePrice, 2),
-                                     round(chartsdata[i].EMA,2),
+                                     round(chartsdata[i].EMA, 2),
+                                     round(chartsdata[i].SMA, 2)
                                     ]);
                     }
                 }

@@ -134,6 +134,8 @@
     <Compile Include="Models\PriceHistory.cs" />
     <Compile Include="Models\SearchSummary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IPriceHistoryService.cs" />
+    <Compile Include="Services\PriceHistoryService.cs" />
     <Compile Include="Utilities\DateTimeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
