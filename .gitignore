@@ -280,6 +280,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 SoldOutHarness/App.config
-*.config
 SoldOutWeb/Web.config
-SoldOutHarness/App.config
