@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using SoldOutWeb.Models;
 using SoldOutBusiness.Repository;
 
@@ -34,28 +32,24 @@ namespace SoldOutWeb.Services
 
         public void AddSimpleMovingAverage(IList<PriceHistory> prices, int interval)
         {
-            for (int i = 0; i < prices.Count; i++)
+            // Loop through each price, starting at the end of the first interval
+            for (int i = interval - 1; i < prices.Count; i++)
             {
-                double simpleMovingAverage = 0.00d;
+                double sma = 0;
 
-                if (i <= interval - 2)
-                {
-                    prices[i].SMA = null;
-                    continue;
-                }
+                // Now we average an interval's worth of prices looking back from our current position
+                for (int j = i - (interval - 1); j <= i; j++)
+                    sma += prices[j].AveragePrice;
 
-                for (int j = (i - (interval - 1)); j < i; j++)
-                {
-                    simpleMovingAverage += prices[j].AveragePrice;
-                }
-
-                simpleMovingAverage += prices[i].AveragePrice; // Add ourselves
-                prices[i].SMA = simpleMovingAverage / interval;
+                prices[i].SMA = sma / interval;
             }
         }
 
         public void AddExponentialMovingAverage(IList<PriceHistory> prices, int interval)
         {
+            if (prices.Count < interval)
+                return;
+
             double k = 2 / ((double)interval + 1);
 
             // Start with the average of the first 'interval' worth of prices

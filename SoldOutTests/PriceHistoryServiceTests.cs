@@ -46,21 +46,27 @@ namespace SoldOutTests
 
             var smas = results.Select(ph => ph.SMA.HasValue ? Math.Round(ph.SMA.Value, 3) : ph.SMA);
 
-            // Test results
-            smas.AssertSequenceIsEqual(null, null, null, null, 
-                    12.694,
-                    12.804,
-                    12.894,
-                    12.812,
-                    13.168,
-                    13.12,
-                    13.21,
-                    13.63,
-                    14.036,
-                    14.48,
-                    13.786,
-                    13.588
-                    );
+            smas.AssertSequenceIsEqual(null, null, null, null, 12.694, 12.804, 12.894,
+                12.812, 13.168, 13.12, 13.21, 13.63, 14.036, 14.48, 13.786, 13.588);
+        }
+
+        [TestMethod]
+        public void CalculateSimpleMovingAverageWhenIntervalBiggerThanNumberOfPricesReturnsNulls()
+        {
+            var mockRepository = A.Fake<ISearchRepository>();
+
+            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored)).Returns(CreateListOfTwoSearchResults());
+
+            var sut = new PriceHistoryService(mockRepository);
+
+            var results = sut.CreateBasicPriceHistory(1);
+
+            sut.AddSimpleMovingAverage(results, 5);
+
+            Assert.AreEqual(results.Count, 2);
+
+            foreach (var result in results)
+                Assert.IsNull(result.SMA);
         }
 
         [TestMethod]
@@ -80,20 +86,25 @@ namespace SoldOutTests
             var emas = results.Select(ph => ph.EMA.HasValue ? Math.Round(ph.EMA.Value, 8) : ph.EMA);
 
             // Test results
-            emas.AssertSequenceIsEqual(null, null, null, null,
-                    12.694,
-                    12.976,
-                    12.64733333,
-                    12.60822222,
-                    12.66548148,
-                    13.36365432,
-                    13.57243621,
-                    13.74495748,
-                    14.01663832,
-                    14.34442554,
-                    13.3262837,
-                    13.21752246
-                    );
+            emas.AssertSequenceIsEqual(null, null, null, null, 12.694, 12.976, 12.64733333, 12.60822222, 12.66548148,
+                13.36365432, 13.57243621, 13.74495748, 14.01663832, 14.34442554, 13.3262837, 13.21752246);
+        }
+
+        [TestMethod]
+        public void CalculateExponentialMovingAverageWhenIntervalBiggerThanNumberOfPricesReturnsNulls()
+        {
+            var mockRepository = A.Fake<ISearchRepository>();
+
+            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored)).Returns(CreateListOfTwoSearchResults());
+
+            var sut = new PriceHistoryService(mockRepository);
+
+            var results = sut.CreateBasicPriceHistory(1);
+
+            sut.AddExponentialMovingAverage(results, 5);
+
+            foreach (var result in results)
+                Assert.IsNull(result.SMA);
         }
 
 
@@ -118,6 +129,15 @@ namespace SoldOutTests
                 new SearchResult() { Price = 15.00, EndTime = new DateTime(2016, 01, 14) },
                 new SearchResult() { Price = 11.29, EndTime = new DateTime(2016, 01, 15) },
                 new SearchResult() { Price = 13.00, EndTime = new DateTime(2016, 01, 16) }
+            };
+        }
+
+        private IList<SearchResult> CreateListOfTwoSearchResults()
+        {
+            return new List<SearchResult>()
+            {
+                new SearchResult() { Price = 12.99, EndTime = new DateTime(2016, 01, 01) },
+                new SearchResult() { Price = 13.99, EndTime = new DateTime(2016, 01, 02) }
             };
         }
         #endregion
