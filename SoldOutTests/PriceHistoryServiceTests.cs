@@ -51,7 +51,7 @@ namespace SoldOutTests
         }
 
         [TestMethod]
-        public void CalculateSimpleMovingAverageWhenIntervalBiggerThanNumberOfPricesReturnsNulls()
+        public void CalculateSimpleMovingAverageWhenIntervalBiggerThanNumberOfPricesDoesntSetSMAs()
         {
             var mockRepository = A.Fake<ISearchRepository>();
 
@@ -91,7 +91,7 @@ namespace SoldOutTests
         }
 
         [TestMethod]
-        public void CalculateExponentialMovingAverageWhenIntervalBiggerThanNumberOfPricesReturnsNulls()
+        public void CalculateExponentialMovingAverageWhenIntervalBiggerThanNumberOfPricesDoesntSetEMAs()
         {
             var mockRepository = A.Fake<ISearchRepository>();
 
@@ -104,7 +104,23 @@ namespace SoldOutTests
             sut.AddExponentialMovingAverage(results, 5);
 
             foreach (var result in results)
-                Assert.IsNull(result.SMA);
+                Assert.IsNull(result.EMA);
+        }
+
+        [TestMethod]
+        public void CalculateExponentialMovingAverageWhenIntervalEqualsNumberOfPrices()
+        {
+            var mockRepository = A.Fake<ISearchRepository>();
+
+            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored)).Returns(CreateTestSearchResults().Take(5));
+
+            var sut = new PriceHistoryService(mockRepository);
+
+            var results = sut.CreateBasicPriceHistory(1);
+
+            sut.AddExponentialMovingAverage(results, 5);
+
+            Assert.AreEqual(Math.Round(results[4].EMA.Value, 3), 12.694);
         }
 
 
