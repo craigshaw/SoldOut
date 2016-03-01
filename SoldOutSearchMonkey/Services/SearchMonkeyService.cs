@@ -98,6 +98,7 @@ namespace SoldOutSearchMonkey.Services
             {
                 using (var repo = _repoFactory.CreateSearchRepository())
                 {
+                    var conditions = repo.GetConditions();
                     var search = repo.GetNextSearch(_currentSearchId);
                     _currentSearchId = search.SearchId;
 
@@ -128,7 +129,7 @@ namespace SoldOutSearchMonkey.Services
                             if (numResults > 0)
                             {
                                 // Map returned items to our SoldItems model
-                                var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item).ToList();
+                                var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, conditions).ToList();
 
                                 // Review for any suspicous results
                                 var reviewSummary = _completedItemReviewer.ReviewCompletedItems(newItems, repo.GetPriceStatsForSearch(search.SearchId), search.SuspiciousPhrases);

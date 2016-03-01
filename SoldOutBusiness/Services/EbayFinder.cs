@@ -84,8 +84,8 @@ namespace SoldOutBusiness.Services
             if (filters.Find(f => f.name == ItemFilterType.Currency) == null)
                 filters.Add(new ItemFilter() { name = ItemFilterType.Currency, value = new string[] { "GBP" } });
 
-            if (filters.Find(f => f.name == ItemFilterType.Condition) == null)
-                filters.Add(new ItemFilter() { name = ItemFilterType.Condition, value = new string[] { "New" , "1000"} });
+            //if (filters.Find(f => f.name == ItemFilterType.Condition) == null)
+            //    filters.Add(new ItemFilter() { name = ItemFilterType.Condition, value = new string[] { "New" , "1000"} });
 
             if (filters.Find(f => f.name == ItemFilterType.SoldItemsOnly) == null)
                 filters.Add(new ItemFilter() { name = ItemFilterType.SoldItemsOnly, value = new string[] { "True" } });

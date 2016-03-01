@@ -62,6 +62,7 @@
     <Compile Include="DAL\SoldOutDbInitialiser.cs" />
     <Compile Include="Mappers\eBayMapper.cs" />
     <Compile Include="Models\Category.cs" />
+    <Compile Include="Models\Condition.cs" />
     <Compile Include="Models\PriceStats.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Search.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Services\IEbayFinder.cs" />
     <Compile Include="Services\Notifiers\INotifier.cs" />
     <Compile Include="Services\Notifiers\Slack\SlackNotifier.cs" />
+    <Compile Include="Utilities\ConditionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\eBay.Services\eBay.Services.csproj">

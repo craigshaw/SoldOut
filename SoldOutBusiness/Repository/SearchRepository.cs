@@ -153,6 +153,11 @@ namespace SoldOutBusiness.Repository
             return _context.SearchSuspiciousPhrases.Where(sp => sp.SearchId == searchId).Select(p => p);
         }
 
+        public IList<Condition> GetConditions()
+        {
+            return _context.Conditions.Select(c => c).ToList();
+        }
+
         #region IDisposable Support
         public void Dispose()
         {

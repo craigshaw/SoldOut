@@ -72,6 +72,7 @@ namespace SoldOutHarness
 
                 // Create the search catalogue
                 var searches = repo.GetAllSearchesWithSearchCriteria();
+                var conditions = repo.GetConditions();
 
                 var finder = new EbayFinder()
                     .Configure(c =>
@@ -103,7 +104,7 @@ namespace SoldOutHarness
                         if (response.searchResult.count > 0)
                         {
                             // Map returned items to our SoldItems model
-                            var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item);
+                            var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, conditions); 
 
                             // Add them to the relevant search
                             repo.AddSearchResults(search.SearchId, newItems);

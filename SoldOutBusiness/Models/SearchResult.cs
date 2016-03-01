@@ -24,5 +24,8 @@ namespace SoldOutBusiness.Models
         public bool Suspicious { get; set; }
 
         public virtual Search Search { get; set; }
+
+        public int ConditionId { get; set; }
+        public virtual Condition Condition { get; set; }
     }
 }
