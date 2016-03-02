@@ -31,6 +31,15 @@ namespace SoldOutTests
             Assert.AreEqual(result.Description, "Unknown");
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ConditionSingleOrDefaultThrowsInvalidOperationExceptionIfNoMatches()
+        {
+            IList<Condition> conditions = new List<Condition>() { new Condition() { ConditionId = 1, Description = "New", eBayConditionId = 1000 } };
+
+            var result = conditions.SingleOrDefault(c => c.eBayConditionId == 2999);
+        }
+
         private IList<Condition> CreateTestConditions()
         {
             return new List<Condition>() {

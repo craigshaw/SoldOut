@@ -56,15 +56,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DAL\CategoryContext.cs" />
-    <Compile Include="DAL\ProductContext.cs" />
     <Compile Include="DAL\SearchContext.cs" />
     <Compile Include="DAL\SoldOutDbInitialiser.cs" />
     <Compile Include="Mappers\eBayMapper.cs" />
-    <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Condition.cs" />
     <Compile Include="Models\PriceStats.cs" />
-    <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Search.cs" />
     <Compile Include="Models\SearchCriteria.cs" />
     <Compile Include="Models\SearchResult.cs" />
