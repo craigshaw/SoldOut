@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using SoldOutSearchMonkey.Factories;
+using SoldOutBusiness.Utilities.Conditions;
 
 namespace SoldOutSearchMonkey.Services
 {
@@ -129,7 +130,7 @@ namespace SoldOutSearchMonkey.Services
                             if (numResults > 0)
                             {
                                 // Map returned items to our SoldItems model
-                                var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, conditions).ToList();
+                                var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, new ConditionResolver(conditions)).ToList();
 
                                 // Review for any suspicous results
                                 var reviewSummary = _completedItemReviewer.ReviewCompletedItems(newItems, repo.GetPriceStatsForSearch(search.SearchId), search.SuspiciousPhrases);

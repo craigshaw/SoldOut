@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SoldOutBusiness.Models;
 using System.Collections.Generic;
-using SoldOutBusiness.Utilities;
+using SoldOutBusiness.Utilities.Conditions;
 
 namespace SoldOutTests
 {

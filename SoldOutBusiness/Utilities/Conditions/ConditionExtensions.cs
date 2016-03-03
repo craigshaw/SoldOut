@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SoldOutBusiness.Utilities
+namespace SoldOutBusiness.Utilities.Conditions
 {
     public static class ConditionExtensions
     {

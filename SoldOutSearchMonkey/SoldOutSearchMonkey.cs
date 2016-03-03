@@ -1,6 +1,5 @@
 ﻿using log4net;
 using Metrics;
-using SoldOutBusiness.Repository;
 using SoldOutBusiness.Services;
 using SoldOutBusiness.Services.Notifiers.Slack;
 using SoldOutSearchMonkey.Factories;

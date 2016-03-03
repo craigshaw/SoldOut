@@ -1,4 +1,5 @@
 ﻿using eBay.Services.Finding;
+using SoldOutBusiness.Utilities.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ namespace SoldOutBusiness.Mappers
 {
     public static class eBayMapper
     {
-        public static IEnumerable<Models.SearchResult> MapSearchItemsToSearchResults(SearchItem[] items, IList<Models.Condition> conditions)
+        public static IEnumerable<Models.SearchResult> MapSearchItemsToSearchResults(SearchItem[] items, IConditionResolver resolver)
         {
             return items.Select(i => new Models.SearchResult()
             {
@@ -25,7 +26,7 @@ namespace SoldOutBusiness.Mappers
                 SiteID = i.globalId,
                 Type = i.listingInfo.listingType,
                 ShippingCost = (i.shippingInfo.shippingServiceCost != null) ? i.shippingInfo.shippingServiceCost.Value : 0.0f,
-                Condition = conditions.SingleOrDefault(c => c.eBayConditionId == i.condition.conditionId)
+                ConditionId = resolver.ConditionIdFromEBayConditionId(i.condition.conditionId)
             });
         }
     }

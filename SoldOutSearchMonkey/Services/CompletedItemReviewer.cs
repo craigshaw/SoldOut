@@ -50,11 +50,14 @@ namespace SoldOutSearchMonkey.Services
             }
 
             // Now look for signs in the auction title that it's not a complete item
-            Regex regex = BuildSuspiciousPhrasesRegex(searchSuspiciousPhrases);
+            if (searchSuspiciousPhrases.Count > 0)
+            {
+                Regex regex = BuildSuspiciousPhrasesRegex(searchSuspiciousPhrases);
 
-            items.Where(i =>
-                regex.Matches(i.Title).Count > 0
-            ).ToList().ForEach(i => i.Suspicious = true);
+                items.Where(i =>
+                    regex.Matches(i.Title).Count > 0
+                ).ToList().ForEach(i => i.Suspicious = true);
+            }
 
             var summary = new ItemReviewSummary()
             {

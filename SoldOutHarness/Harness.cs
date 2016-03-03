@@ -2,6 +2,7 @@
 using SoldOutBusiness.Mappers;
 using SoldOutBusiness.Repository;
 using SoldOutBusiness.Services;
+using SoldOutBusiness.Utilities.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,54 +15,15 @@ namespace SoldOutHarness
 {
     class Harness
     {
+        private IConditionResolver conditionResolver;
+
         static void Main(string[] args)
         {
             new Harness().Run();
-            //new Harness().CreatePriceSummaries();
 
             Console.WriteLine("Press any key to close the program.");
             Console.ReadKey();
 
-        }
-
-        private void CreatePriceSummaries()
-        {
-            using (var repo = new SearchRepository())
-            {
-                // Get the current searches
-                var searches = repo.GetAllSearchesWithResults();
-
-                // Generate the stats
-                foreach (var search in searches)
-                {
-                    var avgs = from item in search.SearchResults
-                               group item by new { item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
-                               orderby grp.Key.Year, grp.Key.Month
-                               select new { Date = new DateTime(grp.Key.Year, grp.Key.Month, 1), Average = grp.Average(it => it.Price) };
-
-                    StringBuilder html = new StringBuilder(File.ReadAllText("SummaryTemplate.html"));
-
-                    StringBuilder priceSummary = new StringBuilder();
-                    int i = 0;
-
-                    foreach (var g in avgs)
-                    {
-                        if (i++ > 0)
-                            priceSummary.AppendLine(",");
-
-                        //['10/15',  38.06]
-                        priceSummary.Append($"['{g.Date.Month:D2}/{g.Date.Year}', {g.Average:F2}]");
-                        //Console.WriteLine(string.Format("{0:D2}/{1}: {2:C2}", g.Date.Month, g.Date.Year, g.Average));
-                    }
-
-                    html.Replace("%%PRICES%%", priceSummary.ToString());
-                    html.Replace("%%TITLE%%", $"{search.Name} {search.Description.Replace("'", @"\'").Replace("\"", "\\\"")}");
-
-                    File.WriteAllText($"{search.Name}.html", html.ToString());
-                }
-
-                // Write to output HTML
-            }
         }
 
         private void Run()
@@ -72,7 +34,7 @@ namespace SoldOutHarness
 
                 // Create the search catalogue
                 var searches = repo.GetAllSearchesWithSearchCriteria();
-                var conditions = repo.GetConditions();
+                conditionResolver = new ConditionResolver(repo.GetConditions());
 
                 var finder = new EbayFinder()
                     .Configure(c =>
@@ -104,7 +66,7 @@ namespace SoldOutHarness
                         if (response.searchResult.count > 0)
                         {
                             // Map returned items to our SoldItems model
-                            var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, conditions); 
+                            var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, conditionResolver); 
 
                             // Add them to the relevant search
                             repo.AddSearchResults(search.SearchId, newItems);
