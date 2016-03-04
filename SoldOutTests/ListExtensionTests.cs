@@ -26,9 +26,9 @@ namespace SoldOutTests
         [TestMethod]
         public void ReturnsFalseIfNotNullOrEmpty()
         {
-            List<string> emptyList = new List<string>() { "Test" };
+            List<string> list = new List<string>() { "Test" };
 
-            Assert.IsFalse(emptyList.IsNullOrEmpty());
+            Assert.IsFalse(list.IsNullOrEmpty());
         }
     }
 }

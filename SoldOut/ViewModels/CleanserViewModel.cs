@@ -95,8 +95,8 @@ namespace SoldOutCleanser.ViewModels
         {
             get
             {
-                return _repo.GetSearchResults(_selectedSearchOverview.SearchId).
-                    OrderByDescending(sr => sr.Suspicious).ThenByDescending(sr => sr.DateOfMatch).ToList();
+                return _repo.GetSearchResultsSince(_selectedSearchOverview.SearchId, _selectedSearchOverview.LastCleansed).
+                    OrderByDescending(sr => sr.DateOfMatch.Date).ThenBy(sr => sr.DateOfMatch.TimeOfDay).ToList();
             }
         }
 

@@ -18,6 +18,8 @@ namespace SoldOutBusiness.Repository
     {
         private SearchContext _context;
 
+        public SearchContext SearchContext { set { _context = value; } }
+
         public SearchRepository()
         {
             _context = new SearchContext();
@@ -69,9 +71,9 @@ namespace SoldOutBusiness.Repository
             return _context.SearchResults.Where(r => r.SearchID == searchId);
         }
 
-        public IEnumerable<SearchCriteria> GetSearchCriteria()
+        public IEnumerable<SearchResult> GetSearchResultsSince(long searchId, DateTime since)
         {
-            return _context.SearchCriteria.Select(sc => sc).ToList();
+            return _context.SearchResults.Where(r => r.SearchID == searchId && r.DateOfMatch > since);
         }
 
         public Search GetSearchByID(long searchID)
