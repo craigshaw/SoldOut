@@ -9,14 +9,28 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         Title="SoldOut Cleanser" Height="350" Width="525" WindowState="Maximized">
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button Click="ShowSettings">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Margin="4 0 0 0"
+                   VerticalAlignment="Center"
+                   Text="Settings" />
+                </StackPanel>
+            </Button>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing" >
             <i:InvokeCommandAction Command="{Binding WindowClosingCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
+
     <Window.DataContext>
         <ViewModels:CleanserViewModel/>
     </Window.DataContext>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"/>
@@ -81,4 +95,24 @@
             <Button Grid.Column="1" Margin="4,0,4,0" Command="{Binding MarkAsCleansedCommand}" CommandParameter="{Binding ElementName=SearchResults, Path=ItemsSource}">Mark as Cleansed</Button>
         </Grid>
     </Grid>
+
+    <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl x:Name="flyoutsControl">
+            <Controls:Flyout x:Name="flyout" Header="Settings" Position="Right" Width="200" Grid.RowSpan="5" 
+                             Theme="Light" d:IsHidden="True" d:IsLocked="True">
+                <StackPanel Orientation="Vertical" Margin="10,0">
+                    <StackPanel.Resources>
+                        <Style x:Key="ResultsToggleSwitchStyle"
+                               TargetType="{x:Type Controls:ToggleSwitch}"
+                               BasedOn="{StaticResource MetroToggleSwitch}">
+                            <Setter Property="OnLabel" Value="Yes" />
+                            <Setter Property="OffLabel" Value="No" />
+                        </Style>
+                    </StackPanel.Resources>
+                    <Controls:ToggleSwitch Style="{DynamicResource ResultsToggleSwitchStyle}" Header="Only show new results"
+                                           IsChecked="{Binding ShowOnlyNewResults}" Margin="0 5 0 0" />
+                </StackPanel>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
 </Controls:MetroWindow>

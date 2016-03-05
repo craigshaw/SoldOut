@@ -24,9 +24,9 @@ namespace SoldOutCleanser
                     CultureInfo.CurrentCulture.IetfLanguageTag)));
 
             // Set theme
-            ThemeManager.ChangeAppStyle(Application.Current,
-                                        ThemeManager.GetAccent("Purple"),
-                                        ThemeManager.GetAppTheme("BaseDark"));
+            //ThemeManager.ChangeAppStyle(Application.Current,
+            //                            ThemeManager.GetAccent("Purple"),
+            //                            ThemeManager.GetAppTheme("BaseDark"));
 
             // Register for global exception handling
             AppDomain.CurrentDomain.UnhandledException += (o, ex) =>

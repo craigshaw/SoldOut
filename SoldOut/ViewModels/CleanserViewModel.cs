@@ -23,6 +23,8 @@ namespace SoldOutCleanser.ViewModels
 
         public CleanserViewModel()
         {
+            ShowOnlyNewResults = true;
+
             _repo = new SearchRepository();
 
             _deleteSearchResultsCommand = new DelegateCommand<IList>(
@@ -58,7 +60,6 @@ namespace SoldOutCleanser.ViewModels
                 return _windowClosingCommand;
             }
         }
-
         public DelegateCommand<IList> MarkAsCleansedCommand
         {
             get
@@ -77,6 +78,8 @@ namespace SoldOutCleanser.ViewModels
         #endregion
 
         #region Properties
+        public bool ShowOnlyNewResults { get; set; }
+
         public IEnumerable<SearchOverview> Searches
         {
             get
@@ -95,8 +98,10 @@ namespace SoldOutCleanser.ViewModels
         {
             get
             {
-                return _repo.GetSearchResultsSince(_selectedSearchOverview.SearchId, _selectedSearchOverview.LastCleansed).
-                    OrderByDescending(sr => sr.DateOfMatch.Date).ThenBy(sr => sr.DateOfMatch.TimeOfDay).ToList();
+                var results = ShowOnlyNewResults ? _repo.GetSearchResultsSince(_selectedSearchOverview.SearchId, _selectedSearchOverview.LastCleansed)
+                                                 : _repo.GetSearchResults(_selectedSearchOverview.SearchId);
+
+                return results.OrderByDescending(sr => sr.EndTime.Value.Date).ThenBy(sr => sr.EndTime.Value.TimeOfDay).ToList();
             }
         }
 

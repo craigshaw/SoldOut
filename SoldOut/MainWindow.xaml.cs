@@ -21,5 +21,10 @@ namespace SoldOutCleanser
             Hyperlink link = (Hyperlink)e.OriginalSource;
             Process.Start(link.NavigateUri.AbsoluteUri);
         }
+
+        private void ShowSettings(object sender, RoutedEventArgs e)
+        {
+            flyout.IsOpen = !flyout.IsOpen;
+        }
     }
 }
