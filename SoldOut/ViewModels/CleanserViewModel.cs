@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace SoldOutCleanser.ViewModels
 {
@@ -79,6 +80,14 @@ namespace SoldOutCleanser.ViewModels
 
         #region Properties
         public bool ShowOnlyNewResults { get; set; }
+
+        public string AppTitle
+        {
+            get
+            {
+                return "SoldOut Cleanser v" + Assembly.GetEntryAssembly().GetName().Version;
+            }
+        }
 
         public IEnumerable<SearchOverview> Searches
         {

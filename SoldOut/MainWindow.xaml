@@ -9,7 +9,7 @@
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
-        Title="SoldOut Cleanser" Height="350" Width="525" WindowState="Maximized">
+        Title="{Binding AppTitle}" TitleCaps="False" Height="350" Width="525" WindowState="Maximized">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <Button Click="ShowSettings">
