@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SoldOutCleanser"
+        xmlns:utilities="clr-namespace:SoldOutCleanser.Utilities"
         xmlns:ViewModels="clr-namespace:SoldOutCleanser.ViewModels"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
@@ -26,6 +27,10 @@
             <i:InvokeCommandAction Command="{Binding WindowClosingCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
+
+    <Window.Resources>
+        <utilities:ConditionIdConverter x:Key="ConditionIdConverter" />
+    </Window.Resources>
 
     <Window.DataContext>
         <ViewModels:CleanserViewModel/>
@@ -71,6 +76,8 @@
                                         Binding="{Binding EndTime}" Width="Auto" />
                 <DataGridTextColumn Header="Price"
                                         Binding="{Binding Price, StringFormat=C}" Width="Auto" />
+                <DataGridTextColumn Header="Condition"
+                                        Binding="{Binding ConditionId, Converter={StaticResource ConditionIdConverter}}" Width="Auto" />
                 <DataGridTextColumn Header="Title"
                                         Binding="{Binding Title}" Width="5*" />
                 <DataGridHyperlinkColumn Header="Listing"
