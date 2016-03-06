@@ -10,8 +10,8 @@ namespace SoldOutSearchMonkey.Services
 {
     internal class CompletedItemReviewer : ICompletedItemReviewer
     {
-        private const int SetSizeForPriceReview = 50;
-        private IList<SuspiciousPhrase> _basicSuspiciousPhrases;
+        private const int SetSizeForPriceReview = 20;
+        private readonly IList<SuspiciousPhrase> _basicSuspiciousPhrases;
 
         public CompletedItemReviewer(IList<SuspiciousPhrase> basicSuspiciousPhrases)
         {
