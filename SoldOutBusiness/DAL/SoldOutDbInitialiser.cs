@@ -11,6 +11,43 @@ namespace SoldOutBusiness.DAL
         {
             base.Seed(context);
 
+            var currencies = new List<Ccy>()
+            {
+                    new Ccy() { Currency = "GBP" },
+                    new Ccy() { Currency = "USD" },
+                    new Ccy() { Currency = "JPY" },
+                    new Ccy() { Currency = "EUR" }
+            };
+
+            var Categories = new List<Category>()
+            {
+                    new Category() { Name = "Lego", CategoryID = 1, IncludeInKeywordSearch = true },
+                    new Category() { CategoryID = 4, Name = "Minifigure", ParentCategoryId = 1, IncludeInKeywordSearch = true },
+                    new Category() { Name = "Star Wars", ParentCategoryId = 1 },
+                    new Category() { Name = "Ghostbusters", ParentCategoryId = 1, IncludeInKeywordSearch = true },
+                    new Category() { CategoryID = 2, Name = "DC Comics Super Heroes", ParentCategoryId = 2 },
+                    new Category() { CategoryID = 3, Name = "Batman Classic TV Series", ParentCategoryId = 2 }
+            };
+
+            var Products = new List<Product>()
+            {
+                new Product() { ProductId = 1, CategoryIds = new List<int>() { 2 }, Name = "The Bat vs. Bane", ManufacturerCode = "76001"  },
+                new Product() { ProductId = 2, CategoryIds = new List<int>() { 2,3 }, Name = "Batcave", YearOfRelease = "2016", ManufacturerCode = "76052",
+                                OriginalRRP = new List<Price>() { new Price() { Amount = 229.99, PricedIn = new Ccy() { Currency = "GBP" }, IsRRP = true },
+                                                                  new Price() { Amount = 269.99, PricedIn = new Ccy() { Currency = "USD" }, IsRRP = true },
+                                                                  new Price() { Amount = 249.99, PricedIn = new Ccy() { Currency = "EUR" }, IsRRP = true }} ,
+                               },
+                new Product() { ParentProductIds = new List<int>() { 2 }, CategoryIds = new List<int>() {3,4}, Name = "Alfred Pennyworth" },
+                new Product() { ParentProductIds = new List<int>() { 2 }, CategoryIds = new List<int>() {3,4}, Name = "Batman" },
+                new Product() { ParentProductIds = new List<int>() { 2 }, CategoryIds = new List<int>() {3,4}, Name = "Bruce Wayne" },
+                new Product() { ParentProductIds = new List<int>() { 2 }, CategoryIds = new List<int>() {3,4}, Name = "Catwoman" },
+                new Product() { ParentProductIds = new List<int>() { 2 }, CategoryIds = new List<int>() {3,4}, Name = "Dick Grayson" },
+                new Product() { ParentProductIds = new List<int>() { 2 }, CategoryIds = new List<int>() {3,4}, Name = "Robin" },
+                new Product() { ParentProductIds = new List<int>() { 2 }, CategoryIds = new List<int>() {3,4}, Name = "The Joker" },
+                new Product() { ParentProductIds = new List<int>() { 2 }, CategoryIds = new List<int>() {3,4}, Name = "The Penguin" },
+                new Product() { ParentProductIds = new List<int>() { 2 }, CategoryIds = new List<int>() {3,4}, Name = "The Riddler" }                
+            };
+
             // Searches
             var searches = new List<Search>()
             {

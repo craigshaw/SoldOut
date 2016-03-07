@@ -59,8 +59,14 @@
     <Compile Include="DAL\SoldOutContext.cs" />
     <Compile Include="DAL\SoldOutDbInitialiser.cs" />
     <Compile Include="Mappers\eBayMapper.cs" />
+    <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Condition.cs" />
+    <Compile Include="Models\Currency.cs" />
+    <Compile Include="Models\Portfolio.cs" />
+    <Compile Include="Models\PortfolioItem.cs" />
+    <Compile Include="Models\Price.cs" />
     <Compile Include="Models\PriceStats.cs" />
+    <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Search.cs" />
     <Compile Include="Models\SearchCriteria.cs" />
     <Compile Include="Models\SearchResult.cs" />
