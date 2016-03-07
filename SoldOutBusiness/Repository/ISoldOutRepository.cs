@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SoldOutBusiness.Repository
 {
-    public interface ISearchRepository : IDisposable
+    public interface ISoldOutRepository : IDisposable
     {
         Search GetSearchByID(long searchID);
         Search GetNextSearch(long searchID);

@@ -18,7 +18,7 @@ namespace SoldOutCleanser.ViewModels
         private DelegateCommand<IList> _markAsCleansedCommand;
 
         // Fields
-        private ISearchRepository _repo;
+        private ISoldOutRepository _repo;
         private SearchOverview _selectedSearchOverview;
         private IEnumerable<SearchOverview> _searches;
 
@@ -26,7 +26,7 @@ namespace SoldOutCleanser.ViewModels
         {
             ShowOnlyNewResults = true;
 
-            _repo = new SearchRepository();
+            _repo = new SoldOutRepository();
 
             _deleteSearchResultsCommand = new DelegateCommand<IList>(
                 DeleteSelectedSearchResults

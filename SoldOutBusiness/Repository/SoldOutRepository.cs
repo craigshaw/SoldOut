@@ -14,15 +14,15 @@ namespace SoldOutBusiness.Repository
         public int Count { get; set; }
     }
 
-    public class SearchRepository : ISearchRepository
+    public class SoldOutRepository : ISoldOutRepository
     {
-        private SearchContext _context;
+        private SoldOutContext _context;
 
-        public SearchContext SearchContext { set { _context = value; } }
+        public SoldOutContext SearchContext { set { _context = value; } }
 
-        public SearchRepository()
+        public SoldOutRepository()
         {
-            _context = new SearchContext();
+            _context = new SoldOutContext();
 
 #if DEBUG
             _context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);

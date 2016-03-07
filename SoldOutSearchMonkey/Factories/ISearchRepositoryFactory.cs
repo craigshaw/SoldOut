@@ -4,6 +4,6 @@ namespace SoldOutSearchMonkey.Factories
 {
     internal interface ISearchRepositoryFactory
     {
-        ISearchRepository CreateSearchRepository(); 
+        ISoldOutRepository CreateSearchRepository(); 
     }
 }

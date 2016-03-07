@@ -4,7 +4,7 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace SoldOutBusiness.DAL
 {
-    public class SearchContext : DbContext
+    public class SoldOutContext : DbContext
     {
         public DbSet<Search> Searches { get; set; }
         public DbSet<SearchResult> SearchResults { get; set; }
@@ -13,10 +13,10 @@ namespace SoldOutBusiness.DAL
         public DbSet<SearchSuspiciousPhrase> SearchSuspiciousPhrases { get; set; }
         public DbSet<Condition> Conditions { get; set; }
 
-        public SearchContext()
+        public SoldOutContext()
         {
             // Turn off the Migrations, (NOT a code first Db)
-            Database.SetInitializer<SearchContext>(null);
+            Database.SetInitializer<SoldOutContext>(null);
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

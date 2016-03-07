@@ -7,9 +7,9 @@ namespace SoldOutWeb.Services
 {
     public class PriceHistoryService : IPriceHistoryService
     {
-        private ISearchRepository _repository;
+        private ISoldOutRepository _repository;
 
-        public PriceHistoryService(ISearchRepository repository)
+        public PriceHistoryService(ISoldOutRepository repository)
         {
             _repository = repository;
         }

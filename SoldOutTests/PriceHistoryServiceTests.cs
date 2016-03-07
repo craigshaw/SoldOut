@@ -17,7 +17,7 @@ namespace SoldOutTests
         public void CreatePriceHistoryReturnsIEnumerableForValidSearch()
         {
             int searchId = 1;
-            var mockRepository = A.Fake<ISearchRepository>();
+            var mockRepository = A.Fake<ISoldOutRepository>();
 
             A.CallTo(() => mockRepository.GetSearchResults(searchId)).Returns(CreateTestSearchResults());
 
@@ -34,7 +34,7 @@ namespace SoldOutTests
         public void CalculateSimpleMovingAverageFromBasicPriceHistory()
         {
             int searchId = 2;
-            var mockRepository = A.Fake<ISearchRepository>();
+            var mockRepository = A.Fake<ISoldOutRepository>();
 
             A.CallTo(() => mockRepository.GetSearchResults(searchId)).Returns(CreateTestSearchResults());
 
@@ -53,7 +53,7 @@ namespace SoldOutTests
         [TestMethod]
         public void CalculateSimpleMovingAverageWhenIntervalBiggerThanNumberOfPricesDoesntSetSMAs()
         {
-            var mockRepository = A.Fake<ISearchRepository>();
+            var mockRepository = A.Fake<ISoldOutRepository>();
 
             A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored)).Returns(CreateListOfTwoSearchResults());
 
@@ -73,7 +73,7 @@ namespace SoldOutTests
         public void CalculateExponentialMovingAverageFromBasicPriceHistory()
         {
             int searchId = 2;
-            var mockRepository = A.Fake<ISearchRepository>();
+            var mockRepository = A.Fake<ISoldOutRepository>();
 
             A.CallTo(() => mockRepository.GetSearchResults(searchId)).Returns(CreateTestSearchResults());
 
@@ -93,7 +93,7 @@ namespace SoldOutTests
         [TestMethod]
         public void CalculateExponentialMovingAverageWhenIntervalBiggerThanNumberOfPricesDoesntSetEMAs()
         {
-            var mockRepository = A.Fake<ISearchRepository>();
+            var mockRepository = A.Fake<ISoldOutRepository>();
 
             A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored)).Returns(CreateListOfTwoSearchResults());
 
@@ -110,7 +110,7 @@ namespace SoldOutTests
         [TestMethod]
         public void CalculateExponentialMovingAverageWhenIntervalEqualsNumberOfPrices()
         {
-            var mockRepository = A.Fake<ISearchRepository>();
+            var mockRepository = A.Fake<ISoldOutRepository>();
 
             A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored)).Returns(CreateTestSearchResults().Take(5));
 
