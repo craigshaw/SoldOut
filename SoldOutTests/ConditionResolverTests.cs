@@ -43,6 +43,21 @@ namespace SoldOutTests
             var resolver = new ConditionResolver(new List<Condition>());
         }
 
+        [TestMethod]
+        public void ResolvesDescriptionFromConditionId()
+        {
+            var resolver = new ConditionResolver(CreateTestConditions());
+            Assert.AreEqual("New", resolver.ConditionDescriptionFromConditionId(2));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ResolveDescriptionFromConditionIdThrowsIfConditionIdNotKnown()
+        {
+            var resolver = new ConditionResolver(CreateTestConditions());
+            resolver.ConditionDescriptionFromConditionId(6);
+        }
+
         private IList<Condition> CreateTestConditions()
         {
             return new List<Condition>()

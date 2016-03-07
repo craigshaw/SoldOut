@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace SoldOutSearchMonkey.Services
 {
-    internal class CompletedItemReviewer : ICompletedItemReviewer
+    public class CompletedItemReviewer : ICompletedItemReviewer
     {
         private const int SetSizeForPriceReview = 20;
         private readonly IList<SuspiciousPhrase> _basicSuspiciousPhrases;
@@ -27,7 +27,7 @@ namespace SoldOutSearchMonkey.Services
             get { return _basicSuspiciousPhrases;  }
         }
 
-        public ItemReviewSummary ReviewCompletedItems(IList<SearchResult> items, PriceStats priceStats, ICollection<SearchSuspiciousPhrase> searchSuspiciousPhrases)
+        public ItemReviewSummary ReviewCompletedItems(IEnumerable<SearchResult> items, PriceStats priceStats, ICollection<SearchSuspiciousPhrase> searchSuspiciousPhrases)
         {
             if (items == null)
                 throw new ArgumentNullException(nameof(items));
@@ -50,7 +50,7 @@ namespace SoldOutSearchMonkey.Services
             }
 
             // Now look for signs in the auction title that it's not a complete item
-            if (searchSuspiciousPhrases.Count > 0)
+            if (BasicSuspiciousPhrases.Count > 0 || searchSuspiciousPhrases.Count > 0)
             {
                 Regex regex = BuildSuspiciousPhrasesRegex(searchSuspiciousPhrases);
 

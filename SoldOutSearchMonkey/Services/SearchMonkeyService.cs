@@ -15,9 +15,30 @@ using System.Threading.Tasks;
 using System.Linq;
 using SoldOutSearchMonkey.Factories;
 using SoldOutBusiness.Utilities.Conditions;
+using System.Collections.Generic;
 
 namespace SoldOutSearchMonkey.Services
 {
+    class ConditionalSummary
+    {
+        public string Condition { get; set; }
+        public int Total { get; set; }
+        public int Suspicious { get; set; }
+    }
+
+    class SearchSummary
+    {
+        public SearchSummary()
+        {
+            Summary = new List<ConditionalSummary>();
+        }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Link { get; set; }
+        public int TotalResults { get; set; }
+        public IList<ConditionalSummary> Summary { get; set; }
+    }
+
     internal class SearchMonkeyService
     {
         private const int ApiDailyRateLimit = 5000;
@@ -33,6 +54,7 @@ namespace SoldOutSearchMonkey.Services
         private readonly INotifier _notifier;
         private readonly ISearchRepositoryFactory _repoFactory;
         private readonly ICompletedItemReviewer _completedItemReviewer;
+        private IConditionResolver _conditionResolver;
 
         public SearchMonkeyService(IEbayFinder finder, INotifier notifier, ISearchRepositoryFactory repoFactory,
                                    ICompletedItemReviewer completedItemReviewer)
@@ -99,7 +121,6 @@ namespace SoldOutSearchMonkey.Services
             {
                 using (var repo = _repoFactory.CreateSearchRepository())
                 {
-                    var conditions = repo.GetConditions();
                     var search = repo.GetNextSearch(_currentSearchId);
                     _currentSearchId = search.SearchId;
 
@@ -110,6 +131,8 @@ namespace SoldOutSearchMonkey.Services
                     else
                     {
                         _log.Info($"Running search for {search.Name}...");
+
+                        var searchSummary = CreateSearchSummary(search);
 
                         // Run the search
                         using (_serviceRequestTimer.NewContext())
@@ -125,26 +148,39 @@ namespace SoldOutSearchMonkey.Services
                             // Set the last ran time
                             search.LastRun = response.timestamp;
 
-                            int numResults = response.searchResult.count;
+                            searchSummary.TotalResults = response.searchResult.count;
 
-                            if (numResults > 0)
+                            if (searchSummary.TotalResults > 0)
                             {
                                 // Map returned items to our SoldItems model
-                                var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, new ConditionResolver(conditions)).ToList();
+                                var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, _conditionResolver).ToList();
 
-                                // Review for any suspicous results
-                                var reviewSummary = _completedItemReviewer.ReviewCompletedItems(newItems, repo.GetPriceStatsForSearch(search.SearchId), search.SuspiciousPhrases);
+                                // Get list of all the condition types in each result
+                                var conditionsInResults = newItems.Select(i => i.ConditionId).Distinct();
 
-                                _log.Info($"{reviewSummary.SuspiciousItems.Count} look suspicious");
+                                foreach (var condition in conditionsInResults)
+                                {
+                                    var filteredItems = newItems.Where(i => i.ConditionId == condition);
+
+                                    // Review for any suspicous results
+                                    var reviewSummary = _completedItemReviewer.ReviewCompletedItems(filteredItems, repo.GetPriceStatsForSearch(search.SearchId, condition), search.SuspiciousPhrases);
+
+                                    searchSummary.Summary.Add(new ConditionalSummary()
+                                    {
+                                        Condition = _conditionResolver.ConditionDescriptionFromConditionId(condition),
+                                        Suspicious = reviewSummary.SuspiciousItems.Count,
+                                        Total = filteredItems.Count()
+                                    });
+                                }
 
                                 // Add them to the relevant search
                                 repo.AddSearchResults(search.SearchId, newItems);
 
                                 // Send a notification out
-                                NotifyResultsReady(search, numResults, reviewSummary.SuspiciousItems.Count);
+                                NotifyResultsReady(searchSummary);
 
                                 // Add to the total harvested
-                                _resultCounter.Increment(search.Description, numResults);
+                                _resultCounter.Increment(search.Description, searchSummary.TotalResults);
                             }
 
                             repo.SaveAll();
@@ -167,6 +203,16 @@ namespace SoldOutSearchMonkey.Services
             return executionTimer.ElapsedMilliseconds;
         }
 
+        private SearchSummary CreateSearchSummary(Search search)
+        {
+            return new SearchSummary()
+            {
+                Name = search.Name,
+                Description = search.Description,
+                Link = search.Link
+            };
+        }
+
         private void LogEBayError(FindCompletedItemsResponse response)
         {
             StringBuilder errorMessage = new StringBuilder("Errors occured when calling the eBay API:" + Environment.NewLine);
@@ -185,11 +231,19 @@ namespace SoldOutSearchMonkey.Services
             _notifier.PostMessage($"The eBay API has given me an error: {errorMessage}");
         }
 
-        private void NotifyResultsReady(Search search, int numResults, int numSuspiciousResults)
+        private void NotifyResultsReady(SearchSummary summary)
         {
+            StringBuilder notification = new StringBuilder($"I've just logged {summary.TotalResults} new search results for {summary.Name} (<{summary.Link}|{summary.Description}>). ");
+
+            foreach (var condition in summary.Summary)
+            {
+                notification.Append($"{condition.Condition} - {condition.Total} total, {condition.Suspicious} suspicious. ");
+            }
+
 #if (DEBUG == false)
-            _notifier.PostMessage($"I've just logged {numResults} new search results for {search.Name} (<{search.Link}|{search.Description}>). {numSuspiciousResults} of them look suspicious");
+            _notifier.PostMessage(notification.ToString());
 #endif
+            _log.Info(notification.ToString());
         }
 
         public void Start()
@@ -199,6 +253,9 @@ namespace SoldOutSearchMonkey.Services
 
             // Calculate the delay between searches
             SearchScheduleInterval = CalculateScheduleInterval();
+
+            // Create the condition resolver
+            _conditionResolver = CreateConditionResolver();
 
             // Kick off the first search
             Task.Delay(100, _cts.Token).ContinueWith(_searchTask, _cts.Token);
@@ -210,6 +267,14 @@ namespace SoldOutSearchMonkey.Services
 #if (DEBUG == false)
             _notifier.PostMessage("SearchMonkey Started");
 #endif
+        }
+
+        private IConditionResolver CreateConditionResolver()
+        {
+            using (var repo = _repoFactory.CreateSearchRepository())
+            {
+                return new ConditionResolver(repo.GetConditions());
+            }
         }
 
         private Version Version

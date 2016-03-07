@@ -2,6 +2,7 @@
 using SoldOutBusiness.Utilities.Collections;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SoldOutBusiness.Utilities.Conditions
 {
@@ -20,6 +21,11 @@ namespace SoldOutBusiness.Utilities.Conditions
         public int ConditionIdFromEBayConditionId(int eBayConditionId)
         {
             return _conditions.SingleOrDefault(c => c.eBayConditionId == eBayConditionId).ConditionId;
+        }
+
+        public string ConditionDescriptionFromConditionId(int conditionId)
+        {
+            return _conditions.Single(c => c.ConditionId == conditionId).Description;
         }
     }
 }

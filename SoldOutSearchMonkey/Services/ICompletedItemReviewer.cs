@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 namespace SoldOutSearchMonkey.Services
 {
-    internal interface ICompletedItemReviewer
+    public interface ICompletedItemReviewer
     {
-        ItemReviewSummary ReviewCompletedItems(IList<SearchResult> items, PriceStats priceStats, ICollection<SearchSuspiciousPhrase> searchSuspiciousPhrases);
+        ItemReviewSummary ReviewCompletedItems(IEnumerable<SearchResult> items, PriceStats priceStats, ICollection<SearchSuspiciousPhrase> searchSuspiciousPhrases);
     }
 }

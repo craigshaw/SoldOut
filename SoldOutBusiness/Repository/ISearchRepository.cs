@@ -20,7 +20,7 @@ namespace SoldOutBusiness.Repository
         bool SaveAll();
         int ResultCount(long searchID);
         IDictionary<long, int> GetUncleansedCounts();
-        PriceStats GetPriceStatsForSearch(long searchId);
+        PriceStats GetPriceStatsForSearch(long searchId, int conditionId);
         IEnumerable<SuspiciousPhrase> GetBasicSuspiciousPhrases();
         IEnumerable<SearchSuspiciousPhrase> GetSuspiciousPhrasesForSearch(long searchId);
         bool ResetSuspiciousSearchResults(IEnumerable<SearchResult> results);

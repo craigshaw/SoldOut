@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using SoldOutBusiness.Models;
 
 namespace SoldOutTests.Extensions
 {
@@ -17,6 +18,14 @@ namespace SoldOutTests.Extensions
                     Assert.Fail(string.Format("Sequences differ at index {0}. Expected {1}, got {2}",
                         i, expected[i], copy[i]));
                 }
+            }
+        }
+
+        public static void AssertNoneAreSuspicious<T>(this IList<T> source) where T : SearchResult
+        {
+            foreach (var item in source)
+            {
+                Assert.IsFalse(item.Suspicious);
             }
         }
     }

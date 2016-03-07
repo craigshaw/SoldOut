@@ -56,6 +56,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="CompletedItemReviewerTests.cs" />
     <Compile Include="ConditionResolverTests.cs" />
     <Compile Include="Extensions\IEnumerableTestExtensions.cs" />
     <Compile Include="ListExtensionTests.cs" />
@@ -67,6 +68,10 @@
     <ProjectReference Include="..\SoldOutBusiness\SoldOutBusiness.csproj">
       <Project>{65f592f6-5360-4626-ade9-86a76540bc23}</Project>
       <Name>SoldOutBusiness</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SoldOutSearchMonkey\SoldOutSearchMonkey.csproj">
+      <Project>{6e078f57-f339-4a88-9ca2-99606cf79b0b}</Project>
+      <Name>SoldOutSearchMonkey</Name>
     </ProjectReference>
     <ProjectReference Include="..\SoldOutWeb\SoldOutWeb.csproj">
       <Project>{90e9acf2-3040-488b-a29a-2ccd0b750640}</Project>

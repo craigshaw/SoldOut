@@ -140,9 +140,12 @@ namespace SoldOutBusiness.Repository
             return _context.SearchResults.Where(s => s.SearchID == searchID).Count();
         }
 
-        public PriceStats GetPriceStatsForSearch(long searchId)
+        public PriceStats GetPriceStatsForSearch(long searchId, int conditionId)
         {
-            return _context.Database.SqlQuery<PriceStats>("dbo.GetPriceStatsForSearch @SearchId", new SqlParameter("SearchId", searchId)).Single();
+            return _context.Database.SqlQuery<PriceStats>("dbo.GetPriceStatsForSearch @SearchId, @ConditionId", 
+                new SqlParameter("SearchId", searchId),
+                new SqlParameter("ConditionId", conditionId)
+                ).Single();
         }
 
         public IEnumerable<SuspiciousPhrase> GetBasicSuspiciousPhrases()
