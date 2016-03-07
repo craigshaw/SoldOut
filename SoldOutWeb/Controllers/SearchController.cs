@@ -10,12 +10,12 @@ namespace SoldOutWeb.Controllers
 {
     public class SearchController : Controller
     {
-        private ISearchRepository _repository;
+        private ISoldOutRepository _repository;
         private IPriceHistoryService _priceHistoryService;
 
         public SearchController()
         {
-            _repository = new SearchRepository();
+            _repository = new SoldOutRepository();
 
             _priceHistoryService = new PriceHistoryService(_repository);
         }

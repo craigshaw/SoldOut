@@ -30,7 +30,7 @@ namespace SoldOutHarness
         {
             try
             {
-                var repo = new SearchRepository();
+                var repo = new SoldOutRepository();
 
                 // Create the search catalogue
                 var searches = repo.GetAllSearchesWithSearchCriteria();

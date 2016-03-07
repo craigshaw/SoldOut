@@ -5,9 +5,9 @@ using System.Data.Entity;
 
 namespace SoldOutBusiness.DAL
 {
-    public class SoldOutDbInitialiser : DropCreateDatabaseIfModelChanges<SearchContext>
+    public class SoldOutDbInitialiser : DropCreateDatabaseIfModelChanges<SoldOutContext>
     {
-        protected override void Seed(SearchContext context)
+        protected override void Seed(SoldOutContext context)
         {
             base.Seed(context);
 

@@ -4,9 +4,9 @@ namespace SoldOutSearchMonkey.Factories
 {
     internal class SearchRepositoryFactory : ISearchRepositoryFactory
     {
-        public ISearchRepository CreateSearchRepository()
+        public ISoldOutRepository CreateSearchRepository()
         {
-            return new SearchRepository();
+            return new SoldOutRepository();
         }
     }
 }
