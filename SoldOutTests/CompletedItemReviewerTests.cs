@@ -18,7 +18,7 @@ namespace SoldOutTests
         }
 
         [TestMethod]
-        public void ConstrucsWithEmptyList()
+        public void ConstructsWithEmptyList()
         {
             var reviewer = new CompletedItemReviewer(new List<SuspiciousPhrase>());
         }
