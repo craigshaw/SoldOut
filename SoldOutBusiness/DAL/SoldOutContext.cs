@@ -13,6 +13,8 @@ namespace SoldOutBusiness.DAL
         public DbSet<SearchSuspiciousPhrase> SearchSuspiciousPhrases { get; set; }
         public DbSet<Condition> Conditions { get; set; }
 
+        public DbSet<Category> Categories { get; set; }
+
         public SoldOutContext()
         {
             // Turn off the Migrations, (NOT a code first Db)

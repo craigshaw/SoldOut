@@ -14,6 +14,8 @@ namespace SoldOutBusiness.Models
 
         public ICollection<AliasCollection> Aliases { get; set; }
 
+        public IEnumerable<Category> Children { get; set; }
+
         public bool IncludeInKeywordSearch { get; set; }
     }
 }

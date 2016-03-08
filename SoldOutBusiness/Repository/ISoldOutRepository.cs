@@ -25,5 +25,7 @@ namespace SoldOutBusiness.Repository
         IEnumerable<SearchSuspiciousPhrase> GetSuspiciousPhrasesForSearch(long searchId);
         bool ResetSuspiciousSearchResults(IEnumerable<SearchResult> results);
         IList<Condition> GetConditions();
+
+        IEnumerable<Category> GetAllCategories();
     }
 }

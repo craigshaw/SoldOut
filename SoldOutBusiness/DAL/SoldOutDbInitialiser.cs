@@ -29,6 +29,9 @@ namespace SoldOutBusiness.DAL
                     new Category() { CategoryID = 3, Name = "Batman Classic TV Series", ParentCategoryId = 2 }
             };
 
+            context.Categories.AddRange(Categories);
+            context.SaveChanges();
+
             var Products = new List<Product>()
             {
                 new Product() { ProductId = 1, CategoryIds = new List<int>() { 2 }, Name = "The Bat vs. Bane", ManufacturerCode = "76001"  },
@@ -47,6 +50,8 @@ namespace SoldOutBusiness.DAL
                 new Product() { ParentProductIds = new List<int>() { 2 }, CategoryIds = new List<int>() {3,4}, Name = "The Penguin" },
                 new Product() { ParentProductIds = new List<int>() { 2 }, CategoryIds = new List<int>() {3,4}, Name = "The Riddler" }                
             };
+
+
 
             // Searches
             var searches = new List<Search>()

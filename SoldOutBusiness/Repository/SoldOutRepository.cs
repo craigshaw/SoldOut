@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
 using System.Data.SqlClient;
+using SoldOutBusiness.Utilities.Collections;
 
 namespace SoldOutBusiness.Repository
 {
@@ -18,7 +19,7 @@ namespace SoldOutBusiness.Repository
     {
         private SoldOutContext _context;
 
-        public SoldOutContext SearchContext { set { _context = value; } }
+        public SoldOutContext SoldOutContext { set { _context = value; } }
 
         public SoldOutRepository()
         {
@@ -35,6 +36,25 @@ namespace SoldOutBusiness.Repository
 
             search.SearchResults.Add(result);
             _context.SearchResults.Add(result);
+        }
+
+        public IEnumerable<Category> GetAllCategories()
+        {
+            var categories = _context.Categories.Select(s => s).Where(s => s.ParentCategoryId == 0)
+                                                .OrderBy(s => s.CategoryID)
+                                                .OrderBy(s => s.Name)
+                                                .ToList();
+
+            return categories;
+        }
+
+        public IEnumerable<Category> GetAllCategories(int parentCategoryID)
+        {
+            var result = new List<Category>() { new Category() }
+                                .SelectNestedChildren(c => c.Children)
+                                .Where(c => c.ParentCategoryId == parentCategoryID).ToList();
+
+            return result;
         }
 
         public void AddSearchResults(long searchID, IEnumerable<SearchResult> results)

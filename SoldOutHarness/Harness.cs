@@ -19,11 +19,20 @@ namespace SoldOutHarness
 
         static void Main(string[] args)
         {
-            new Harness().Run();
+            //new Harness().Run();
+
+            new Harness().GetAllCategories();
 
             Console.WriteLine("Press any key to close the program.");
             Console.ReadKey();
 
+        }
+
+        private void GetAllCategories()
+        {
+            var repo = new SoldOutRepository();
+
+            var allCategories = repo.GetAllCategories();
         }
 
         private void Run()
