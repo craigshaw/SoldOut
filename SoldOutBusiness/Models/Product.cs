@@ -11,7 +11,7 @@ namespace SoldOutBusiness.Models
 
         public string Name { get; set; }        
 
-        public ICollection<ProductAlias> Aliases { get; set; }
+        public ICollection<AliasCollection> Aliases { get; set; } // Think games with regional variation in their title
 
         public string YearOfRelease { get; set; }
 
@@ -27,7 +27,7 @@ namespace SoldOutBusiness.Models
             ParentProductIds = new List<int>();
             CategoryIds = new List<int>();
             OriginalRRP = new List<Price>();
-            Aliases = new List<ProductAlias>();
+            Aliases = new List<AliasCollection>();
         }
 
     }

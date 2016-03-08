@@ -12,6 +12,8 @@ namespace SoldOutBusiness.Models
         public int ParentCategoryId { get; set; }
         public string Name { get; set; }
 
+        public ICollection<AliasCollection> Aliases { get; set; }
+
         public bool IncludeInKeywordSearch { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SoldOutBusiness.Models
 {
-    public class ProductRegion
+    public class Region
     {
         [Key]
         public string Name { get; set; }
