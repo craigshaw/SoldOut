@@ -17,9 +17,9 @@ namespace SoldOutBusiness.Models
 
         public string YearOfRetirement { get; set; }
 
-        public ICollection<int> ParentProductIds { get; set; }
+        public ICollection<int> ParentProductIds { get; set; } // Ideally there should only be one parent Product but you never know...
 
-        public string ManufacturerCode { get; set; }
+        public string ManufacturerCode { get; set; } // Think Lego code, Addidas code, something to make a search unique apart from name
         public ICollection<Price> OriginalRRP { get; set; }
 
         public Product()

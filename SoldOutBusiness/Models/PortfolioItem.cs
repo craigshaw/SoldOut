@@ -8,7 +8,7 @@ namespace SoldOutBusiness.Models
         public int PortfolioItemId { get; set; }
         public int PortfolioId { get; set; }
 
-        public ICollection<Product> Products { get; set; }
+        public Product Product { get; set; }
 
         public int Quantity { get; set; }
 
@@ -17,10 +17,5 @@ namespace SoldOutBusiness.Models
         public Condition ItemCondition { get; set; }
 
         public Price PricePaid { get; set; }
-
-        public PortfolioItem()
-        {
-            Products = new List<Product>();
-        }
     }
 }
