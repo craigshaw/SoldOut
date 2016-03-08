@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SoldOutBusiness.Models
 {
@@ -11,7 +8,7 @@ namespace SoldOutBusiness.Models
         public int PortfolioItemId { get; set; }
         public int PortfolioId { get; set; }
 
-        public List<Product> Products { get; set; }
+        public ICollection<Product> Products { get; set; }
 
         public int Quantity { get; set; }
 

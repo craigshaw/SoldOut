@@ -67,6 +67,8 @@
     <Compile Include="Models\Price.cs" />
     <Compile Include="Models\PriceStats.cs" />
     <Compile Include="Models\Product.cs" />
+    <Compile Include="Models\ProductAlias.cs" />
+    <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Search.cs" />
     <Compile Include="Models\SearchCriteria.cs" />
     <Compile Include="Models\SearchResult.cs" />

@@ -32,7 +32,7 @@ namespace SoldOutBusiness.DAL
             var Products = new List<Product>()
             {
                 new Product() { ProductId = 1, CategoryIds = new List<int>() { 2 }, Name = "The Bat vs. Bane", ManufacturerCode = "76001"  },
-                new Product() { ProductId = 2, CategoryIds = new List<int>() { 2,3 }, Name = "Batcave", YearOfRelease = "2016", ManufacturerCode = "76052",
+                new Product() { ProductId = 2, CategoryIds = new List<int>() { 2,3 }, Name =  "Batcave", YearOfRelease = "2016", ManufacturerCode = "76052",
                                 OriginalRRP = new List<Price>() { new Price() { Amount = 229.99, PricedIn = new Ccy() { Currency = "GBP" }, IsRRP = true },
                                                                   new Price() { Amount = 269.99, PricedIn = new Ccy() { Currency = "USD" }, IsRRP = true },
                                                                   new Price() { Amount = 249.99, PricedIn = new Ccy() { Currency = "EUR" }, IsRRP = true }} ,

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SoldOutBusiness.Models
 {
@@ -11,24 +7,27 @@ namespace SoldOutBusiness.Models
 
         public int ProductId { get; set; }
 
-        public List<int> CategoryIds { get; set; }
+        public ICollection<int> CategoryIds { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; }        
+
+        public ICollection<ProductAlias> Aliases { get; set; }
 
         public string YearOfRelease { get; set; }
 
         public string YearOfRetirement { get; set; }
 
-        public List<int> ParentProductIds { get; set; }
+        public ICollection<int> ParentProductIds { get; set; }
 
         public string ManufacturerCode { get; set; }
-        public List<Price> OriginalRRP { get; set; }
+        public ICollection<Price> OriginalRRP { get; set; }
 
         public Product()
         {
             ParentProductIds = new List<int>();
             CategoryIds = new List<int>();
             OriginalRRP = new List<Price>();
+            Aliases = new List<ProductAlias>();
         }
 
     }
