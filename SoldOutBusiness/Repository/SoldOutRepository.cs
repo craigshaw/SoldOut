@@ -50,8 +50,9 @@ namespace SoldOutBusiness.Repository
 
         public IEnumerable<Category> GetAllCategories(int parentCategoryID)
         {
-            var result = new List<Category>() { new Category() }
-                                .SelectNestedChildren(c => c.Children)
+            var categories = GetAllCategories();
+
+            var result = categories.SelectNestedChildren(c => c.Children)
                                 .Where(c => c.ParentCategoryId == parentCategoryID).ToList();
 
             return result;

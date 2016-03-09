@@ -59,6 +59,7 @@
     <Compile Include="CompletedItemReviewerTests.cs" />
     <Compile Include="ConditionResolverTests.cs" />
     <Compile Include="Extensions\IEnumerableTestExtensions.cs" />
+    <Compile Include="LinqTreeTests.cs" />
     <Compile Include="ListExtensionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PriceHistoryServiceTests.cs" />
