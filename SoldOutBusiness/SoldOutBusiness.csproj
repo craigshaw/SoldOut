@@ -82,7 +82,6 @@
     <Compile Include="Services\IEbayFinder.cs" />
     <Compile Include="Services\Notifiers\INotifier.cs" />
     <Compile Include="Services\Notifiers\Slack\SlackNotifier.cs" />
-    <Compile Include="Utilities\Collections\LinqExtensions.cs" />
     <Compile Include="Utilities\Collections\ListExtensions.cs" />
     <Compile Include="Utilities\Conditions\ConditionExtensions.cs" />
     <Compile Include="Utilities\Conditions\ConditionResolver.cs" />
