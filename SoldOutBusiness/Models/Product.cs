@@ -17,17 +17,19 @@ namespace SoldOutBusiness.Models
 
         public string YearOfRetirement { get; set; }
 
-        public ICollection<int> ParentProductIds { get; set; } // Ideally there should only be one parent Product but you never know...
+        public virtual ICollection<int> ParentProductIds { get; set; } // Ideally there should only be one parent Product but you never know...
 
         public string ManufacturerCode { get; set; } // Think Lego code, Addidas code, something to make a search unique apart from name
         public ICollection<Price> OriginalRRP { get; set; }
+
+        public virtual IEnumerable<Product> ProductParts { get; set; }
 
         public Product()
         {
             ParentProductIds = new List<int>();
             CategoryIds = new List<int>();
             OriginalRRP = new List<Price>();
-            Aliases = new List<AliasCollection>();
+            Aliases = new List<AliasCollection>();            
         }
 
     }

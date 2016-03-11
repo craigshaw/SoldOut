@@ -2,6 +2,7 @@
 using SoldOutBusiness.Utilities.Collections;
 using System.Collections.Generic;
 using SoldOutBusiness.Models;
+using System.Linq;
 
 namespace SoldOutTests
 {
@@ -33,18 +34,39 @@ namespace SoldOutTests
         }
 
         [TestMethod]
-        public void TestTreeRecursion()
+        public void TreeRecursionReturnsCompleteTree()
         {
             var category = new List<Category>() {
-                new Category() { Name = "Lego", CategoryID = 1, Children = new List<Category>() {
-                    new Category() { Name = "Star Wars", ParentCategoryId = 1, CategoryID = 2 }
+                new Category() { Name = "Lego", CategoryID = 1, Children = new List<Category>()
+                    {
+                        new Category() { Name = "Star Wars", ParentCategoryId = 1, CategoryID = 2 }
                     }
                 }
             };
 
-            //var result = category.SelectNestedChildren(c => c.Children);
-            //.Where(c => c.ParentCategoryId == 1).ToList();
-            Assert.IsNull(null);
+            var result = category.SelectNestedChildren(c => c.Children).ToList();
+
+            Assert.AreEqual(result.Count, 2);
+            Assert.AreEqual(result[0].Name,"Lego");
+            Assert.AreEqual(result[1].Name,"Star Wars");
+        }
+
+        [TestMethod]
+        public void TreeRecursionReturnsChildrenForSelectedParent()
+        {
+            var category = new List<Category>() {
+                new Category() { Name = "Lego", CategoryID = 1, Children = new List<Category>()
+                    {
+                        new Category() { Name = "Star Wars", ParentCategoryId = 1, CategoryID = 2 }
+                    },               
+                },
+                 new Category() { Name = "Retro Games", CategoryID = 3 }
+            };
+
+            var result = category.SelectNestedChildren(c => c.Children).ToList()
+                        .Where(c => c.ParentCategoryId == 1).ToList();
+
+            Assert.AreSame(category[0].Children.ToList()[0], result[0]);
         }
     }
 }
