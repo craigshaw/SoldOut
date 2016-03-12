@@ -281,3 +281,4 @@ $RECYCLE.BIN/
 *.lnk
 SoldOutHarness/App.config
 SoldOutWeb/Web.config
+*.config
