@@ -22,7 +22,7 @@ namespace SoldOutBusiness.Models
         public string ManufacturerCode { get; set; } // Think Lego code, Addidas code, something to make a search unique apart from name
         public ICollection<Price> OriginalRRP { get; set; }
 
-        public virtual IEnumerable<Product> ProductParts { get; set; }
+        public virtual IEnumerable<Product> SubProducts { get; set; }
 
         public Product()
         {

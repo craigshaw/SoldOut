@@ -10,46 +10,30 @@
 
     $(function() {
         var searchId = $('#chartContainer').attr('data-search-id');
-        var chartTitle = $('#chartContainer').attr('data-search-title');
+        var conditionId = $('#chartContainer').attr('data-search-conditionId');
+        var chartTitle = $('#chartContainer').attr('data-search-title') + '-' + conditionId;
 
         $.ajax({
             type: 'GET',
             dataType: 'json',
             contentType: 'application/json',
-            url: '/PriceHistory/' + searchId,
+            url: '/PriceHistory/' + searchId + '/' + conditionId,
             success: function (chartsdata) {
                 // Create the chart data from the API response
                 var data = new google.visualization.DataTable();
-                var addMinMaxPrices = document.getElementById('showMinMax').checked;
+                //var addMinMaxPrices = document.getElementById('showMinMax').checked;
 
                 data.addColumn('string', 'Date');
                 data.addColumn('number', 'Avg Price');
-                data.addColumn('number', 'EMA');
-                data.addColumn('number', 'SMA');
-
-                if (addMinMaxPrices) {
-                    data.addColumn('number', 'Min Price');
-                    data.addColumn('number', 'Max Price');
-                }
-
+                data.addColumn('number', 'Min Price');
+                data.addColumn('number', 'Max Price');
 
                 for (var i = 0; i < chartsdata.length; i++) {
-                    if (addMinMaxPrices) {
                         data.addRow([chartsdata[i].PricePeriod,
                                      round(chartsdata[i].AveragePrice, 2),
                                      round(chartsdata[i].MinPrice, 2),
                                      round(chartsdata[i].MaxPrice, 2)
                         ]);
-
-
-                    }
-                    else {
-                        data.addRow([chartsdata[i].PricePeriod,
-                                     round(chartsdata[i].AveragePrice, 2),
-                                     round(chartsdata[i].EMA, 2),
-                                     round(chartsdata[i].SMA, 2)
-                                    ]);
-                    }
                 }
 
                 // Hide the loader

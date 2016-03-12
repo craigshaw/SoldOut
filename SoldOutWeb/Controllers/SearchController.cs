@@ -55,6 +55,13 @@ namespace SoldOutWeb.Controllers
             return Json(priceHistory, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult PriceHistoryByCondition(int id, int conditionId)
+        {
+            var priceHistory = CreatePriceHistory(id, conditionId);
+
+            return Json(priceHistory, JsonRequestBehavior.AllowGet);
+        }
+
         private IEnumerable<PriceHistory> CreatePriceHistory(int searchId)
         {
             int interval = 5;
@@ -64,6 +71,16 @@ namespace SoldOutWeb.Controllers
             _priceHistoryService.AddExponentialMovingAverage(basicPriceHistory, interval);
 
             return basicPriceHistory;
+        }
+
+        private IEnumerable<PriceHistory> CreatePriceHistory(int searchId, int conditionId)
+        {
+            var allPriceHistory = CreatePriceHistory(searchId, conditionId);
+
+            //_priceHistoryService.AddSimpleMovingAverage(basicPriceHistory, interval);
+            //_priceHistoryService.AddExponentialMovingAverage(basicPriceHistory, interval);
+
+            return allPriceHistory;
         }
     }
 }

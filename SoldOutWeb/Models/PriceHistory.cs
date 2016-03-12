@@ -10,25 +10,10 @@
 
         public double AveragePrice { get; set; }
 
+        public int Condition { get; set; }
+
         public double? SMA { get; set; }
 
         public double? EMA { get; set; }
-
-        //    public double? MACD
-        //{
-        //    get
-        //    {
-        //        double? lowerMACD = 0.00;
-        //        double? upperMACD = 0.00;
-
-        //        this.Interval = 12;
-        //        lowerMACD = this.EMA;
-
-        //        this.Interval = 26;
-        //        upperMACD = this.EMA;
-
-        //        return lowerMACD - upperMACD;
-        //    }
-        //}
     }
 }

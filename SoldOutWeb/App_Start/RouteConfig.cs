@@ -14,6 +14,12 @@ namespace SoldOutWeb
                 url: "{action}/{id}",
                 defaults: new { controller = "Search", action = "All", id = UrlParameter.Optional }
             );
+
+            routes.MapRoute(
+              name: "PriceHistory",
+              url: "{action}/{id}/{conditionId}",
+              defaults: new { controller = "Search", action = "PriceHistoryByCondition", id = UrlParameter.Optional, conditionId = UrlParameter.Optional }
+);
         }
     }
 }

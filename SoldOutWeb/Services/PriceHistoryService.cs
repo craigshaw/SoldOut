@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using SoldOutBusiness.Models;
 using SoldOutWeb.Models;
 using SoldOutBusiness.Repository;
 
@@ -18,16 +19,29 @@ namespace SoldOutWeb.Services
         {
             var results = _repository.GetSearchResults(searchId).ToList();
 
-            return (from item in results
-                   group item by new { item.EndTime.Value.Day, item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
-                   orderby grp.Key.Year, grp.Key.Month, grp.Key.Day
-                   select new PriceHistory()
-                   {
-                       PricePeriod = $"{grp.Key.Day:D2}/{grp.Key.Month:D2}/{grp.Key.Year}",
-                       AveragePrice = (double)(grp.Average(it => it.Price)),
-                       MinPrice = (double)(grp.Min(it => it.Price)),
-                       MaxPrice = (double)(grp.Max(it => it.Price)),
-                   }).ToList();
+            return AggregatePriceData(results);
+        }
+
+        private IList<PriceHistory> AggregatePriceData(IEnumerable<SearchResult> searchResults)
+        {
+            return (from item in searchResults
+                    group item by new { item.EndTime.Value.Day, item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
+                    orderby grp.Key.Year, grp.Key.Month, grp.Key.Day
+                    select new PriceHistory()
+                    {
+                        PricePeriod = $"{grp.Key.Day:D2}/{grp.Key.Month:D2}/{grp.Key.Year}",
+                        AveragePrice = (double)(grp.Average(it => it.Price)),
+                        MinPrice = (double)(grp.Min(it => it.Price)),
+                        MaxPrice = (double)(grp.Max(it => it.Price)),
+                    }).ToList();
+        }
+
+        public IList<PriceHistory> CreateBasicPriceHistory(int searchId, int conditionId)
+        {
+            var result = _repository.GetSearchResults(searchId, conditionId);
+
+            return AggregatePriceData(result);
+        
         }
 
         public void AddSimpleMovingAverage(IList<PriceHistory> prices, int interval)
