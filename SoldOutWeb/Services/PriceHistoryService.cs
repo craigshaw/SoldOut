@@ -15,6 +15,14 @@ namespace SoldOutWeb.Services
             _repository = repository;
         }
 
+        public IList<PriceHistory> CreateBasicPriceHistory(int searchId, int conditionId)
+        {
+            var result = _repository.GetSearchResults(searchId, conditionId);
+
+            return AggregatePriceData(result);
+
+        }
+
         public IList<PriceHistory> CreateBasicPriceHistory(int searchId)
         {
             var results = _repository.GetSearchResults(searchId).ToList();
@@ -34,14 +42,6 @@ namespace SoldOutWeb.Services
                         MinPrice = (double)(grp.Min(it => it.Price)),
                         MaxPrice = (double)(grp.Max(it => it.Price)),
                     }).ToList();
-        }
-
-        public IList<PriceHistory> CreateBasicPriceHistory(int searchId, int conditionId)
-        {
-            var result = _repository.GetSearchResults(searchId, conditionId);
-
-            return AggregatePriceData(result);
-        
         }
 
         public void AddSimpleMovingAverage(IList<PriceHistory> prices, int interval)
