@@ -75,7 +75,7 @@ namespace SoldOutWeb.Controllers
 
         private IEnumerable<PriceHistory> CreatePriceHistory(int searchId, int conditionId)
         {
-            var allPriceHistory = CreatePriceHistory(searchId, conditionId);
+            var allPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId, conditionId);
 
             //_priceHistoryService.AddSimpleMovingAverage(basicPriceHistory, interval);
             //_priceHistoryService.AddExponentialMovingAverage(basicPriceHistory, interval);
