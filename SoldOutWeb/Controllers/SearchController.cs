@@ -1,13 +1,12 @@
 ﻿using SoldOutBusiness.Repository;
 using SoldOutWeb.Models;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
-using System;
 using SoldOutWeb.Services;
 
 namespace SoldOutWeb.Controllers
 {
+    [Route("{action=All}")]
     public class SearchController : Controller
     {
         private ISoldOutRepository _repository;
@@ -26,6 +25,7 @@ namespace SoldOutWeb.Controllers
             return View(searches);
         }
 
+        [Route("Summmary/{id?}")]
         public ActionResult Summary(int? id)
         {
             int searchId = 1;
@@ -48,6 +48,7 @@ namespace SoldOutWeb.Controllers
             return View(summary);
         }
 
+        [Route("PriceHistory/{id}")]
         public JsonResult PriceHistory(int id)
         {
             var priceHistory = CreatePriceHistory(id);
@@ -55,6 +56,7 @@ namespace SoldOutWeb.Controllers
             return Json(priceHistory, JsonRequestBehavior.AllowGet);
         }
 
+        [Route("PriceHistory/{id}/{conditionId}")]
         public JsonResult PriceHistoryByCondition(int id, int conditionId)
         {
             var priceHistory = CreatePriceHistory(id, conditionId);
