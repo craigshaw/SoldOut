@@ -15,6 +15,9 @@ namespace SoldOutBusiness.DAL
 
         public DbSet<Category> Categories { get; set; }
 
+        public DbSet<Product> Products { get; set; }
+
+
         public SoldOutContext()
         {
             // Turn off the Migrations, (NOT a code first Db)
@@ -26,6 +29,10 @@ namespace SoldOutBusiness.DAL
             // Our database convention does not pluralize table names
             modelBuilder.Conventions
                 .Remove<PluralizingTableNameConvention>();
+
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.CategoryIds)
+                .WithMany(p => p.Products);           
         }
     }
 }

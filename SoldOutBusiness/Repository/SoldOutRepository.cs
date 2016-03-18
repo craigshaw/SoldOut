@@ -48,6 +48,31 @@ namespace SoldOutBusiness.Repository
             return categories;
         }
 
+        public IEnumerable<Product> GetAllProducts()
+        {
+            var products = _context.Products.Select(s => s).OrderBy(s => s.Name).ToList();
+
+            return products;
+        }
+
+        public IEnumerable<Product> GetProductsByCategoryId(int categoryId)
+        {           
+            var products = _context.Products.Select(s => s).Where(s => s.CategoryIds.Any(c => c.CategoryID == categoryId))
+                                       .OrderBy(s => s.Name)
+                                       .ToList();
+
+            return products;
+        }
+
+        public IEnumerable<Product> GetProductsByParentProductId(int parentProductId)
+        {
+            var childProducts = _context.Products.Select(s => s).Where(s => s.ParentProducts.Any(p => p.ProductId == parentProductId))                                        
+                                        .OrderBy(s => s.Name)
+                                        .ToList();
+
+            return childProducts;
+        }
+
         public IEnumerable<Category> GetAllCategories(int parentCategoryID)
         {
             var categories = GetAllCategories();

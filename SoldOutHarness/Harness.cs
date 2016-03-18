@@ -16,12 +16,19 @@ namespace SoldOutHarness
     class Harness
     {
         private IConditionResolver conditionResolver;
+        
 
         static void Main(string[] args)
         {
             //new Harness().Run();
 
-            new Harness().GetAllCategories();
+            
+            Harness test = new Harness();
+
+            test.GetAllCategories();
+            test.GetAllProducts();
+            test.GetProductsByCategoryId();
+            test.GetAllProductsByParentProductId();
 
             Console.WriteLine("Press any key to close the program.");
             Console.ReadKey();
@@ -33,6 +40,51 @@ namespace SoldOutHarness
             var repo = new SoldOutRepository();
 
             var allCategories = repo.GetAllCategories();
+
+            foreach (var category in allCategories)
+            {
+                Console.WriteLine(category.Name);
+            }
+        }
+
+        private void GetAllProducts()
+        {
+            var repo = new SoldOutRepository();
+
+            var allProducts = repo.GetAllProducts();
+
+            foreach (var product in allProducts)
+            {
+                Console.WriteLine(product.Name);
+            }
+        }
+
+        private void GetProductsByCategoryId()
+        {
+            var repo = new SoldOutRepository();
+
+            Console.Write("Products with Category:");
+
+            var childProducts = repo.GetProductsByCategoryId(4);
+
+            foreach (var product in childProducts)
+            {                
+                Console.WriteLine(product.Name);
+            }
+        }
+
+        private void GetAllProductsByParentProductId()
+        {
+            var repo = new SoldOutRepository();
+
+            Console.Write("Products with ParentId:");
+
+            var childProducts = repo.GetProductsByParentProductId(11);
+
+            foreach (var product in childProducts)
+            {
+                Console.WriteLine(product.Name);
+            }
         }
 
         private void Run()

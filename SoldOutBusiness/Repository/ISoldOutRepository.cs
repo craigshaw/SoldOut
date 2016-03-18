@@ -28,5 +28,10 @@ namespace SoldOutBusiness.Repository
         IList<Condition> GetConditions();
 
         IEnumerable<Category> GetAllCategories();
+
+        IEnumerable<Product> GetAllProducts();
+
+        IEnumerable<Product> GetProductsByCategoryId(int categoryId);
+        IEnumerable<Product> GetProductsByParentProductId(int parentProductId);
     }
 }

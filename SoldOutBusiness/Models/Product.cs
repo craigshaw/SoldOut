@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SoldOutBusiness.Models
 {
@@ -7,29 +8,28 @@ namespace SoldOutBusiness.Models
 
         public int ProductId { get; set; }
 
-        public ICollection<int> CategoryIds { get; set; }
+        [Required]
+        public virtual ICollection<Category> CategoryIds { get; set; }
 
         public string Name { get; set; }        
 
-        public ICollection<AliasCollection> Aliases { get; set; } // Think games with regional variation in their title
+        public virtual ICollection<AliasCollection> Aliases { get; set; } // Think games with regional variation in their title
 
         public string YearOfRelease { get; set; }
 
         public string YearOfRetirement { get; set; }
 
-        public virtual ICollection<int> ParentProductIds { get; set; } // Ideally there should only be one parent Product but you never know...
+        public virtual ICollection<Product> ParentProducts { get; set; } // Ideally there should only be one parent Product but you never know...
 
         public string ManufacturerCode { get; set; } // Think Lego code, Addidas code, something to make a search unique apart from name
-        public ICollection<Price> OriginalRRP { get; set; }
+        public virtual ICollection<Price> OriginalRRP { get; set; }
 
-        public virtual IEnumerable<Product> SubProducts { get; set; }
+        public virtual ICollection<Product> SubProducts { get; set; }
 
         public Product()
-        {
-            ParentProductIds = new List<int>();
-            CategoryIds = new List<int>();
-            OriginalRRP = new List<Price>();
-            Aliases = new List<AliasCollection>();            
+        {            
+            CategoryIds = new List<Category>();
+            OriginalRRP = new List<Price>();         
         }
 
     }
