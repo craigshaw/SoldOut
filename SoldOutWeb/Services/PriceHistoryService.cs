@@ -3,6 +3,7 @@ using System.Linq;
 using SoldOutBusiness.Models;
 using SoldOutWeb.Models;
 using SoldOutBusiness.Repository;
+using System;
 
 namespace SoldOutWeb.Services
 {
@@ -15,22 +16,22 @@ namespace SoldOutWeb.Services
             _repository = repository;
         }
 
-        public IList<PriceHistory> CreateBasicPriceHistory(int searchId, int conditionId)
+        public IList<PriceHistory> CreateBasicPriceHistory(int searchId, int conditionId, AggregationPeriod aggregationPeriod)
         {
+            var aggregator = CreatePriceAggregatorForAggregationPeriod(aggregationPeriod);
             var result = _repository.GetSearchResults(searchId, conditionId);
-
-            return AggregatePriceData(result);
-
+            return aggregator(result);
         }
 
-        public IList<PriceHistory> CreateBasicPriceHistory(int searchId)
+        private Func<IEnumerable<SearchResult>, IList<PriceHistory>> CreatePriceAggregatorForAggregationPeriod(AggregationPeriod aggregationPeriod)
         {
-            var results = _repository.GetSearchResults(searchId).ToList();
-
-            return AggregatePriceData(results);
+            if(aggregationPeriod == AggregationPeriod.Daily)
+                return new Func<IEnumerable<SearchResult>, IList<PriceHistory>>(AggregatePriceDataDaily);
+            else
+                return new Func<IEnumerable<SearchResult>, IList<PriceHistory>>(AggregatePriceDataMonthly);
         }
 
-        private IList<PriceHistory> AggregatePriceData(IEnumerable<SearchResult> searchResults)
+        private IList<PriceHistory> AggregatePriceDataDaily(IEnumerable<SearchResult> searchResults)
         {
             return (from item in searchResults
                     group item by new { item.EndTime.Value.Day, item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
@@ -38,6 +39,20 @@ namespace SoldOutWeb.Services
                     select new PriceHistory()
                     {
                         PricePeriod = $"{grp.Key.Day:D2}/{grp.Key.Month:D2}/{grp.Key.Year}",
+                        AveragePrice = (double)(grp.Average(it => it.Price)),
+                        MinPrice = (double)(grp.Min(it => it.Price)),
+                        MaxPrice = (double)(grp.Max(it => it.Price)),
+                    }).ToList();
+        }
+
+        private IList<PriceHistory> AggregatePriceDataMonthly(IEnumerable<SearchResult> searchResults)
+        {
+            return (from item in searchResults
+                    group item by new { item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
+                    orderby grp.Key.Year, grp.Key.Month
+                    select new PriceHistory()
+                    {
+                        PricePeriod = $"{grp.Key.Month:D2}/{grp.Key.Year}",
                         AveragePrice = (double)(grp.Average(it => it.Price)),
                         MinPrice = (double)(grp.Min(it => it.Price)),
                         MaxPrice = (double)(grp.Max(it => it.Price)),
