@@ -16,31 +16,36 @@ namespace SoldOutTests
         [TestMethod]
         public void CreatePriceHistoryReturnsIEnumerableForValidSearch()
         {
-            int searchId = 1;
-            var mockRepository = A.Fake<ISoldOutRepository>();
+            int searchId = 1, conditionId = 2;
+            var mockRepository = CreateBasicMockRepository(searchId, conditionId);
 
-            A.CallTo(() => mockRepository.GetSearchResults(searchId)).Returns(CreateTestSearchResults());
+            var sut = new PriceHistoryService(mockRepository) as IPriceHistoryService;
 
-            var sut = new PriceHistoryService(mockRepository);
+            var results = sut.CreateBasicPriceHistory(searchId, conditionId);
 
-            var results = sut.CreateBasicPriceHistory(searchId);
-
-            A.CallTo(() => mockRepository.GetSearchResults(searchId)).MustHaveHappened();
+            A.CallTo(() => mockRepository.GetSearchResults(searchId, conditionId)).MustHaveHappened();
 
             Assert.AreEqual(results.Count(), 16);
+        }
+
+        private ISoldOutRepository CreateBasicMockRepository(int searchId, int conditionId)
+        {
+            var mockRepository = A.Fake<ISoldOutRepository>();
+
+            A.CallTo(() => mockRepository.GetSearchResults(searchId, conditionId)).Returns(CreateTestSearchResults());
+
+            return mockRepository;
         }
 
         [TestMethod]
         public void CalculateSimpleMovingAverageFromBasicPriceHistory()
         {
-            int searchId = 2;
-            var mockRepository = A.Fake<ISoldOutRepository>();
+            int searchId = 2, conditionId = 2;
+            var mockRepository = CreateBasicMockRepository(searchId, conditionId);
 
-            A.CallTo(() => mockRepository.GetSearchResults(searchId)).Returns(CreateTestSearchResults());
+            var sut = new PriceHistoryService(mockRepository) as IPriceHistoryService;
 
-            var sut = new PriceHistoryService(mockRepository);
-
-            var results = sut.CreateBasicPriceHistory(searchId);
+            var results = sut.CreateBasicPriceHistory(searchId, conditionId);
 
             sut.AddSimpleMovingAverage(results, 5);
 
@@ -55,11 +60,11 @@ namespace SoldOutTests
         {
             var mockRepository = A.Fake<ISoldOutRepository>();
 
-            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored)).Returns(CreateListOfTwoSearchResults());
+            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored, A<int>.Ignored)).Returns(CreateListOfTwoSearchResults());
 
-            var sut = new PriceHistoryService(mockRepository);
+            var sut = new PriceHistoryService(mockRepository) as IPriceHistoryService;
 
-            var results = sut.CreateBasicPriceHistory(1);
+            var results = sut.CreateBasicPriceHistory(1, 2);
 
             sut.AddSimpleMovingAverage(results, 5);
 
@@ -72,14 +77,12 @@ namespace SoldOutTests
         [TestMethod]
         public void CalculateExponentialMovingAverageFromBasicPriceHistory()
         {
-            int searchId = 2;
-            var mockRepository = A.Fake<ISoldOutRepository>();
+            int searchId = 2, conditionId = 2;
+            var mockRepository = CreateBasicMockRepository(searchId, conditionId);
 
-            A.CallTo(() => mockRepository.GetSearchResults(searchId)).Returns(CreateTestSearchResults());
+            var sut = new PriceHistoryService(mockRepository) as IPriceHistoryService;
 
-            var sut = new PriceHistoryService(mockRepository);
-
-            var results = sut.CreateBasicPriceHistory(searchId);
+            var results = sut.CreateBasicPriceHistory(searchId, conditionId);
 
             sut.AddExponentialMovingAverage(results, 5);
 
@@ -95,11 +98,11 @@ namespace SoldOutTests
         {
             var mockRepository = A.Fake<ISoldOutRepository>();
 
-            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored)).Returns(CreateListOfTwoSearchResults());
+            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored, A<int>.Ignored)).Returns(CreateListOfTwoSearchResults());
 
-            var sut = new PriceHistoryService(mockRepository);
+            var sut = new PriceHistoryService(mockRepository) as IPriceHistoryService;
 
-            var results = sut.CreateBasicPriceHistory(1);
+            var results = sut.CreateBasicPriceHistory(1, 2);
 
             sut.AddExponentialMovingAverage(results, 5);
 
@@ -112,11 +115,11 @@ namespace SoldOutTests
         {
             var mockRepository = A.Fake<ISoldOutRepository>();
 
-            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored)).Returns(CreateTestSearchResults().Take(5));
+            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored, A<int>.Ignored)).Returns(CreateTestSearchResults().Take(5));
 
-            var sut = new PriceHistoryService(mockRepository);
+            var sut = new PriceHistoryService(mockRepository) as IPriceHistoryService;
 
-            var results = sut.CreateBasicPriceHistory(1);
+            var results = sut.CreateBasicPriceHistory(1, 2);
 
             sut.AddExponentialMovingAverage(results, 5);
 

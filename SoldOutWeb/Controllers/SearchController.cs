@@ -68,7 +68,7 @@ namespace SoldOutWeb.Controllers
         {
             int interval = 5;
 
-            var basicPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId);
+            var basicPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId, 2, AggregationPeriod.Monthly); // TODO: Use the condition resolver here?
             _priceHistoryService.AddSimpleMovingAverage(basicPriceHistory, interval);
             _priceHistoryService.AddExponentialMovingAverage(basicPriceHistory, interval);
 
@@ -77,7 +77,7 @@ namespace SoldOutWeb.Controllers
 
         private IEnumerable<PriceHistory> CreatePriceHistory(int searchId, int conditionId)
         {
-            var allPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId, conditionId);
+            var allPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId, conditionId, AggregationPeriod.Monthly);
 
             //_priceHistoryService.AddSimpleMovingAverage(basicPriceHistory, interval);
             //_priceHistoryService.AddExponentialMovingAverage(basicPriceHistory, interval);
