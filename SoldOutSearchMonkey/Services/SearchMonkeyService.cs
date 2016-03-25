@@ -153,7 +153,7 @@ namespace SoldOutSearchMonkey.Services
                             if (searchSummary.TotalResults > 0)
                             {
                                 // Map returned items to our SoldItems model
-                                var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, _conditionResolver).ToList();
+                                var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, _conditionResolver, search.ProductId).ToList();
 
                                 // Get list of all the condition types in each result
                                 var conditionsInResults = newItems.Select(i => i.ConditionId).Distinct();
@@ -171,12 +171,6 @@ namespace SoldOutSearchMonkey.Services
                                         Suspicious = reviewSummary.SuspiciousItems.Count,
                                         Total = filteredItems.Count()
                                     });
-                                }
-
-                                // Set the ProductId which relates to the Search
-                                for (int i=0; i < newItems.Count; i++)
-                                {
-                                    newItems[i].ProductId = search.ProductId;
                                 }
 
                                 // Add them to the relevant search
