@@ -173,6 +173,8 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Search\All.cshtml" />
     <Content Include="Views\Search\Summary.cshtml" />
+    <Content Include="Views\Search\Product.cshtml" />
+    <Content Include="Views\Search\CategorySummary.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

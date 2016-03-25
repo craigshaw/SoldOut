@@ -29,6 +29,10 @@ namespace SoldOutBusiness.Repository
 
         IEnumerable<Category> GetAllCategories();
 
+        IEnumerable<Category> GetParentCategories();
+
+        
+
         IEnumerable<Product> GetAllProducts();
 
         IEnumerable<Product> GetProductsByCategoryId(int categoryId);

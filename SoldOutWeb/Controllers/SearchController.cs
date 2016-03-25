@@ -22,6 +22,11 @@ namespace SoldOutWeb.Controllers
         public ActionResult All()
         {
             var searches = _repository.GetAllSearchesWithResults();
+
+            //var categoryParents = _repository.GetParentCategories();
+
+            //var categorySummary = _repository.GetCategorySummaryByCategoryId(categoryParents);
+
             return View(searches);
         }
 
@@ -68,7 +73,7 @@ namespace SoldOutWeb.Controllers
         {
             int interval = 5;
 
-            var basicPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId, 2, AggregationPeriod.Monthly); // TODO: Use the condition resolver here?
+            var basicPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId, 2, AggregationPeriod.Daily); // TODO: Use the condition resolver here?
             _priceHistoryService.AddSimpleMovingAverage(basicPriceHistory, interval);
             _priceHistoryService.AddExponentialMovingAverage(basicPriceHistory, interval);
 
@@ -77,7 +82,7 @@ namespace SoldOutWeb.Controllers
 
         private IEnumerable<PriceHistory> CreatePriceHistory(int searchId, int conditionId)
         {
-            var allPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId, conditionId, AggregationPeriod.Monthly);
+            var allPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId, conditionId, AggregationPeriod.Daily);
 
             //_priceHistoryService.AddSimpleMovingAverage(basicPriceHistory, interval);
             //_priceHistoryService.AddExponentialMovingAverage(basicPriceHistory, interval);

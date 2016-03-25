@@ -33,16 +33,27 @@ namespace SoldOutWeb.Services
 
         private IList<PriceHistory> AggregatePriceDataDaily(IEnumerable<SearchResult> searchResults)
         {
-            return (from item in searchResults
-                    group item by new { item.EndTime.Value.Day, item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
-                    orderby grp.Key.Year, grp.Key.Month, grp.Key.Day
-                    select new PriceHistory()
-                    {
-                        PricePeriod = $"{grp.Key.Day:D2}/{grp.Key.Month:D2}/{grp.Key.Year}",
-                        AveragePrice = (double)(grp.Average(it => it.Price)),
-                        MinPrice = (double)(grp.Min(it => it.Price)),
-                        MaxPrice = (double)(grp.Max(it => it.Price)),
-                    }).ToList();
+            DateTime priorDate = DateTime.Now.AddMonths(-1);
+
+            double totalDays = (DateTime.Now - priorDate).TotalDays;
+
+            var allItems = (from item in searchResults
+                           group item by new { item.EndTime.Value.Day, item.EndTime.Value.Month, item.EndTime.Value.Year } into grp
+                           orderby grp.Key.Year, grp.Key.Month, grp.Key.Day
+                           select new PriceHistory()
+                           {
+                               PricePeriod = $"{grp.Key.Day:D2}/{grp.Key.Month:D2}/{grp.Key.Year}",
+                               AveragePrice = (double)(grp.Average(it => it.Price)),
+                               MinPrice = (double)(grp.Min(it => it.Price)),
+                               MaxPrice = (double)(grp.Max(it => it.Price)),
+                           });
+
+            var summaryItems = allItems.Select(i => i).Where(i => DateTime.Parse(i.PricePeriod) > priorDate).ToList();
+
+            if (summaryItems.Count < totalDays)
+                summaryItems = allItems.Take(Convert.ToInt32(totalDays)).ToList();
+
+            return summaryItems;
         }
 
         private IList<PriceHistory> AggregatePriceDataMonthly(IEnumerable<SearchResult> searchResults)

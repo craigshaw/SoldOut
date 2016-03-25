@@ -214,6 +214,11 @@ namespace SoldOutBusiness.Repository
             return _context.Conditions.Select(c => c).ToList();
         }
 
+        public IEnumerable<Category> GetParentCategories()
+        {
+            return _context.Categories.Select(s => s).Where(s => s.ParentCategoryId == null);
+        }
+
         #region IDisposable Support
         public void Dispose()
         {
