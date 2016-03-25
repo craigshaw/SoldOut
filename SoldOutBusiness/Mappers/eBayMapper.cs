@@ -8,7 +8,7 @@ namespace SoldOutBusiness.Mappers
 {
     public static class eBayMapper
     {
-        public static IEnumerable<Models.SearchResult> MapSearchItemsToSearchResults(SearchItem[] items, IConditionResolver resolver)
+        public static IEnumerable<Models.SearchResult> MapSearchItemsToSearchResults(SearchItem[] items, IConditionResolver resolver, int productId)
         {
             return items.Select(i => new Models.SearchResult()
             {
@@ -26,7 +26,8 @@ namespace SoldOutBusiness.Mappers
                 SiteID = i.globalId,
                 Type = i.listingInfo.listingType,
                 ShippingCost = (i.shippingInfo.shippingServiceCost != null) ? i.shippingInfo.shippingServiceCost.Value : 0.0f,
-                ConditionId = resolver.ConditionIdFromEBayConditionId(i.condition.conditionId)
+                ConditionId = resolver.ConditionIdFromEBayConditionId(i.condition.conditionId),
+                ProductId = productId
             });
         }
     }
