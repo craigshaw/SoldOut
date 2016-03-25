@@ -127,7 +127,7 @@ namespace SoldOutHarness
                         if (response.searchResult.count > 0)
                         {
                             // Map returned items to our SoldItems model
-                            var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, conditionResolver); 
+                            var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, conditionResolver, search.ProductId); 
 
                             // Add them to the relevant search
                             repo.AddSearchResults(search.SearchId, newItems);
