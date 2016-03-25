@@ -9,7 +9,7 @@ namespace SoldOutBusiness.Services
     {
         IEbayFinder Configure(Action<ClientConfig> config);
         IEbayFinder SetRequestDefaults(Action<FindCompletedItemsRequest> setRequestDefaults);
-        FindCompletedItemsResponse GetCompletedItems(Search search);
-        FindCompletedItemsResponse GetCompletedItems(Search search, Action<FindCompletedItemsRequest> embellishRequest);
+        FindCompletedItemsResponse GetCompletedItems(Search search, int pageNumber);
+        FindCompletedItemsResponse GetCompletedItems(Search search, int pageNumber, Action<FindCompletedItemsRequest> embellishRequest);
     }
 }

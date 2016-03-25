@@ -28,25 +28,25 @@ namespace SoldOutBusiness.Services
             return this;
         }
 
-        public FindCompletedItemsResponse GetCompletedItems(SoldOutBusiness.Models.Search search)
+        public FindCompletedItemsResponse GetCompletedItems(SoldOutBusiness.Models.Search search, int pageNumber)
         {
             // Create a request to get our completed items
-            var request = CreateCompletedItemsRequest(search); 
+            var request = CreateCompletedItemsRequest(search, pageNumber); 
 
             return _client.findCompletedItems(request);
         }
 
-        public FindCompletedItemsResponse GetCompletedItems(SoldOutBusiness.Models.Search searchItem, Action<FindCompletedItemsRequest> embellishRequest)
+        public FindCompletedItemsResponse GetCompletedItems(SoldOutBusiness.Models.Search searchItem, int pageNumber, Action<FindCompletedItemsRequest> embellishRequest)
         {
             // Create a request to get our completed items
-            var request = CreateCompletedItemsRequest(searchItem);
+            var request = CreateCompletedItemsRequest(searchItem, pageNumber);
 
             embellishRequest(request);
 
             return _client.findCompletedItems(request);
         }
 
-        private FindCompletedItemsRequest CreateCompletedItemsRequest(Search searchItem)
+        private FindCompletedItemsRequest CreateCompletedItemsRequest(Search searchItem, int pageNumber)
         {
             // Completed items, new only
             var request = new FindCompletedItemsRequest();
@@ -97,6 +97,11 @@ namespace SoldOutBusiness.Services
                     new ItemFilter() { name = ItemFilterType.EndTimeFrom, value = new string[] { searchItem.LastRun.ToString("s") } }
                     );
             }
+
+            // Add the page number
+            request.paginationInput = new PaginationInput();
+            request.paginationInput.pageNumber = pageNumber;
+            request.paginationInput.pageNumberSpecified = true;
 
             request.itemFilter = filters.ToArray();
             request.sortOrder = SortOrderType.EndTimeSoonest;

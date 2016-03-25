@@ -114,7 +114,7 @@ namespace SoldOutHarness
                         (search.LastRun != null) ? "since " + search.LastRun.ToString() : string.Empty);
 
                     // Create a request to get our completed items
-                    var response = finder.GetCompletedItems(search);
+                    var response = finder.GetCompletedItems(search, 1);
 
                     // Show output
                     if (response.ack == AckValue.Success || response.ack == AckValue.Warning)

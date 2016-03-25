@@ -9,6 +9,7 @@ namespace SoldOutBusiness.Models
         public Search()
         {
             SearchResults = new List<SearchResult>();
+            SearchCriteria = new List<SearchCriteria>();
         }
 
         public long SearchId { get; set; }

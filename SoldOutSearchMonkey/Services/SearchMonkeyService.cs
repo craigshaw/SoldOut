@@ -135,32 +135,44 @@ namespace SoldOutSearchMonkey.Services
                         var searchSummary = CreateSearchSummary(search);
 
                         // Run the search
-                        using (_serviceRequestTimer.NewContext())
+                        int pageNumber = 1;
+                        int foundItemCount = 0;
+                        IEnumerable<SoldOutBusiness.Models.SearchResult> foundItems = null;
+                        do
                         {
-                            response = _finder.GetCompletedItems(search);
-                        }
+                            using (_serviceRequestTimer.NewContext())
+                            {
+                                response = _finder.GetCompletedItems(search, pageNumber++);
+                            }
+
+                            if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
+                            {
+                                foundItemCount += response.searchResult.count;
+
+                                var items = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, _conditionResolver, search.ProductId).ToList();
+
+                                foundItems = (foundItems == null) ? items : foundItems.Concat(items);
+                            }
+                        } while (response.paginationOutput.pageNumber < response.paginationOutput.totalPages);
 
                         // Process results
                         if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
                         {
-                            _log.Info($"Found {response.searchResult.count} new items");
+                            _log.Info($"Found {foundItemCount} new items");
 
                             // Set the last ran time
                             search.LastRun = response.timestamp;
 
-                            searchSummary.TotalResults = response.searchResult.count;
+                            searchSummary.TotalResults = foundItemCount;
 
                             if (searchSummary.TotalResults > 0)
                             {
-                                // Map returned items to our SoldItems model
-                                var newItems = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, _conditionResolver, search.ProductId).ToList();
-
                                 // Get list of all the condition types in each result
-                                var conditionsInResults = newItems.Select(i => i.ConditionId).Distinct();
+                                var conditionsInResults = foundItems.Select(i => i.ConditionId).Distinct();
 
                                 foreach (var condition in conditionsInResults)
                                 {
-                                    var filteredItems = newItems.Where(i => i.ConditionId == condition);
+                                    var filteredItems = foundItems.Where(i => i.ConditionId == condition);
 
                                     // Review for any suspicous results
                                     var reviewSummary = _completedItemReviewer.ReviewCompletedItems(filteredItems, repo.GetPriceStatsForSearch(search.SearchId, condition), search.SuspiciousPhrases);
@@ -174,7 +186,7 @@ namespace SoldOutSearchMonkey.Services
                                 }
 
                                 // Add them to the relevant search
-                                repo.AddSearchResults(search.SearchId, newItems);
+                                repo.AddSearchResults(search.SearchId, foundItems);
 
                                 // Send a notification out
                                 NotifyResultsReady(searchSummary);
