@@ -27,5 +27,7 @@ namespace SoldOutBusiness.Models
 
         public int ConditionId { get; set; }
         public virtual Condition Condition { get; set; }
+
+        public int ProductId { get; set; }
     }
 }

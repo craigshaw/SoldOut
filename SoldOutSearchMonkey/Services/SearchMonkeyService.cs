@@ -173,6 +173,12 @@ namespace SoldOutSearchMonkey.Services
                                     });
                                 }
 
+                                // Set the ProductId which relates to the Search
+                                for (int i=0; i < newItems.Count; i++)
+                                {
+                                    newItems[i].ProductId = search.ProductId;
+                                }
+
                                 // Add them to the relevant search
                                 repo.AddSearchResults(search.SearchId, newItems);
 

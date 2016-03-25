@@ -5,7 +5,7 @@ namespace SoldOutBusiness.Models
     public class Category
     {
         public int CategoryID { get; set; }
-        public int ParentCategoryId { get; set; }
+        public int? ParentCategoryId { get; set; }
         public string Name { get; set; }
 
         public ICollection<AliasCollection> Aliases { get; set; }

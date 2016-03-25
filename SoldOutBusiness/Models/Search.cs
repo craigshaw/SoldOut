@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SoldOutBusiness.Models
 {
@@ -17,6 +18,9 @@ namespace SoldOutBusiness.Models
         public string Link { get; set; }
         public DateTime LastCleansed { get; set; }
         public double OriginalRRP { get; set; }
+
+        
+        public int ProductId { get; set; }
 
         public ICollection<SearchResult> SearchResults { get; set; }
         public ICollection<SearchCriteria> SearchCriteria { get; set; }

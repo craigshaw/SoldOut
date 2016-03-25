@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SoldOutBusiness.Models
+﻿namespace SoldOutBusiness.Models
 {
     public class Price
     {
