@@ -3,7 +3,6 @@ using log4net;
 using Metrics;
 using SoldOutBusiness.Mappers;
 using SoldOutBusiness.Models;
-using SoldOutBusiness.Repository;
 using SoldOutBusiness.Services;
 using SoldOutBusiness.Services.Notifiers;
 using System;
@@ -147,11 +146,14 @@ namespace SoldOutSearchMonkey.Services
 
                             if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
                             {
-                                foundItemCount += response.searchResult.count;
+                                if (response.searchResult.count > 0)
+                                {
+                                    foundItemCount += response.searchResult.count;
 
-                                var items = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, _conditionResolver, search.ProductId).ToList();
+                                    var items = eBayMapper.MapSearchItemsToSearchResults(response.searchResult.item, _conditionResolver, search.ProductId).ToList();
 
-                                foundItems = (foundItems == null) ? items : foundItems.Concat(items);
+                                    foundItems = (foundItems == null) ? items : foundItems.Concat(items);
+                                }
                             }
                         } while (response.paginationOutput.pageNumber < response.paginationOutput.totalPages);
 
