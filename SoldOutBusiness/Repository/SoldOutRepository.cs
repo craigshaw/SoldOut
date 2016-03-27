@@ -151,11 +151,8 @@ namespace SoldOutBusiness.Repository
 
         public Search GetNextSearch(long searchID)
         {
-            long maxID = _context.Searches.Max(s => s.SearchId);
-
-            var currentID = (maxID == searchID) ? 0 : searchID;
-
-            return _context.Searches.Where(s => s.SearchId > currentID).Include(s => s.SearchCriteria).FirstOrDefault();
+            // Get next search based on the oldest run
+            return _context.Searches.Select(s => s).OrderBy(s => s.LastRun).First();
         }
 
         public bool ResetSuspiciousSearchResults(IEnumerable<SearchResult> results)
