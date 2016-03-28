@@ -12,16 +12,14 @@ namespace SoldOutBusiness.DAL
         public DbSet<SuspiciousPhrase> SuspiciousPhrases { get; set; }
         public DbSet<SearchSuspiciousPhrase> SearchSuspiciousPhrases { get; set; }
         public DbSet<Condition> Conditions { get; set; }
-
-        public DbSet<Category> Categories { get; set; }
-
         public DbSet<Product> Products { get; set; }
-
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Currency> Currencies { get; set; }
 
         public SoldOutContext()
         {
             // Turn off the Migrations, (NOT a code first Db)
-            Database.SetInitializer<SoldOutContext>(null);
+            //Database.SetInitializer<SoldOutContext>(null);
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -30,9 +28,27 @@ namespace SoldOutBusiness.DAL
             modelBuilder.Conventions
                 .Remove<PluralizingTableNameConvention>();
 
+            // ProductSubProduct mapping table
             modelBuilder.Entity<Product>()
-                .HasMany(p => p.CategoryIds)
-                .WithMany(p => p.Products);           
+                .HasMany(p => p.SubProducts)
+                .WithMany(p => p.ParentProducts)
+                .Map(pp =>
+                {
+                    pp.MapLeftKey("ParentProductId");
+                    pp.MapRightKey("SubProductId");
+                    pp.ToTable("ProductSubProduct");
+                });
+
+            // ProductCategory mapping table
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.Categories)
+                .WithMany(p => p.Products)
+                .Map(pc =>
+                {
+                    pc.MapLeftKey("ProductId");
+                    pc.MapRightKey("CategoryId");
+                    pc.ToTable("ProductCategory");
+                });
         }
     }
 }

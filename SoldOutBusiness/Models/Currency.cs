@@ -2,9 +2,9 @@
 
 namespace SoldOutBusiness.Models
 {
-    public class Ccy
+    public class Currency
     {   
         [Key]
-        public string Currency { get; set; }        
+        public string CurrencyCode { get; set; }        
     }
 }

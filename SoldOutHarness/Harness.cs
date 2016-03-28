@@ -17,22 +17,37 @@ namespace SoldOutHarness
     {
         private IConditionResolver conditionResolver;
         
-
         static void Main(string[] args)
         {
+            new Harness().TestDB();
             //new Harness().Run();
-
-            
             Harness test = new Harness();
 
-            test.GetAllCategories();
-            test.GetAllProducts();
-            test.GetProductsByCategoryId();
-            test.GetAllProductsByParentProductId();
+            //test.GetAllCategories();
+            //test.GetAllProducts();
+            //test.GetProductsByCategoryId();
+            //test.GetAllProductsByParentProductId();
 
             Console.WriteLine("Press any key to close the program.");
             Console.ReadKey();
 
+        }
+
+        private void TestDB()
+        {
+            using (var repo = new SoldOutRepository())
+            {
+                var ctx = repo._context;
+
+                var product = ctx.Products.Where(p => p.ManufacturerCode == "76052").Single();
+
+                Console.WriteLine($"{product.Name} has {product.ParentProducts.Count} parent products and {product.SubProducts.Count} child products");
+
+                foreach (var sub in product.SubProducts)
+                {
+                    Console.WriteLine($"{sub.ProductId}: {sub.Name}");
+                }
+            }
         }
 
         private void GetAllCategories()
@@ -76,6 +91,14 @@ namespace SoldOutHarness
         private void GetAllProductsByParentProductId()
         {
             var repo = new SoldOutRepository();
+
+            //var prod = repo._context.Products.Where(p => p.ProductId == 1).Select(s => s).First();
+
+            //foreach (var item in prod.ParentProducts)
+            //{
+            //    Console.WriteLine($"{item.Name}");
+            //}
+
 
             Console.Write("Products with ParentId:");
 
