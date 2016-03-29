@@ -11,7 +11,6 @@ namespace SoldOutBusiness.Models
         public string ManufacturerCode { get; set; } // Think Lego code, Addidas code, something to make a search unique apart from name
 
         public virtual ICollection<Category> Categories { get; set; }
-        public virtual ICollection<AliasCollection> Aliases { get; set; } // Think games with regional variation in their title
         public virtual ICollection<Price> OriginalRRP { get; set; }
 
         public virtual ICollection<Product> ParentProducts { get; set; } // Ideally there should only be one parent Product but you never know...

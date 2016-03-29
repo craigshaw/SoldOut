@@ -46,6 +46,7 @@ namespace SoldOutBusiness.DAL
             context.SaveChanges();
             #endregion
 
+            #region Products
             Product batCave = new Product()
             {
                 Name = "Batcave",
@@ -78,7 +79,9 @@ namespace SoldOutBusiness.DAL
 
             context.Products.AddRange(Products);
             context.SaveChanges();
+            #endregion
 
+            #region Searches
             // Searches
             var set = context.Products.Where(p => p.Name == "The Bat vs. Bane").Single();
             var searches = new List<Search>()
@@ -89,27 +92,49 @@ namespace SoldOutBusiness.DAL
 
             context.Searches.AddRange(searches);
             context.SaveChanges();
+            #endregion
 
-            //// Conditions
-            //var conditions = new List<Condition>()
-            //{
-            //    new Condition() { ConditionId = 1, Description = "Unknown", eBayConditionId = 0 },
-            //    new Condition() { ConditionId = 2, Description = "New", eBayConditionId = 1000 },
-            //    new Condition() { ConditionId = 3, Description = "New other (see details)", eBayConditionId = 1500 },
-            //    new Condition() { ConditionId = 4, Description = "New with defects", eBayConditionId = 1750 },
-            //    new Condition() { ConditionId = 5, Description = "Manufacturer refurbished", eBayConditionId = 2000 },
-            //    new Condition() { ConditionId = 6, Description = "Seller refurbished", eBayConditionId = 2500 },
-            //    new Condition() { ConditionId = 7, Description = "Used", eBayConditionId = 3000 },
-            //    new Condition() { ConditionId = 8, Description = "Very Good", eBayConditionId = 4000 },
-            //    new Condition() { ConditionId = 9, Description = "Good", eBayConditionId = 5000 },
-            //    new Condition() { ConditionId = 10, Description = "Acceptable", eBayConditionId = 6000 },
-            //    new Condition() { ConditionId = 11, Description = "For parts or not working", eBayConditionId = 7000 }
-            //};
+            #region Conditions
+            // Conditions
+            var conditions = new List<Condition>()
+            {
+                new Condition() { ConditionId = 1, Description = "Unknown", eBayConditionId = 0 },
+                new Condition() { ConditionId = 2, Description = "New", eBayConditionId = 1000 },
+                new Condition() { ConditionId = 3, Description = "New other (see details)", eBayConditionId = 1500 },
+                new Condition() { ConditionId = 4, Description = "New with defects", eBayConditionId = 1750 },
+                new Condition() { ConditionId = 5, Description = "Manufacturer refurbished", eBayConditionId = 2000 },
+                new Condition() { ConditionId = 6, Description = "Seller refurbished", eBayConditionId = 2500 },
+                new Condition() { ConditionId = 7, Description = "Used", eBayConditionId = 3000 },
+                new Condition() { ConditionId = 8, Description = "Very Good", eBayConditionId = 4000 },
+                new Condition() { ConditionId = 9, Description = "Good", eBayConditionId = 5000 },
+                new Condition() { ConditionId = 10, Description = "Acceptable", eBayConditionId = 6000 },
+                new Condition() { ConditionId = 11, Description = "For parts or not working", eBayConditionId = 7000 }
+            };
 
-            //context.Conditions.AddRange(conditions);
-            //context.SaveChanges();
+            context.Conditions.AddRange(conditions);
+            context.SaveChanges();
+            #endregion
 
-            // TODO: Phrases
+            #region Phrases
+            var phrases = new List<SuspiciousPhrase>()
+            {
+                new SuspiciousPhrase() { Phrase = "minifigure" },
+                new SuspiciousPhrase() { Phrase = "minifigures" },
+                new SuspiciousPhrase() { Phrase = "no box" }
+            };
+
+            context.SuspiciousPhrases.AddRange(phrases);
+            context.SaveChanges();
+
+            var search = context.Searches.First();
+            var searchPhrases = new List<SearchSuspiciousPhrase>()
+            {
+                new SearchSuspiciousPhrase() { SearchId = search.SearchId, Phrase = "bane" }
+            };
+
+            context.SearchSuspiciousPhrases.AddRange(searchPhrases);
+            context.SaveChanges();
+            #endregion
         }
     }
 }

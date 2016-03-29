@@ -47,6 +47,16 @@ namespace SoldOutHarness
                 {
                     Console.WriteLine($"{sub.ProductId}: {sub.Name}");
                 }
+
+                var cat = ctx.Categories.Where(c => c.Name == "Lego").First();
+                Console.WriteLine($"{cat.CategoryID} {cat.Name}");
+                foreach(var c in cat.Children)
+                {
+                    Console.WriteLine($"{c.Name} ({c.ParentCategoryId})");
+                }
+
+                //var stats = repo.GetPriceStatsForSearch(1, 2);
+                //Console.WriteLine($"{stats.NumberOfResults} results for search 1");
             }
         }
 

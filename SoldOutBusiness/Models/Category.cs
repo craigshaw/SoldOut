@@ -7,14 +7,10 @@ namespace SoldOutBusiness.Models
         public int CategoryID { get; set; }
         public int? ParentCategoryId { get; set; }
         public string Name { get; set; }
-
-        public ICollection<AliasCollection> Aliases { get; set; }
-
-        public virtual IEnumerable<Category> Children { get; set; }
-
-        public virtual ICollection<Product> Products { get; set; }
-
         public bool IncludeInKeywordSearch { get; set; }
+
+        public virtual ICollection<Category> Children { get; set; }
+        public virtual ICollection<Product> Products { get; set; }
 
         public Category()
         {

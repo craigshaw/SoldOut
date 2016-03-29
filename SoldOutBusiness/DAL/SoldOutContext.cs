@@ -18,8 +18,7 @@ namespace SoldOutBusiness.DAL
 
         public SoldOutContext()
         {
-            // Turn off the Migrations, (NOT a code first Db)
-            //Database.SetInitializer<SoldOutContext>(null);
+
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
