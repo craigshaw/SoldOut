@@ -39,24 +39,56 @@ namespace SoldOutHarness
             {
                 var ctx = repo._context;
 
+                #region Product and SubProducts
+                Console.WriteLine("Product tests");
+                Console.WriteLine("-------------");
                 var product = ctx.Products.Where(p => p.ManufacturerCode == "76052").Single();
-
-                Console.WriteLine($"{product.Name} has {product.ParentProducts.Count} parent products and {product.SubProducts.Count} child products");
-
+                Console.WriteLine($"{product.Name} ({product.ProductId}) has {product.ParentProducts.Count} parent products and {product.SubProducts.Count} child products:");
                 foreach (var sub in product.SubProducts)
                 {
-                    Console.WriteLine($"{sub.ProductId}: {sub.Name}");
+                    Console.WriteLine($" {sub.Name} ({sub.ProductId})");
                 }
 
-                var cat = ctx.Categories.Where(c => c.Name == "Lego").First();
-                Console.WriteLine($"{cat.CategoryID} {cat.Name}");
-                foreach(var c in cat.Children)
+                Console.WriteLine();
+                var product2 = ctx.Products.Where(p => p.Name == "Batman").Single();
+                Console.WriteLine($"{product2.Name} ({product2.ProductId}) has {product2.ParentProducts.Count} parent products:");
+                foreach (var sub2 in product2.ParentProducts)
                 {
-                    Console.WriteLine($"{c.Name} ({c.ParentCategoryId})");
+                    Console.WriteLine($" {sub2.Name} ({sub2.ProductId})");
                 }
+                #endregion
 
+                Console.WriteLine(); Console.WriteLine();
+
+                #region Categories child and parent relations
+                Console.WriteLine("Category tests");
+                Console.WriteLine("--------------");
+                var cat = ctx.Categories.Where(c => c.Name == "Lego").First();
+                Console.WriteLine($"{cat.Name} ({cat.CategoryID}) has {cat.Children.Count} children:");
+                foreach (var c in cat.Children)
+                {
+                    Console.WriteLine($" {c.Name} ({c.CategoryID}) [parent details - {c.Parent.Name} ({c.Parent.CategoryID})]");
+                }
+                #endregion
+
+                Console.WriteLine(); Console.WriteLine();
+
+                #region SearchResults
+                Console.WriteLine("Search Result tests");
+                Console.WriteLine("-------------------");
+                var results = ctx.SearchResults.Select(sr => sr).ToList();
+                Console.WriteLine($"There are {results.Count} search results:");
+                foreach (var res in results)
+                {
+                    Console.WriteLine($" {res.DateOfMatch.ToString()} {res.Price:C2} - {res.Product.Name} - {res.Search.Name} - {res.Condition.Description} ");
+                }
+                #endregion
+
+
+                #region Stored Procs
                 //var stats = repo.GetPriceStatsForSearch(1, 2);
                 //Console.WriteLine($"{stats.NumberOfResults} results for search 1");
+                #endregion
             }
         }
 
