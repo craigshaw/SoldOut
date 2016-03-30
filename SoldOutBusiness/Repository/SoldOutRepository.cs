@@ -17,7 +17,7 @@ namespace SoldOutBusiness.Repository
 
     public class SoldOutRepository : ISoldOutRepository
     {
-        private SoldOutContext _context;
+        public SoldOutContext _context;
 
         public SoldOutContext SoldOutContext { set { _context = value; } }
 
@@ -57,7 +57,7 @@ namespace SoldOutBusiness.Repository
 
         public IEnumerable<Product> GetProductsByCategoryId(int categoryId)
         {           
-            var products = _context.Products.Select(s => s).Where(s => s.CategoryIds.Any(c => c.CategoryID == categoryId))
+            var products = _context.Products.Select(s => s).Where(s => s.Categories.Any(c => c.CategoryID == categoryId))
                                        .OrderBy(s => s.Name)
                                        .ToList();
 

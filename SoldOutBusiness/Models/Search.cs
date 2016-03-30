@@ -19,8 +19,8 @@ namespace SoldOutBusiness.Models
         public DateTime LastCleansed { get; set; }
         public double OriginalRRP { get; set; }
 
-        
         public int ProductId { get; set; }
+        public Product Product { get; set; }
 
         public ICollection<SearchResult> SearchResults { get; set; }
         public ICollection<SearchCriteria> SearchCriteria { get; set; }

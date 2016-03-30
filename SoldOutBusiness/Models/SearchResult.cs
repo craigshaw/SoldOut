@@ -14,7 +14,6 @@ namespace SoldOutBusiness.Models
         public DateTime? EndTime { get; set; }
         public int? NumberOfBidders { get; set; }
         public string ImageURL { get; set; }
-        public long SearchID { get; set; }
         public string Currency { get; set; }
         public string Location { get; set; }
         public string SiteID { get; set; }
@@ -23,11 +22,13 @@ namespace SoldOutBusiness.Models
         public double? ShippingCost { get; set; }
         public bool Suspicious { get; set; }
 
+        public long SearchID { get; set; }
         public virtual Search Search { get; set; }
 
         public int ConditionId { get; set; }
         public virtual Condition Condition { get; set; }
 
-        public int ProductId { get; set; }
+        public int? ProductId { get; set; }
+        public virtual Product Product { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 
 namespace SoldOutBusiness.DAL
 {
@@ -11,73 +12,89 @@ namespace SoldOutBusiness.DAL
         {
             base.Seed(context);
 
-            var currencies = new List<Ccy>()
+            #region Currencies
+            var currencies = new List<Currency>()
             {
-                    new Ccy() { Currency = "GBP" },
-                    new Ccy() { Currency = "USD" },
-                    new Ccy() { Currency = "JPY" },
-                    new Ccy() { Currency = "EUR" }
+                    new Currency() { CurrencyCode = "GBP" },
+                    new Currency() { CurrencyCode = "USD" },
+                    new Currency() { CurrencyCode = "JPY" },
+                    new Currency() { CurrencyCode = "EUR" }
             };
 
-            Category legoCategory = new Category() { Name = "Lego", CategoryID = 1, IncludeInKeywordSearch = true };
-            Category dcComicsCategory = new Category() { CategoryID = 2, Name = "DC Comics Super Heroes", ParentCategoryId = 1 };
-            Category batmanCategory = new Category() { CategoryID = 3, Name = "Batman Classic TV Series", ParentCategoryId = 2 };
-            Category miniFigsCategory = new Category() { CategoryID = 4, Name = "Minifigure", ParentCategoryId = 1, IncludeInKeywordSearch = true };
+            context.Currencies.AddRange(currencies);
+            context.SaveChanges();
+            #endregion
 
-            var Categories = new List<Category>()
-            {
-                    legoCategory,
-                    miniFigsCategory,
-                    new Category() { Name = "Star Wars", ParentCategoryId = 1 },
-                    new Category() { Name = "Ghostbusters", ParentCategoryId = 1, IncludeInKeywordSearch = true },
-                    dcComicsCategory,
-                    batmanCategory
-            };
-
-            context.Categories.AddRange(Categories);
+            #region Categories
+            Category legoCategory = new Category() { Name = "Lego", IncludeInKeywordSearch = true };
+            context.Categories.Add(legoCategory);
             context.SaveChanges();
 
+            context.Categories.AddRange(new List<Category>()
+            {
+                new Category() { Name = "DC Comics Super Heroes", ParentCategoryId = legoCategory.CategoryID },
+                new Category() { Name = "Minifigure", ParentCategoryId = legoCategory.CategoryID, IncludeInKeywordSearch = true },
+                new Category() { Name = "Star Wars", ParentCategoryId = legoCategory.CategoryID },
+                new Category() { Name = "Ghostbusters", ParentCategoryId = 1, IncludeInKeywordSearch = true }
+            });
+            context.SaveChanges();
+
+            var dcCategory = context.Categories.Where(c => c.Name == "DC Comics Super Heroes").Select(s => s).Single();
+
+            Category batmanCategory = new Category() { Name = "Batman Classic TV Series", ParentCategoryId = dcCategory.CategoryID };
+            context.Categories.Add(batmanCategory);
+            context.SaveChanges();
+            #endregion
+
+            #region Products
             Product batCave = new Product()
             {
-                ProductId = 2,
-                CategoryIds = new List<Category>() { dcComicsCategory, batmanCategory },
                 Name = "Batcave",
                 YearOfRelease = "2016",
                 ManufacturerCode = "76052",
-                OriginalRRP = new List<Price>() { new Price() { Amount = 229.99, PricedIn = new Ccy() { Currency = "GBP" }, IsRRP = true },
-                                                                  new Price() { Amount = 269.99, PricedIn = new Ccy() { Currency = "USD" }, IsRRP = true },
-                                                                  new Price() { Amount = 249.99, PricedIn = new Ccy() { Currency = "EUR" }, IsRRP = true }},
+                OriginalRRP = new List<Price>() { new Price() { Amount = 229.99, CurrencyCode = "GBP", IsRRP = true },
+                                                  new Price() { Amount = 269.99, CurrencyCode = "USD", IsRRP = true },
+                                                  new Price() { Amount = 249.99, CurrencyCode = "EUR", IsRRP = true } }
             };
+            batCave.Categories.Add(dcCategory);
+
+            context.Products.Add(batCave);
+            context.SaveChanges();
+
+            var miniFigsCategory = context.Categories.Where(c => c.Name == "Minifigure").Single();
 
             var Products = new List<Product>()
             {
-                new Product() { ProductId = 1, CategoryIds = new List<Category>() { dcComicsCategory }, Name = "The Bat vs. Bane", ManufacturerCode = "76001"  },
-                batCave,
-                new Product() { ParentProducts = new List<Product>() { batCave }, CategoryIds = new List<Category> { batmanCategory, miniFigsCategory }, Name = "Alfred Pennyworth" },
-                new Product() { ParentProducts = new List<Product>() { batCave }, CategoryIds = new List<Category> { batmanCategory, miniFigsCategory }, Name = "Batman" },
-                new Product() { ParentProducts = new List<Product>() { batCave }, CategoryIds = new List<Category> { batmanCategory, miniFigsCategory }, Name = "Bruce Wayne" },
-                new Product() { ParentProducts = new List<Product>() { batCave }, CategoryIds = new List<Category> { batmanCategory, miniFigsCategory }, Name = "Catwoman" },
-                new Product() { ParentProducts = new List<Product>() { batCave }, CategoryIds = new List<Category> { batmanCategory, miniFigsCategory }, Name = "Dick Grayson" },
-                new Product() { ParentProducts = new List<Product>() { batCave }, CategoryIds = new List<Category> { batmanCategory, miniFigsCategory }, Name = "Robin" },
-                new Product() { ParentProducts = new List<Product>() { batCave }, CategoryIds = new List<Category> { batmanCategory, miniFigsCategory }, Name = "The Joker" },
-                new Product() { ParentProducts = new List<Product>() { batCave }, CategoryIds = new List<Category> { batmanCategory, miniFigsCategory }, Name = "The Penguin" },
-                new Product() { ParentProducts = new List<Product>() { batCave }, CategoryIds = new List<Category> { batmanCategory, miniFigsCategory }, Name = "The Riddler" }
+                new Product() { Categories = new List<Category>() { dcCategory }, Name = "The Bat vs. Bane", ManufacturerCode = "76001"  },
+                new Product() { ParentProducts = new List<Product>() { batCave }, Categories = new List<Category> { batmanCategory, miniFigsCategory }, Name = "Alfred Pennyworth" },
+                new Product() { ParentProducts = new List<Product>() { batCave }, Categories = new List<Category> { batmanCategory, miniFigsCategory }, Name = "Batman" },
+                new Product() { ParentProducts = new List<Product>() { batCave }, Categories = new List<Category> { batmanCategory, miniFigsCategory }, Name = "Bruce Wayne" },
+                new Product() { ParentProducts = new List<Product>() { batCave }, Categories = new List<Category> { batmanCategory, miniFigsCategory }, Name = "Catwoman" },
+                new Product() { ParentProducts = new List<Product>() { batCave }, Categories = new List<Category> { batmanCategory, miniFigsCategory }, Name = "Dick Grayson" },
+                new Product() { ParentProducts = new List<Product>() { batCave }, Categories = new List<Category> { batmanCategory, miniFigsCategory }, Name = "Robin" },
+                new Product() { ParentProducts = new List<Product>() { batCave }, Categories = new List<Category> { batmanCategory, miniFigsCategory }, Name = "The Joker" },
+                new Product() { ParentProducts = new List<Product>() { batCave }, Categories = new List<Category> { batmanCategory, miniFigsCategory }, Name = "The Penguin" },
+                new Product() { ParentProducts = new List<Product>() { batCave }, Categories = new List<Category> { batmanCategory, miniFigsCategory }, Name = "The Riddler" }
             };
 
             context.Products.AddRange(Products);
             context.SaveChanges();
+            #endregion
 
-
+            #region Searches
             // Searches
+            var set = context.Products.Where(p => p.Name == "The Bat vs. Bane").Single();
             var searches = new List<Search>()
             {
                 new Search() { Name = "Lego 76001", Description = "The Bat vs. Bane", Link = "http://brickset.com/sets/76001-1/The-Bat-vs-Bane-Tumbler-Chase",
-                LastCleansed = DateTime.Now.AddYears(-1), LastRun = DateTime.Now.AddYears(-1), OriginalRRP = 39.99}
+                ProductId = set.ProductId, LastCleansed = DateTime.Now.AddYears(-1), LastRun = DateTime.Now.AddYears(-1), OriginalRRP = 39.99}
             };
 
             context.Searches.AddRange(searches);
             context.SaveChanges();
-
+            #endregion
+ 
+            #region Conditions
             // Conditions
             var conditions = new List<Condition>()
             {
@@ -96,8 +113,39 @@ namespace SoldOutBusiness.DAL
 
             context.Conditions.AddRange(conditions);
             context.SaveChanges();
+            #endregion
 
-            // TODO: Phrases
+            #region SearchResults
+            var search = context.Searches.First();
+            var results = new List<SearchResult>()
+            {
+                new SearchResult() { ConditionId = 2, DateOfMatch = DateTime.Now, ProductId = set.ProductId,
+                EndTime = DateTime.Now.AddHours(-1), Price = 29.99, SearchID = search.SearchId, }
+            };
+
+            context.SearchResults.AddRange(results);
+            context.SaveChanges();
+            #endregion
+
+            #region Phrases
+            var phrases = new List<SuspiciousPhrase>()
+            {
+                new SuspiciousPhrase() { Phrase = "minifigure" },
+                new SuspiciousPhrase() { Phrase = "minifigures" },
+                new SuspiciousPhrase() { Phrase = "no box" }
+            };
+
+            context.SuspiciousPhrases.AddRange(phrases);
+            context.SaveChanges();
+
+            var searchPhrases = new List<SearchSuspiciousPhrase>()
+            {
+                new SearchSuspiciousPhrase() { SearchId = search.SearchId, Phrase = "bane" }
+            };
+
+            context.SearchSuspiciousPhrases.AddRange(searchPhrases);
+            context.SaveChanges();
+            #endregion
         }
     }
 }
