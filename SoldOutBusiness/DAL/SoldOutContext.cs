@@ -48,6 +48,12 @@ namespace SoldOutBusiness.DAL
                     pc.MapRightKey("CategoryId");
                     pc.ToTable("ProductCategory");
                 });
+
+            // Category self references for parent / child relations
+            modelBuilder.Entity<Category>()
+                .HasMany(c => c.Children)
+                .WithOptional(c => c.Parent)
+                .HasForeignKey(c => c.ParentCategoryId);
         }
     }
 }

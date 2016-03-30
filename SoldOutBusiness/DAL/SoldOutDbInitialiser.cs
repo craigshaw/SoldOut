@@ -93,7 +93,7 @@ namespace SoldOutBusiness.DAL
             context.Searches.AddRange(searches);
             context.SaveChanges();
             #endregion
-
+ 
             #region Conditions
             // Conditions
             var conditions = new List<Condition>()
@@ -115,6 +115,18 @@ namespace SoldOutBusiness.DAL
             context.SaveChanges();
             #endregion
 
+            #region SearchResults
+            var search = context.Searches.First();
+            var results = new List<SearchResult>()
+            {
+                new SearchResult() { ConditionId = 2, DateOfMatch = DateTime.Now, ProductId = set.ProductId,
+                EndTime = DateTime.Now.AddHours(-1), Price = 29.99, SearchID = search.SearchId, }
+            };
+
+            context.SearchResults.AddRange(results);
+            context.SaveChanges();
+            #endregion
+
             #region Phrases
             var phrases = new List<SuspiciousPhrase>()
             {
@@ -126,7 +138,6 @@ namespace SoldOutBusiness.DAL
             context.SuspiciousPhrases.AddRange(phrases);
             context.SaveChanges();
 
-            var search = context.Searches.First();
             var searchPhrases = new List<SearchSuspiciousPhrase>()
             {
                 new SearchSuspiciousPhrase() { SearchId = search.SearchId, Phrase = "bane" }
