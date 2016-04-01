@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SoldOutBusiness.DAL
 {
-    public class SoldOutDbInitialiser : DropCreateDatabaseIfModelChanges<SoldOutContext>
+    public class SoldOutDbInitialiser : CreateDatabaseIfNotExists<SoldOutContext>
     {
         protected override void Seed(SoldOutContext context)
         {
