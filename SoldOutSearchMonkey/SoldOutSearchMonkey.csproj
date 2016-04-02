@@ -77,6 +77,8 @@
     <Compile Include="Model\ItemReviewSummary.cs" />
     <Compile Include="Services\CompletedItemReviewer.cs" />
     <Compile Include="Services\ICompletedItemReviewer.cs" />
+    <Compile Include="Services\IResultAggregator.cs" />
+    <Compile Include="Services\ResultAggregator.cs" />
     <Compile Include="Services\SearchMonkeyService.cs" />
     <Compile Include="SoldOutSearchMonkey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

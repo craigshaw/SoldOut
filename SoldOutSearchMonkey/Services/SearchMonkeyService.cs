@@ -18,7 +18,7 @@ using System.Collections.Generic;
 
 namespace SoldOutSearchMonkey.Services
 {
-    class ConditionalSummary
+    internal class ConditionalSummary
     {
         public string Condition { get; set; }
         public int Total { get; set; }
@@ -54,9 +54,10 @@ namespace SoldOutSearchMonkey.Services
         private readonly ISearchRepositoryFactory _repoFactory;
         private readonly ICompletedItemReviewer _completedItemReviewer;
         private IConditionResolver _conditionResolver;
+        private IResultAggregator _resultAggregator;
 
         public SearchMonkeyService(IEbayFinder finder, INotifier notifier, ISearchRepositoryFactory repoFactory,
-                                   ICompletedItemReviewer completedItemReviewer)
+                                   ICompletedItemReviewer completedItemReviewer, IResultAggregator resultAggregator)
         {
             if (finder == null)
                 throw new ArgumentNullException(nameof(finder));
@@ -70,10 +71,14 @@ namespace SoldOutSearchMonkey.Services
             if (completedItemReviewer == null)
                 throw new ArgumentNullException(nameof(completedItemReviewer));
 
+            if (resultAggregator == null)
+                throw new ArgumentNullException(nameof(resultAggregator)); 
+
             _finder = finder;
             _notifier = notifier;
             _repoFactory = repoFactory;
             _completedItemReviewer = completedItemReviewer;
+            _resultAggregator = resultAggregator;
 
             _cts = new CancellationTokenSource();
 
@@ -190,8 +195,7 @@ namespace SoldOutSearchMonkey.Services
                                 // Add them to the relevant search
                                 repo.AddSearchResults(search.SearchId, foundItems);
 
-                                // Send a notification out
-                                NotifyResultsReady(searchSummary);
+                                ReportOnResults(searchSummary);
 
                                 // Add to the total harvested
                                 _resultCounter.Increment(search.Description, searchSummary.TotalResults);
@@ -245,8 +249,9 @@ namespace SoldOutSearchMonkey.Services
             _notifier.PostMessage($"The eBay API has given me an error: {errorMessage}");
         }
 
-        private void NotifyResultsReady(SearchSummary summary)
+        private void ReportOnResults(SearchSummary summary)
         {
+            // Log something
             StringBuilder notification = new StringBuilder($"I've just logged {summary.TotalResults} new search results for {summary.Name} (<{summary.Link}|{summary.Description}>). ");
 
             foreach (var condition in summary.Summary)
@@ -254,10 +259,10 @@ namespace SoldOutSearchMonkey.Services
                 notification.Append($"{condition.Condition} - {condition.Total} total, {condition.Suspicious} suspicious. ");
             }
 
-#if (DEBUG == false)
-            _notifier.PostMessage(notification.ToString());
-#endif
             _log.Info(notification.ToString());
+
+            // Aggregate
+            _resultAggregator.Add(summary);
         }
 
         public void Start()
@@ -276,6 +281,9 @@ namespace SoldOutSearchMonkey.Services
 
             // Mark start time
             StartTime = DateTime.Now;
+
+            // Start the result notifier
+            _resultAggregator.Start();
 
             _log.Info($"SearchMonkey v{Version} Started");
 #if (DEBUG == false)
@@ -306,6 +314,7 @@ namespace SoldOutSearchMonkey.Services
         {
             _cts.Cancel();
             _cts.Token.WaitHandle.WaitOne();
+            _resultAggregator.Stop();
             _log.Info("SearchMonkey Stopped");
 #if (DEBUG == false)
             _notifier.PostMessage("SearchMonkey Stopped");

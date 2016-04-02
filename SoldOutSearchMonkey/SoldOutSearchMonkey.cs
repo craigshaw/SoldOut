@@ -58,12 +58,14 @@ namespace SoldOutSearchMonkey
                                         });
 
                         var factory = new SearchRepositoryFactory();
+
+                        var resultAggregator = new ResultAggregator(notifier, Int32.Parse(ConfigurationManager.AppSettings["ReportingPeriod"]));
                         
                         using (var repo = factory.CreateSearchRepository())
                         {
                             var reviewer = new CompletedItemReviewer(repo.GetBasicSuspiciousPhrases().ToList());
 
-                            return new SearchMonkeyService(finder, notifier, factory, reviewer);
+                            return new SearchMonkeyService(finder, notifier, factory, reviewer, resultAggregator);
                         }
                     });
                     service.WhenStarted(svc => svc.Start());
