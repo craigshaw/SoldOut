@@ -39,7 +39,7 @@ namespace SoldOutSearchMonkey.Services
             lock (_summaryLock)
             {
                 // Generate and send a notification summarising what we've got stored
-                StringBuilder notification = new StringBuilder($"I've harvested {_results.TotalItemsHarvested} results in the last {_reportingPeriod} minutes\n");
+                StringBuilder notification = new StringBuilder($"I've harvested {_results.TotalItemsHarvested} results from {_results.TotalSearchesRan} searches in the last {_reportingPeriod} minutes\n");
 
                 foreach (var condition in _results.ConditionalTotals)
                 {
@@ -58,6 +58,7 @@ namespace SoldOutSearchMonkey.Services
             // Add the given results to our aggregate
             lock (_summaryLock)
             {
+                _results.TotalSearchesRan++;
                 _results.TotalItemsHarvested += searchSummary.TotalResults;
 
                 foreach (var condition in searchSummary.Summary)
@@ -96,6 +97,7 @@ namespace SoldOutSearchMonkey.Services
             ConditionalTotals = new Dictionary<string, ConditionalSummary>();
         }
 
+        public int TotalSearchesRan { get; set; }
         public int TotalItemsHarvested { get; set; }
         public IDictionary<string, ConditionalSummary> ConditionalTotals { get; set; }
     }

@@ -201,6 +201,9 @@ namespace SoldOutSearchMonkey.Services
                                 _resultCounter.Increment(search.Description, searchSummary.TotalResults);
                             }
 
+                            // Aggregate
+                            _resultAggregator.Add(searchSummary);
+
                             repo.SaveAll();
                         }
                         else
@@ -260,9 +263,6 @@ namespace SoldOutSearchMonkey.Services
             }
 
             _log.Info(notification.ToString());
-
-            // Aggregate
-            _resultAggregator.Add(summary);
         }
 
         public void Start()
