@@ -26,7 +26,7 @@ namespace SoldOutBusiness.Mappers
                 SiteID = i.globalId,
                 Type = i.listingInfo.listingType,
                 ShippingCost = (i.shippingInfo.shippingServiceCost != null) ? i.shippingInfo.shippingServiceCost.Value : 0.0f,
-                ConditionId = resolver.ConditionIdFromEBayConditionId(i.condition.conditionId),
+                ConditionId = resolver.ConditionIdFromEBayConditionId((i.condition == null)? 0 : i.condition.conditionId),
                 ProductId = productId
             });
         }
