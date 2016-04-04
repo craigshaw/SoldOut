@@ -287,7 +287,7 @@ namespace SoldOutSearchMonkey.Services
 
             _log.Info($"SearchMonkey v{Version} Started");
 #if (DEBUG == false)
-            _notifier.PostMessage("SearchMonkey Started");
+            _notifier.PostMessage($"SearchMonkey v{Version} Started");
 #endif
         }
 
