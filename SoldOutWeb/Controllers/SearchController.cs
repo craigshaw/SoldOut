@@ -6,7 +6,6 @@ using SoldOutWeb.Services;
 
 namespace SoldOutWeb.Controllers
 {
-    [Route("{action=All}")]
     public class SearchController : Controller
     {
         private ISoldOutRepository _repository;
@@ -19,6 +18,7 @@ namespace SoldOutWeb.Controllers
             _priceHistoryService = new PriceHistoryService(_repository);
         }
 
+        [Route("Searches/All", Name = "Searches")]
         public ActionResult All()
         {
             var searches = _repository.GetAllSearchesWithResults();

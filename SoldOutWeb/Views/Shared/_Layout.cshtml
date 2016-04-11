@@ -20,11 +20,18 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("SoldOut (Working Title)", "All", "Search", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("SoldOut (Working Title)", "Home", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "All", "Search")</li>
+                    <li>@Html.RouteLink(linkText: "Home",
+                        routeName: "Home",
+                        routeValues: new { controller = "Home", action = "Home"})</li>
+                    <li>
+                        @Html.RouteLink(linkText: "Search",
+                        routeName: "Searches",
+                        routeValues: new { controller = "Search", action = "All" })
+                </li>
                 </ul>
             </div>
         </div>

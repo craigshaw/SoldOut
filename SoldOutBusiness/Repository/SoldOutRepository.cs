@@ -216,6 +216,11 @@ namespace SoldOutBusiness.Repository
             return _context.Categories.Select(s => s).Where(s => s.ParentCategoryId == null);
         }
 
+        public Product GetProductByID(int productID)
+        {
+            return _context.Products.Where(p => p.ProductId == productID).FirstOrDefault();
+        }
+
         #region IDisposable Support
         public void Dispose()
         {

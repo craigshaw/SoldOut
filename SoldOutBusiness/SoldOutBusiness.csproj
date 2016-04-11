@@ -72,7 +72,9 @@
     <Compile Include="Models\SuspiciousPhrase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\ISoldOutRepository.cs" />
+    <Compile Include="Repository\IStatsRepository.cs" />
     <Compile Include="Repository\SoldOutRepository.cs" />
+    <Compile Include="Repository\StatsRepository.cs" />
     <Compile Include="Services\EbayFinder.cs" />
     <Compile Include="Services\IEbayFinder.cs" />
     <Compile Include="Services\Notifiers\INotifier.cs" />

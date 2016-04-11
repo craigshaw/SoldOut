@@ -26,16 +26,11 @@ namespace SoldOutBusiness.Repository
         IEnumerable<SearchSuspiciousPhrase> GetSuspiciousPhrasesForSearch(long searchId);
         bool ResetSuspiciousSearchResults(IEnumerable<SearchResult> results);
         IList<Condition> GetConditions();
-
         IEnumerable<Category> GetAllCategories();
-
         IEnumerable<Category> GetParentCategories();
-
-        
-
         IEnumerable<Product> GetAllProducts();
-
         IEnumerable<Product> GetProductsByCategoryId(int categoryId);
         IEnumerable<Product> GetProductsByParentProductId(int parentProductId);
+        Product GetProductByID(int productID);
     }
 }
