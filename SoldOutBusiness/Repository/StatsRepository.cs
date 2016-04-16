@@ -32,7 +32,8 @@ namespace SoldOutBusiness.Repository
                           && sr2.ConditionId == conditionId
                     group sr2 by s.ProductId into grouped
                     orderby grouped.Count() descending
-                    select new ProductItemCount() { ProductId = grouped.Key, ItemCount = grouped.Count() }).Take(numberToReturn);
+                    select new ProductItemCount() { ProductId = grouped.Key, ItemCount = grouped.Count(),
+                        AveragePrice = grouped.Average(sr => sr.Price) }).Take(numberToReturn);
         }
 
         public IEnumerable<SearchResult> MostExpensiveProducts(int conditionId, int numberToReturn = 10, int daysToLookBack = 7)

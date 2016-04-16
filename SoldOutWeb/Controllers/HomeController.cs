@@ -21,7 +21,7 @@ namespace SoldOutWeb.Controllers
         public ActionResult Home()
         {
             // Most popular new
-            var mostPopularNewProducts = _statsRepository.MostPopularProducts(2, 10, 7);
+            var mostPopularNewProducts = _statsRepository.MostPopularProducts(2, 10, 30);
             return View(mostPopularNewProducts);
         }
     }

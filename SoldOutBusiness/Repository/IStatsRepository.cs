@@ -14,5 +14,6 @@ namespace SoldOutBusiness.Repository
     {
         public int ProductId { get; set; }
         public int ItemCount { get; set; }
+        public double? AveragePrice { get; set; }
     }
 }

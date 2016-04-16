@@ -7,24 +7,64 @@
 
 <div class="row">
     <div class="col-md-6">
-        <h3>Most Popular Sets This Week</h3>
-        <table class="table table-striped">
+        <h3>Most Popular New Sets This Week</h3>
+        <table class="table table-condensed">
             <thead>
                 <tr>
+                    <th></th>
                     <th>Product</th>
-                    <th>Number Sold</th>
+                    <th># Sold</th>
+                    <th>Av Price</th>
                 </tr>
             </thead>
             <tbody>
                 @using (var r = new SoldOutBusiness.Repository.SoldOutRepository())
                 {
+                    int position = 1;
                     foreach (var product in Model)
                     {
                         var p = r.GetProductByID(product.ProductId);
                         <tr>
-                            <td>@Html.ActionLink(p.Name, "Product", new { Id = product.ProductId })</td>
+                            <td>@string.Format($"{position++}.")</td>
+                            <td>@Html.ActionLink(string.Format($"{p.ManufacturerCode} {p.Name}"), "Product", new { Id = product.ProductId })</td>
                             <td>@product.ItemCount</td>
+                            <td>@string.Format($"{product.AveragePrice:C2}")</td>
                         </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-md-6">
+        <h3>Most Popular Used Sets This Week</h3>
+        <table class="table table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Product</th>
+                    <th># Sold</th>
+                    <th>Av Price</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @using (var sr = new SoldOutBusiness.Repository.StatsRepository())
+                {
+                    var used = sr.MostPopularProducts(7, 10, 30);
+                    using (var r = new SoldOutBusiness.Repository.SoldOutRepository())
+                    {
+                        int position = 1;
+                        foreach (var product in used)
+                        {
+                        var p = r.GetProductByID(product.ProductId);
+                        <tr>
+                            <td>@string.Format($"{position++}.")</td>
+                            <td>@Html.ActionLink(string.Format($"{p.ManufacturerCode} {p.Name}"), "Product", new { Id = product.ProductId })</td>
+                            <td>@product.ItemCount</td>
+                            <td>@string.Format($"{product.AveragePrice:C2}")</td>
+                        </tr>
+                        }
                     }
                 }
             </tbody>
