@@ -25,15 +25,18 @@ namespace SoldOutBusiness.Repository
 
         public IEnumerable<ProductItemCount> MostPopularProducts(int conditionId, int numberToReturn = 10, int daysToLookBack = 7)
         {
-            return (from s in _context.Searches
-                    join sr in _context.SearchResults on s.SearchId equals sr.SearchID into srgroup
-                    from sr2 in srgroup
-                    where DbFunctions.AddDays(sr2.DateOfMatch, daysToLookBack) > DateTime.Now
-                          && sr2.ConditionId == conditionId
-                    group sr2 by s.ProductId into grouped
+            return (from product in _context.Products
+                    join results in _context.SearchResults on product.ProductId equals results.ProductId into productResults
+                    from productResult in productResults
+                    where DbFunctions.AddDays(productResult.DateOfMatch, daysToLookBack) > DateTime.Now
+                          && productResult.ConditionId == conditionId
+                    group productResult by new { ProductId = product.ProductId,
+                                       ManufacturerCode = product.ManufacturerCode,
+                                       Name = product.Name }  into grouped
                     orderby grouped.Count() descending
-                    select new ProductItemCount() { ProductId = grouped.Key, ItemCount = grouped.Count(),
-                        AveragePrice = grouped.Average(sr => sr.Price) }).Take(numberToReturn);
+                    select new ProductItemCount() { ProductId = grouped.Key.ProductId, ItemCount = grouped.Count(),
+                        AveragePrice = grouped.Average(sr => sr.Price), ManufacturerCode = grouped.Key.ManufacturerCode,
+                        Name = grouped.Key.Name}).Take(numberToReturn);
         }
 
         public IEnumerable<SearchResult> MostExpensiveProducts(int conditionId, int numberToReturn = 10, int daysToLookBack = 7)

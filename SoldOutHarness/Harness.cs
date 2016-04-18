@@ -37,29 +37,42 @@ namespace SoldOutHarness
 
         private void TestStats()
         {
-            var r = new SoldOutRepository();
             using (var repo = new StatsRepository())
             {
-                var top = repo.MostPopularProducts(7);
+                var top = repo.MostPopularProducts(2, 10, 30);
 
-                foreach(var search in top)
+                var position = 1;
+                foreach (var product in top)
                 {
-                    var p = r.GetProductByID(search.ProductId);
-                    Console.WriteLine($"{p.Name}: {search.ItemCount}");
-                }
-
-                Console.WriteLine(Environment.NewLine); Console.WriteLine(Environment.NewLine);
-                Console.WriteLine("Most expensive items");
-
-                var exp = repo.MostExpensiveProducts(2);
-
-                foreach (var res in exp)
-                {
-                    var pr = res.Product;
-                    Console.WriteLine($"{pr.Name}: {res.Price:C2} {res.SearchResultID}");
+                    Console.WriteLine($"{position++}. {product.ManufacturerCode} {product.Name} {product.ItemCount} {product.AveragePrice:C2}");
                 }
             }
-            r.Dispose();
+
+
+
+            //    var r = new SoldOutRepository();
+            //using (var repo = new StatsRepository())
+            //{
+            //    var top = repo.MostPopularProducts(7);
+
+            //    foreach(var search in top)
+            //    {
+            //        var p = r.GetProductByID(search.ProductId);
+            //        Console.WriteLine($"{p.Name}: {search.ItemCount}");
+            //    }
+
+            //    Console.WriteLine(Environment.NewLine); Console.WriteLine(Environment.NewLine);
+            //    Console.WriteLine("Most expensive items");
+
+            //    var exp = repo.MostExpensiveProducts(2);
+
+            //    foreach (var res in exp)
+            //    {
+            //        var pr = res.Product;
+            //        Console.WriteLine($"{pr.Name}: {res.Price:C2} {res.SearchResultID}");
+            //    }
+            //}
+            //r.Dispose();
         }
 
         private void TestDB()

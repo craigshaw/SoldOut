@@ -1,8 +1,4 @@
 ﻿using SoldOutBusiness.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace SoldOutWeb.Controllers
@@ -20,9 +16,14 @@ namespace SoldOutWeb.Controllers
         // GET: Home
         public ActionResult Home()
         {
-            // Most popular new
-            var mostPopularNewProducts = _statsRepository.MostPopularProducts(2, 10, 30);
-            return View(mostPopularNewProducts);
+            return View();
+        }
+
+        [Route("Api/Popular/{conditionId}")]
+        public JsonResult Popular(int conditionId)
+        {
+            var mostPopularProducts = _statsRepository.MostPopularProducts(conditionId, 10, 30);
+            return Json(mostPopularProducts, JsonRequestBehavior.AllowGet);
         }
     }
 }
