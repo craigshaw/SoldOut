@@ -6,7 +6,7 @@
         return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
     }
 
-    function loadPopularProducts(productContainer) {
+    function loadPopularProductsTable(productContainer) {
         var container = $('#' + productContainer);
         var loader = container.find('#loader');
         var errorMessage = container.find('#errorMessage');
@@ -18,14 +18,32 @@
             contentType: 'application/json',
             url: 'Api/Popular/' + conditionId,
             success: function (productData) {
+                // Create the chart data from the API response
+                var data = new google.visualization.DataTable();
+
+                data.addColumn('number', '#');
+                data.addColumn('string', 'Product');
+                data.addColumn('number', 'Sold');
+                data.addColumn('number', 'Av Price');
+
                 // Create a table from the response data
-                var html = buildProductTableHTMLFrom(productData, conditionId);
+                for (var i = 0; i < productData.length; i++) {
+                    data.addRow([(i+1),
+                                 "<a href='/Product/" + productData[i].ProductId + "'>" + productData[i].ManufacturerCode + " " + productData[i].Name + "</a>",
+                                 productData[i].ItemCount,
+                                 productData[i].AveragePrice
+                    ]);
+                }
 
                 // Hide the loader
                 loader.hide();
 
-                // smash it in the DOM
-                container.append(html);
+                var table = new google.visualization.Table(container[0]);
+
+                var formatter = new google.visualization.NumberFormat({ prefix: '£' });
+                formatter.format(data, 3); // Format price data correctly
+
+                table.draw(data, { showRowNumber: false, allowHtml: true, width: '100%', height: '100%' });
             },
             error: function () {
                 loader.hide();
@@ -34,27 +52,16 @@
         });
     }
 
-    function buildProductTableHTMLFrom(productData, conditionId)
+    function loadProductTables()
     {
-        var HTML = "<h3>Most Popular " + conditions[conditionId] + " Sets This Week</h3>";
-        HTML += "<table class='table table-condensed'><thead><tr><th></th><th>Product</th><th># Sold</th><th>Av Price</th></tr></thead>";
-        HTML += "<tbody>";
-
-        for (var i = 0; i < productData.length; i++) {
-            HTML += "<tr><td>" + (i + 1) + ".</td><td>";
-            HTML += "<a href='/Product/" + productData[i].ProductId + "'>" + productData[i].ManufacturerCode + " " + productData[i].Name + "</a></td>";
-            HTML += "<td>" + productData[i].ItemCount + "</td>";
-            HTML += "<td>" + round(productData[i].AveragePrice, 2) + "</td></tr>";
-            // TODO: Format the average price as the MVC version would (i.e. £24.10)
-        }
-
-        HTML += "</tbody></table>";
-
-        return HTML;
+        loadPopularProductsTable('newProductContainer');
+        loadPopularProductsTable('usedProductContainer');
     }
 
     $(function () {
-        loadPopularProducts('newProductContainer');
-        loadPopularProducts('usedProductContainer');
+        google.charts.load('current', {
+            'packages': ['table']
+        });
+        google.charts.setOnLoadCallback(loadProductTables);
     })
 })();

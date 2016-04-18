@@ -1,8 +1,4 @@
 ﻿(function () {
-    google.load('visualization', '1', {
-        'packages': ['corechart', 'controls']
-    });
-
     var conditions = { 2: "New", 7: "Used" };
 
     // Courtesy of Jack Moore, http://www.jacklmoore.com/notes/rounding-in-javascript/
@@ -61,8 +57,13 @@
         });
     }
 
-    $(function () {
+    function loadCharts() {
         loadChart('chartContainer');
         loadChart('usedChartContainer');
+    }
+
+    $(function () {
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(loadCharts);
     })
 })();
