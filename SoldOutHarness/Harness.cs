@@ -39,12 +39,19 @@ namespace SoldOutHarness
         {
             using (var repo = new StatsRepository())
             {
-                var top = repo.MostPopularProducts(2, 10, 30);
+                //var top = repo.MostPopularProducts(2, 10, 30);
 
-                var position = 1;
-                foreach (var product in top)
+                //var position = 1;
+                //foreach (var product in top)
+                //{
+                //    Console.WriteLine($"{position++}. {product.ManufacturerCode} {product.Name} {product.ItemCount} {product.AveragePrice:C2}");
+                //}
+
+                var exp = repo.MostExpensiveProducts(2,10,30);
+
+                foreach (var res in exp)
                 {
-                    Console.WriteLine($"{position++}. {product.ManufacturerCode} {product.Name} {product.ItemCount} {product.AveragePrice:C2}");
+                    Console.WriteLine($"{res.Name}: {res.AveragePrice:C2} {res.ProductId}");
                 }
             }
 

@@ -132,6 +132,11 @@ namespace SoldOutBusiness.Repository
             return _context.Searches.Where(s => s.SearchId == searchID).FirstOrDefault();
         }
 
+        public Search GetSearchByProductID(int productID)
+        {
+            return _context.Searches.Where(s => s.ProductId == productID).FirstOrDefault();
+        }
+
         public IDictionary<long, int> GetUncleansedCounts()
         {
             var uncleansedCounts = new Dictionary<long, int>();

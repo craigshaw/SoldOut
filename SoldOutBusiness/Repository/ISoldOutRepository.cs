@@ -7,6 +7,7 @@ namespace SoldOutBusiness.Repository
     public interface ISoldOutRepository : IDisposable
     {
         Search GetSearchByID(long searchID);
+        Search GetSearchByProductID(int productID); 
         Search GetNextSearch(long searchID);
         IEnumerable<Search> GetAllSearches();
         IEnumerable<Search> GetAllSearchesWithResults();

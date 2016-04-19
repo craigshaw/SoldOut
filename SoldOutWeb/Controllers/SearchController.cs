@@ -30,6 +30,29 @@ namespace SoldOutWeb.Controllers
             return View(searches);
         }
 
+        [Route("Product/{id?}")]
+        public ActionResult Product(int? id)
+        {
+            int productId = 1;
+
+            if (id.HasValue)
+                productId = id.Value;
+
+            var search = _repository.GetSearchByProductID(productId);
+
+            SearchSummary summary = new SearchSummary()
+            {
+                Name = search.Name,
+                Description = search.Description,
+                SearchID = search.SearchId,
+                LastRun = search.LastRun,
+                TotalResults = _repository.ResultCount(search.SearchId),
+                Link = search.Link
+            };
+
+            return View("Summary", summary);
+        }
+
         [Route("Summmary/{id?}")]
         public ActionResult Summary(int? id)
         {

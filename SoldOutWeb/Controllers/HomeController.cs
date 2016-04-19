@@ -25,5 +25,12 @@ namespace SoldOutWeb.Controllers
             var mostPopularProducts = _statsRepository.MostPopularProducts(conditionId, 10, 30);
             return Json(mostPopularProducts, JsonRequestBehavior.AllowGet);
         }
+
+        [Route("Api/Expensive/")]
+        public JsonResult Expensive()
+        {
+            var mostExpensiveProducts = _statsRepository.MostExpensiveProducts(2, 10, 30);
+            return Json(mostExpensiveProducts, JsonRequestBehavior.AllowGet);
+        }
     }
 }
