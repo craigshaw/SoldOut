@@ -117,9 +117,12 @@ namespace SoldOutBusiness.Repository
             return _context.SearchResults.Where(r => r.SearchID == searchId);
         }
     
-        public IEnumerable<SearchResult> GetSearchResults(long searchId, int conditionId)
+        public IEnumerable<SearchResult> GetSearchResults(long searchId, int conditionId, bool includeSuspiciousItems = true)
         {
-            return _context.SearchResults.Where(r => r.SearchID == searchId && r.ConditionId == conditionId);
+            if(includeSuspiciousItems)
+                return _context.SearchResults.Where(r => r.SearchID == searchId && r.ConditionId == conditionId);
+            else
+                return _context.SearchResults.Where(r => r.SearchID == searchId && r.ConditionId == conditionId && r.Suspicious == false);
         }
 
         public IEnumerable<SearchResult> GetSearchResultsSince(long searchId, DateTime since)

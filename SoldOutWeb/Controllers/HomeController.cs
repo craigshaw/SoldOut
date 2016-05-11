@@ -19,10 +19,19 @@ namespace SoldOutWeb.Controllers
             return View();
         }
 
-        [Route("Api/Popular/{conditionId}")]
-        public JsonResult Popular(int conditionId)
+        [Route("Api/TopSellers/")]
+        public JsonResult Popular()
         {
-            var mostPopularProducts = _statsRepository.MostPopularProducts(conditionId, 10, 30);
+            var topSellers = _statsRepository.TopSellingProducts(2, 10, 30);
+            return Json(topSellers, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [Route("Api/Popular/{conditionId}")]
+        public JsonResult Popular(int? conditionId)
+        {
+            int cId = conditionId.HasValue ? conditionId.Value : 2;
+            var mostPopularProducts = _statsRepository.MostPopularProductsByCondition(cId, 10, 30);
             return Json(mostPopularProducts, JsonRequestBehavior.AllowGet);
         }
 

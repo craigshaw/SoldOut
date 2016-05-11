@@ -19,7 +19,7 @@ namespace SoldOutWeb.Services
         public IList<PriceHistory> CreateBasicPriceHistory(int searchId, int conditionId, AggregationPeriod aggregationPeriod)
         {
             var aggregator = CreatePriceAggregatorForAggregationPeriod(aggregationPeriod);
-            var result = _repository.GetSearchResults(searchId, conditionId);
+            var result = _repository.GetSearchResults(searchId, conditionId,false);
             return aggregator(result);
         }
 

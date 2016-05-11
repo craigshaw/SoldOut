@@ -23,7 +23,7 @@ namespace SoldOutTests
 
             var results = sut.CreateBasicPriceHistory(searchId, conditionId);
 
-            A.CallTo(() => mockRepository.GetSearchResults(searchId, conditionId)).MustHaveHappened();
+            A.CallTo(() => mockRepository.GetSearchResults(searchId, conditionId, true)).MustHaveHappened();
 
             Assert.AreEqual(results.Count(), 16);
         }
@@ -32,7 +32,7 @@ namespace SoldOutTests
         {
             var mockRepository = A.Fake<ISoldOutRepository>();
 
-            A.CallTo(() => mockRepository.GetSearchResults(searchId, conditionId)).Returns(CreateTestSearchResults());
+            A.CallTo(() => mockRepository.GetSearchResults(searchId, conditionId, true)).Returns(CreateTestSearchResults());
 
             return mockRepository;
         }
@@ -60,7 +60,7 @@ namespace SoldOutTests
         {
             var mockRepository = A.Fake<ISoldOutRepository>();
 
-            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored, A<int>.Ignored)).Returns(CreateListOfTwoSearchResults());
+            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored, A<int>.Ignored, A<bool>.Ignored)).Returns(CreateListOfTwoSearchResults());
 
             var sut = new PriceHistoryService(mockRepository) as IPriceHistoryService;
 
@@ -98,7 +98,7 @@ namespace SoldOutTests
         {
             var mockRepository = A.Fake<ISoldOutRepository>();
 
-            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored, A<int>.Ignored)).Returns(CreateListOfTwoSearchResults());
+            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored, A<int>.Ignored, A<bool>.Ignored)).Returns(CreateListOfTwoSearchResults());
 
             var sut = new PriceHistoryService(mockRepository) as IPriceHistoryService;
 
@@ -115,7 +115,7 @@ namespace SoldOutTests
         {
             var mockRepository = A.Fake<ISoldOutRepository>();
 
-            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored, A<int>.Ignored)).Returns(CreateTestSearchResults().Take(5));
+            A.CallTo(() => mockRepository.GetSearchResults(A<long>.Ignored, A<int>.Ignored, A<bool>.Ignored)).Returns(CreateTestSearchResults().Take(5));
 
             var sut = new PriceHistoryService(mockRepository) as IPriceHistoryService;
 

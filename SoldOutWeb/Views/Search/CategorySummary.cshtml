@@ -8,15 +8,12 @@
         <h1>Category Summary</h1>
         <table class="table table-striped">
             <tbody>
-                @foreach (var search in Model)
+                <!--@foreach (var category in Model)
                 {
                     <tr>
-                        <td>@Html.ActionLink(search.Name, "Summary", new { Id = search.SearchId })</td>
-                        <td>@search.Description</td>
-                        <td>@search.SearchResults.Count()</td>
-                        <td>@search.LastRun</td>
+                        <td>@Html.ActionLink(category.Name, "Summary", new { Id = category.CategoryID })</td>                        
                     </tr>
-                }
+                }-->
             </tbody>
         </table>
     </div>

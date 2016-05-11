@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
+using System.Data.SqlClient;
 
 namespace SoldOutBusiness.Repository
 {
@@ -22,10 +23,43 @@ namespace SoldOutBusiness.Repository
 #endif
         }
 
-        public IEnumerable<ProductItemCount> MostPopularProducts(int conditionId, int numberToReturn = 10, int daysToLookBack = 7)
+        public IEnumerable<ProductSaleSummary> TopSellingProducts(int categoryId, int numberToReturn, int daysToLookBack)
+        {
+            var data = _context.Database.SqlQuery<ProductSaleSummary>("exec GetTopSellingProductsByNumberItemsSold " + categoryId.ToString() + "," + daysToLookBack.ToString()).ToList();
+
+            return data;
+        }
+
+        //public IEnumerable<ProductItemCount> MostPopularProducts(int categoryId, int numberToReturn = 10, int daysToLookBack = 7)
+        //{
+        //    return (from product in _context.Products
+        //            join results in _context.SearchResults on product.ProductId equals results.ProductId into productResults
+        //            from productResult in productResults
+        //            where DbFunctions.AddDays(productResult.DateOfMatch, daysToLookBack) > DateTime.Now
+        //            group productResult by new
+        //            {
+        //                ProductId = product.ProductId,
+        //                ManufacturerCode = product.ManufacturerCode,
+        //                Name = product.Name,
+        //                ConditionId = productResult.ConditionId
+        //            } into grouped
+        //            orderby grouped.Count() descending
+        //            select new ProductItemCount()
+        //            {
+        //                ProductId = grouped.Key.ProductId,
+        //                ItemCount = grouped.Count(),
+        //                AveragePrice = grouped.Average(sr => sr.Price),
+        //                ManufacturerCode = grouped.Key.ManufacturerCode,
+        //                Name = grouped.Key.Name,
+        //                Condition = grouped.Key.ConditionId.ToString()
+        //            }).Take(numberToReturn);
+        //}
+
+
+        public IEnumerable<ProductItemCount> MostPopularProductsByCondition(int conditionId, int numberToReturn = 10, int daysToLookBack = 7)
         {
             return (from product in _context.Products
-                    join results in _context.SearchResults on product.ProductId equals results.ProductId into productResults
+                    join results in _context.SearchResults on product.ProductId equals results.ProductId into productResults                    
                     from productResult in productResults
                     where DbFunctions.AddDays(productResult.DateOfMatch, daysToLookBack) > DateTime.Now
                           && productResult.ConditionId == conditionId
