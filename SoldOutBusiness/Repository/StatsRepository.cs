@@ -25,10 +25,39 @@ namespace SoldOutBusiness.Repository
 
         public IEnumerable<ProductSaleSummary> TopSellingProducts(int categoryId, int numberToReturn, int daysToLookBack)
         {
-            var data = _context.Database.SqlQuery<ProductSaleSummary>("exec GetTopSellingProductsByNumberItemsSold " + categoryId.ToString() + "," + daysToLookBack.ToString()).ToList();
+            var data = _context.Database.SqlQuery<ProductSaleSummary>("exec GetTopSellingProductsByCategoryAndNumberItemsSold " + categoryId.ToString() + "," + daysToLookBack.ToString()).ToList();
 
             return data;
         }
+
+        public IEnumerable<ProductSaleSummary> TopSellingCategories(int? categoryId, int daysToLookBack)
+        {            
+            var data = _context.Database.SqlQuery<ProductSaleSummary>("exec GetTopSellingCategoriesByNumberItemsSold " + categoryId.ToString() + "," + daysToLookBack.ToString()).ToList();
+
+            return data;
+        }
+
+        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesDataForProduct(int? productId, int? conditionId)
+        {
+            var condition = conditionId == null ? 2 : conditionId;
+
+            var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>("exec GetTimeSeriesDataByProductID " + productId.ToString() + "," + condition.ToString());
+            
+            return timeData.Skip(Math.Max(0, timeData.Count() - 30));
+        }
+
+        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval)
+        {
+            var condition = conditionId == null ? 2 : conditionId;
+            var sInterval = shortInterval == null ? 20 : shortInterval.Value;
+            var lInterval = longInterval == null ? 50 : longInterval.Value;
+
+            var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>("exec GetTimeSeriesMACDDataByProductID " + productId.ToString() + "," + condition.ToString() + "," + sInterval.ToString() + "," + lInterval.ToString());
+
+            return timeData.Skip(Math.Max(0, timeData.Count() - 50));
+        }
+
+        //public IEnumerable<Pro>
 
         //public IEnumerable<ProductItemCount> MostPopularProducts(int categoryId, int numberToReturn = 10, int daysToLookBack = 7)
         //{
@@ -72,6 +101,37 @@ namespace SoldOutBusiness.Repository
                         Name = grouped.Key.Name}).Take(numberToReturn);
         }
 
+        public IEnumerable<ProductItemCount> MostPopularProductsByCategoryAndCondition(int categoryId, int conditionId, int daysToLookBack = 7, int numberToTake = 10)
+        {
+           return _context.Database.SqlQuery<ProductItemCount>("exec GetMostPopularProductsByCategory " + categoryId.ToString() + "," + conditionId.ToString() + "," + daysToLookBack.ToString()).ToList().Take(numberToTake);
+        }
+
+        public IEnumerable<ProductItemCount> MostExpensiveProductsByCategoryAndCondition(int categoryId, int conditionId, int daysToLookBack = 7, int numberToTake = 10)
+        {
+            var tableData = _context.Database.SqlQuery<ProductItemCount>("exec GetMostExpensiveProductsByCategory " + categoryId.ToString() + "," + conditionId.ToString() + "," + daysToLookBack.ToString()).ToList();
+            return tableData.Take(numberToTake);
+        }
+
+        public IEnumerable<CategoryMoversAndLosersData> GetMoversAndLosersByCategoryAndCondition(int categoryId, int conditionId, int daysToLookBack = 7, int numberToTake = 10)
+        {
+            
+            var _priceChangeData = _context.Database.SqlQuery<CategoryMoversAndLosersData>("exec GetPriceChangesOverPeriodByCategoryAndCondition " + categoryId.ToString() + "," + conditionId.ToString() + "," + daysToLookBack.ToString());
+            
+            // return the top n movers and bottom n losers
+            return _priceChangeData.Take(numberToTake).ToList().Union(_priceChangeData.Skip(Math.Max(0, _priceChangeData.Count() - numberToTake)));           
+        }
+
+        public IEnumerable<CategoryProducts> GetProductsInCategory(int categoryId)
+        {            
+            return _context.Database.SqlQuery<CategoryProducts>("exec GetProductsForCategory " + categoryId.ToString());  
+        }
+
+        public IEnumerable<CategorySales> GetTopSellingProductsForCategoryByNumberOfBuyers(int categoryId, int daysToLookBack)
+        {
+            return _context.Database.SqlQuery<CategorySales>("exec GetTopSellingProductsForCategoryByNumberOfBuyers " + categoryId.ToString() + "," + daysToLookBack.ToString());
+        }
+
+
         public IEnumerable<ProductItemCount> MostExpensiveProducts(int conditionId, int numberToReturn = 10, int daysToLookBack = 7)
         {
             // TODO: Confirm this one ... it's grouping by product, should it? It's also looking at DateOfMatch, should probably use item end time
@@ -104,6 +164,13 @@ namespace SoldOutBusiness.Repository
             //        from g in grouped
             //        orderby g.Price descending
             //        select g).Take(numberToReturn);
+        }
+
+        public IEnumerable<ProductPriceScatterGraphData> GetScatterGraphDataForProduct(int productId, int interval)
+        {
+            var scatterGraphData = _context.Database.SqlQuery<ProductPriceScatterGraphData>("exec GetSalesDataByPeriodAndIntervalForProductScatterGraph " + productId.ToString() + "," + interval.ToString()).ToList();
+
+            return scatterGraphData;
         }
 
         #region IDisposable Support

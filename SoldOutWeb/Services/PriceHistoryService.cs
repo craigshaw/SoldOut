@@ -16,10 +16,10 @@ namespace SoldOutWeb.Services
             _repository = repository;
         }
 
-        public IList<PriceHistory> CreateBasicPriceHistory(int searchId, int conditionId, AggregationPeriod aggregationPeriod)
+        public IList<PriceHistory> CreateBasicPriceHistory(int productId, int conditionId, AggregationPeriod aggregationPeriod)
         {
             var aggregator = CreatePriceAggregatorForAggregationPeriod(aggregationPeriod);
-            var result = _repository.GetSearchResults(searchId, conditionId,false);
+            var result = _repository.GetSearchResultsByProductID (productId, conditionId,false);
             return aggregator(result);
         }
 

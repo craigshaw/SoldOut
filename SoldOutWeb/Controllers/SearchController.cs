@@ -10,10 +10,13 @@ namespace SoldOutWeb.Controllers
     {
         private ISoldOutRepository _repository;
         private IPriceHistoryService _priceHistoryService;
+        private IStatsRepository _statsRepository;
 
         public SearchController()
         {
             _repository = new SoldOutRepository();
+
+            _statsRepository = new StatsRepository();
 
             _priceHistoryService = new PriceHistoryService(_repository);
         }
@@ -30,87 +33,94 @@ namespace SoldOutWeb.Controllers
             return View(searches);
         }
 
-        [Route("Product/{id?}")]
-        public ActionResult Product(int? id)
-        {
-            int productId = 1;
+        //[Route("Product/{id?}")]
+        //public ActionResult Product(int? id)
+        //{
+        //    int productId = 1;
 
-            if (id.HasValue)
-                productId = id.Value;
+        //    if (id.HasValue)
+        //        productId = id.Value;
 
-            var search = _repository.GetSearchByProductID(productId);
+         //   var search = _repository.GetSearchByProductID(productId);
 
-            SearchSummary summary = new SearchSummary()
-            {
-                Name = search.Name,
-                Description = search.Description,
-                SearchID = search.SearchId,
-                LastRun = search.LastRun,
-                TotalResults = _repository.ResultCount(search.SearchId),
-                Link = search.Link
-            };
+        //    SearchSummary summary = new SearchSummary()
+        //    {
+        //        Name = search.Name,
+        //        Description = search.Description,
+        //        SearchID = search.SearchId,
+        //        LastRun = search.LastRun,
+        //        TotalResults = _repository.ResultCount(search.SearchId),
+        //        Link = search.Link
+        //    };
 
-            return View("Summary", summary);
-        }
+        //    return View("Summary", summary);
+        //}
 
-        [Route("Summmary/{id?}")]
-        public ActionResult Summary(int? id)
-        {
-            int searchId = 1;
+        //[Route("Summmary/{id?}")]
+        //public ActionResult Summary(int? id)
+        //{
+        //    int searchId = 1;
 
-            if (id.HasValue)
-                searchId = id.Value;
+        //    if (id.HasValue)
+        //        searchId = id.Value;
 
-            var search = _repository.GetSearchByID(searchId);
+        //    var search = _repository.GetSearchByID(searchId);
 
-            SearchSummary summary = new SearchSummary()
-            {
-                Name = search.Name,
-                Description = search.Description,
-                SearchID = searchId,
-                LastRun = search.LastRun,
-                TotalResults = _repository.ResultCount(searchId),
-                Link = search.Link
-            };
+        //    SearchSummary summary = new SearchSummary()
+        //    {
+        //        Name = search.Name,
+        //        Description = search.Description,
+        //        SearchID = searchId,
+        //        LastRun = search.LastRun,
+        //        TotalResults = _repository.ResultCount(searchId),
+        //        Link = search.Link
+        //    };
 
-            return View(summary);
-        }
+        //    return View(summary);
+        //}
 
-        [Route("PriceHistory/{id}")]
-        public JsonResult PriceHistory(int id)
-        {
-            var priceHistory = CreatePriceHistory(id);
+        //[Route("PriceHistory/{id}")]
+        //public JsonResult PriceHistory(int id)
+        //{
+        //    var priceHistory = CreatePriceHistory(id);
 
-            return Json(priceHistory, JsonRequestBehavior.AllowGet);
-        }
+        //    return Json(priceHistory, JsonRequestBehavior.AllowGet);
+        //}
 
-        [Route("PriceHistory/{id}/{conditionId}")]
-        public JsonResult PriceHistoryByCondition(int id, int conditionId)
-        {
-            var priceHistory = CreatePriceHistory(id, conditionId);
+        //[Route("PriceHistory/{id}/{conditionId}")]
+        //public JsonResult PriceHistoryByCondition(int id, int conditionId)
+        //{
+        //    var priceHistory = CreatePriceHistory(id, conditionId);
 
-            return Json(priceHistory, JsonRequestBehavior.AllowGet);
-        }
+        //    return Json(priceHistory, JsonRequestBehavior.AllowGet);
+        //}
 
-        private IEnumerable<PriceHistory> CreatePriceHistory(int searchId)
-        {
-            int interval = 5;
+        //[Route("Api/CandlestickData/{id}")]
+        //public JsonResult GetCandleStickChartDataForProduct(int productId)
+        //{
+        //    var chartData = _statsRepository.GetTimeSeriesDataForProduct(productId, 2);
+        //    return Json(chartData, JsonRequestBehavior.AllowGet);
+        //}
 
-            var basicPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId, 2, AggregationPeriod.Monthly); // TODO: Use the condition resolver here?
-            _priceHistoryService.AddSimpleMovingAverage(basicPriceHistory, interval);
-            _priceHistoryService.AddExponentialMovingAverage(basicPriceHistory, interval);
+        //private IEnumerable<PriceHistory> CreatePriceHistory(int searchId)
+        //{
+        //    int interval = 5;
 
-            return basicPriceHistory;
-        }
+        //    var basicPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId, 2, AggregationPeriod.Monthly); // TODO: Use the condition resolver here?
+        //    _priceHistoryService.AddSimpleMovingAverage(basicPriceHistory, interval);
+        //    _priceHistoryService.AddExponentialMovingAverage(basicPriceHistory, interval);
 
-        private IEnumerable<PriceHistory> CreatePriceHistory(int searchId, int conditionId)
-        {
-            var allPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId, conditionId, AggregationPeriod.Monthly);
+        //    return basicPriceHistory;
+        //}
 
-            //_priceHistoryService.AddSimpleMovingAverage(basicPriceHistory, interval);
-            //_priceHistoryService.AddExponentialMovingAverage(basicPriceHistory, interval);
+        //private IEnumerable<PriceHistory> CreatePriceHistory(int searchId, int conditionId)
+        //{
+        //    var allPriceHistory = _priceHistoryService.CreateBasicPriceHistory(searchId, conditionId, AggregationPeriod.Monthly);
 
-            return allPriceHistory;
-        }
+        //    //_priceHistoryService.AddSimpleMovingAverage(basicPriceHistory, interval);
+        //    //_priceHistoryService.AddExponentialMovingAverage(basicPriceHistory, interval);
+
+        //    return allPriceHistory;
+        //}
     }
 }

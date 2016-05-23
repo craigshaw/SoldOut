@@ -2,7 +2,7 @@
 
 namespace SoldOutWeb.Models
 {
-    public class SearchSummary
+    public class Product
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -10,19 +10,14 @@ namespace SoldOutWeb.Models
         public int ProductID { get; set; }
         public DateTime LastRun { get; set; }
         public int TotalResults { get; set; }
-        public string Link { get; set; }
-
         public int ConditionID { get; set; }
 
-        public string ConditionName
-        {
-            get
-            {
+        public string ConditionName {
+            get {
                 if (ConditionID == 2)
                     return "New";
                 else
-                    return "Used";
-            }
+                    return "Used"; }
         }
     }
 }
