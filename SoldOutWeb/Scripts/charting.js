@@ -23,6 +23,52 @@
         return url;
     }
 
+    function loadSalesByWeekdayBarChart(productContainer, apiURL) {
+        var container = $('#' + productContainer);
+        var loader = container.find('#loader');
+        var errorMessage = container.find('#errorMessage');
+        var categoryId = container.attr('data-category-id')
+
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json',
+            url: applicationBaseURL() + apiURL + categoryId,
+            success: function (productData) {
+
+                var data = new google.visualization.DataTable();
+
+                data.addColumn('string', 'Day');
+                data.addColumn('number', 'Number of Bidders');
+                data.addColumn('number', 'Number of sales');
+
+                // Create a table from the response data
+                for (var i = 0; i < productData.length; i++) {
+                    data.addRow([productData[i].DayName,
+                                 parseInt(productData[i].NumberOfBidders),
+                                 parseInt(productData[i].NumberOfItemsSold)
+                    ]);
+                }
+
+                // Hide the loader
+                loader.hide();
+
+                var chart = new google.visualization.AreaChart(container[0]);
+
+                var options = {
+                    title: ''
+                }
+
+                chart.draw(data, options);
+            },
+            error: function () {
+                loader.hide();
+                errorMessage.show();
+            }
+        });
+    }
+
+
     function loadTopSellersPieChart(productContainer, apiURL) {
         var container = $('#' + productContainer);
         var loader = container.find('#loader');

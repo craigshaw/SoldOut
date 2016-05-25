@@ -32,6 +32,8 @@ namespace SoldOutBusiness.Repository
 
         IEnumerable<CategorySales> GetTopSellingProductsForCategoryByNumberOfBuyers(int categoryId, int daysToLookBack = 7);
 
+        IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int? categoryId, int daysToLookBack = 7);
+
     }
 
     public class ProductItemCount
@@ -137,14 +139,14 @@ namespace SoldOutBusiness.Repository
 
     public class CategoryProducts
     {
-        
+
         public int ProductId { get; set; }
         public int CategoryId { get; set; }
         public string Name { get; set; }
         public string CategoryName { get; set; }
         public string ManufacturerCode { get; set; }
 
-        public string YearOfRelease { get; set; }        
+        public string YearOfRelease { get; set; }
     }
 
     public class CategorySales
@@ -158,5 +160,13 @@ namespace SoldOutBusiness.Repository
         public double AvgPrice { get; set; }
         public DateTime AsOfDate { get; set; }
 
+    }
+
+    public class WeekdaySalesData
+    {
+        public string DayName { get; set; }
+
+        public int NumberOfBidders { get; set; }
+        public int NumberOfItemsSold { get; set; }
     }
 }

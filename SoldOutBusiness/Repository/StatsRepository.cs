@@ -173,6 +173,13 @@ namespace SoldOutBusiness.Repository
             return scatterGraphData;
         }
 
+        public IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int? categoryId, int daysToLookBack = 7)
+        {   
+            var _salesData = _context.Database.SqlQuery<WeekdaySalesData>("exec GetPriceStatisticsForCategoryByDayOfWeek " + categoryId.ToString() + ",7," + daysToLookBack.ToString()).ToList();
+
+            return _salesData;
+        }
+
         #region IDisposable Support
         public void Dispose()
         {

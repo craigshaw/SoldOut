@@ -117,5 +117,11 @@ namespace SoldOutWeb.Controllers
 
             return allPriceHistory;
         }
+        [Route("Api/WeekdaySalesData/{categoryId?}")]
+        public JsonResult GetWeeklySalesData(int? categoryId)
+        {
+            var salesData = _statsRepository.GetWeeklySalesDataByCategory(categoryId.HasValue ? categoryId.Value : 2);
+            return Json(salesData, JsonRequestBehavior.AllowGet);
+        }
     }
 }
