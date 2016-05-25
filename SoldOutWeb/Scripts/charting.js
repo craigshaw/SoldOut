@@ -29,7 +29,7 @@
         var errorMessage = container.find('#errorMessage');
         var categoryId = container.attr('data-category-id')
 
-        $.ajax({
+        $.ajax({ 
             type: 'GET',
             dataType: 'json',
             contentType: 'application/json',
