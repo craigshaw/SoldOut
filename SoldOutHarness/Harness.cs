@@ -6,6 +6,7 @@ using SoldOutBusiness.Utilities.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -19,9 +20,10 @@ namespace SoldOutHarness
         
         static void Main(string[] args)
         {
-            new Harness().TestDB();
+            new Harness().TestStats();
+            //new Harness().TestDB();
             //new Harness().Run();
-            Harness test = new Harness();
+            //Harness test = new Harness();
 
             //test.GetAllCategories();
             //test.GetAllProducts();
@@ -31,6 +33,53 @@ namespace SoldOutHarness
             Console.WriteLine("Press any key to close the program.");
             Console.ReadKey();
 
+        }
+
+        private void TestStats()
+        {
+            using (var repo = new StatsRepository())
+            {
+                //var top = repo.MostPopularProducts(2, 10, 30);
+
+                //var position = 1;
+                //foreach (var product in top)
+                //{
+                //    Console.WriteLine($"{position++}. {product.ManufacturerCode} {product.Name} {product.ItemCount} {product.AveragePrice:C2}");
+                //}
+
+                var exp = repo.MostExpensiveProducts(2,10,30);
+
+                foreach (var res in exp)
+                {
+                    Console.WriteLine($"{res.Name}: {res.AveragePrice:C2} {res.ProductId}");
+                }
+            }
+
+
+
+            //    var r = new SoldOutRepository();
+            //using (var repo = new StatsRepository())
+            //{
+            //    var top = repo.MostPopularProducts(7);
+
+            //    foreach(var search in top)
+            //    {
+            //        var p = r.GetProductByID(search.ProductId);
+            //        Console.WriteLine($"{p.Name}: {search.ItemCount}");
+            //    }
+
+            //    Console.WriteLine(Environment.NewLine); Console.WriteLine(Environment.NewLine);
+            //    Console.WriteLine("Most expensive items");
+
+            //    var exp = repo.MostExpensiveProducts(2);
+
+            //    foreach (var res in exp)
+            //    {
+            //        var pr = res.Product;
+            //        Console.WriteLine($"{pr.Name}: {res.Price:C2} {res.SearchResultID}");
+            //    }
+            //}
+            //r.Dispose();
         }
 
         private void TestDB()

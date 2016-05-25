@@ -117,9 +117,46 @@ namespace SoldOutBusiness.Repository
             return _context.SearchResults.Where(r => r.SearchID == searchId);
         }
     
-        public IEnumerable<SearchResult> GetSearchResults(long searchId, int conditionId)
+        public IEnumerable<SearchResult> GetSearchResults(long searchId, int conditionId, bool includeSuspiciousItems = true)
         {
-            return _context.SearchResults.Where(r => r.SearchID == searchId && r.ConditionId == conditionId);
+            bool reverseConditionClause;
+
+            reverseConditionClause = false;
+
+            if (conditionId != 2)
+                reverseConditionClause = true;
+
+            if (includeSuspiciousItems)
+                if (reverseConditionClause)
+                    return _context.SearchResults.Where(r => r.SearchID == searchId && r.ConditionId != conditionId);
+                else
+                    return _context.SearchResults.Where(r => r.SearchID == searchId && r.ConditionId == conditionId);
+            else
+                if (reverseConditionClause)
+                    return _context.SearchResults.Where(r => r.SearchID == searchId && r.ConditionId != conditionId && r.Suspicious == false);
+                else
+                    return _context.SearchResults.Where(r => r.SearchID == searchId && r.ConditionId == conditionId && r.Suspicious == false);
+        }
+
+        public IEnumerable<SearchResult> GetSearchResultsByProductID(int productId, int conditionId, bool includeSuspiciousItems = true)
+        {
+            bool reverseConditionClause;
+
+            reverseConditionClause = false;
+
+            if (conditionId != 2)
+                reverseConditionClause = true;
+
+            if (includeSuspiciousItems)
+                if (reverseConditionClause)
+                    return _context.SearchResults.Where(r => r.ProductId == productId && r.ConditionId != 2);
+                else
+                    return _context.SearchResults.Where(r => r.ProductId == productId && r.ConditionId == conditionId);
+            else
+                if (reverseConditionClause)
+                return _context.SearchResults.Where(r => r.ProductId == productId && r.ConditionId != 2 && r.Suspicious == false);
+            else
+                return _context.SearchResults.Where(r => r.ProductId == productId && r.ConditionId == conditionId && r.Suspicious == false);
         }
 
         public IEnumerable<SearchResult> GetSearchResultsSince(long searchId, DateTime since)
@@ -130,6 +167,11 @@ namespace SoldOutBusiness.Repository
         public Search GetSearchByID(long searchID)
         {
             return _context.Searches.Where(s => s.SearchId == searchID).FirstOrDefault();
+        }
+
+        public Search GetSearchByProductID(int productID)
+        {
+            return _context.Searches.Where(s => s.ProductId == productID).FirstOrDefault();
         }
 
         public IDictionary<long, int> GetUncleansedCounts()
@@ -214,6 +256,16 @@ namespace SoldOutBusiness.Repository
         public IEnumerable<Category> GetParentCategories()
         {
             return _context.Categories.Select(s => s).Where(s => s.ParentCategoryId == null);
+        }
+
+        public Product GetProductByID(int productID)
+        {
+            return _context.Products.Where(p => p.ProductId == productID).FirstOrDefault();
+        }
+
+        public Category GetCategoryByID(int categoryId)
+        {
+            return _context.Categories.Where(c => c.CategoryID == categoryId).FirstOrDefault();
         }
 
         #region IDisposable Support

@@ -28,6 +28,10 @@ textarea {
     height: 400px;
 }
 
+.top-margin {
+    margin-top:20px;
+}
+
 .loader {
     position:absolute;
     top:50%;

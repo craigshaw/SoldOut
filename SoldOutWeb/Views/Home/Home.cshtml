@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+@section scripts{
+    <script src="~/Scripts/charting.js" type="text/javascript"></script>
+    <script>
+        function loadHomePageCharts() {
+            loadTopSellersBarChart('topSellersByProduct', '/api/TopSellingProducts/');
+            loadTopSellersPieChart('topSellersByCategory', '/api/TopSellingCategories/');
+        }
+
+        $(function () {            
+            google.charts.setOnLoadCallback(loadHomePageCharts);
+        })
+    </script>
+}
+<h1>Welcome to NoLonga!</h1>
+
+<div class="row">
+    <div class="col-md-12">        
+        Putting a price on items that are "no longa" available in stores can be extremely difficult. With such a wealth of information out there, it can be hard to get a clear idea of what an item is worth.<br/><br/>
+        Here at NoLonga we're going to try and change that, we wanted to take sale price information and apply the same techniques to that as the Stock market so you can get a clear idea of price, trends and hopefully be able to time your sale or purchase to maximise your gains!
+    </div>
+</div>
+
+<h2>Whats trending now</h2>
+ 
+
+<div class="row">
+    <div class="col-md-6" >
+        <div id="topSellersByCategory"  data-interval=30>
+            <div id="loader" class="loader">
+                <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
+            </div>
+            <div id="errorMessage" class="loader" style="display: none">
+                <p class="text-danger">Sorry, we couldn't get your search results</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div id="topSellersByProduct" data-interval=30>
+            <div id="loader" class="loader">
+                <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
+            </div>
+            <div id="errorMessage" class="loader" style="display: none">
+                <p class="text-danger">Sorry, we couldn't get your search results</p>
+            </div>
+        </div>
+    </div>
+</div>
+

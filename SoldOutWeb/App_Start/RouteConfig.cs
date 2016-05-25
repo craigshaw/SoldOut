@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web;
 
 namespace SoldOutWeb
 {
@@ -10,6 +11,12 @@ namespace SoldOutWeb
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapMvcAttributeRoutes();
+
+            routes.MapRoute(
+                name: "Default",
+                url: "api/{controller}/{id}"
+            );
+            
         }
     }
 }
