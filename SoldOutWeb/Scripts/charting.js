@@ -68,7 +68,6 @@
         });
     }
 
-
     function loadTopSellersPieChart(productContainer, apiURL) {
         var container = $('#' + productContainer);
         var loader = container.find('#loader');
@@ -122,7 +121,7 @@
         });
     }
 
-    function loadMoversAndLosersBarChart(productContainer, apiURL) {
+    function loadMoversAndLosersBarChart(productContainer, apiURL, tag, onLoaded) {
         var container = $('#' + productContainer);
         var loader = container.find('#loader');
         var errorMessage = container.find('#errorMessage');
@@ -186,6 +185,8 @@
 
                     window.location.href = "/Product/" + pid + "/" + conditionId;
                 });
+
+                onLoaded(tag, chart, data, options);
             },
             error: function () {
                 loader.hide();
@@ -609,5 +610,6 @@
 
     $(function () {
         google.charts.load('current', { 'packages': ['table', 'corechart', 'bar', 'scatter'] });
+
 
     })
