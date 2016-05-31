@@ -6,7 +6,7 @@
 @section scripts{
     <script src="~/Scripts/charting.js" type="text/javascript"></script>
     <script>
-        var chartCache = {};
+        
 
         function loadHomePageCharts() {
             loadTopSellersBarChart('topSellersChartContainer', '/api/TopSellingProducts/');
@@ -16,19 +16,13 @@
             loadPopularProductsTable('usedMostExpensiveProductTableContainer', '/api/Expensive/');
             loadPopularProductsTable('usedTopSellersTableContainer', '/api/Popular/');
 
-            loadMoversAndLosersBarChart('newMoversAndLosersChartContainer', '/api/MoversAndLosers/', 'new', chartLoaded);
-            loadMoversAndLosersBarChart('usedMoversAndLosersChartContainer', '/api/MoversAndLosers/', 'used', chartLoaded);
+            // Todo: Move to convention based approach for charts?
+            loadMoversAndLosersBarChart('newMoversAndLosersChartContainer', '/api/MoversAndLosers/', 'newMoversAndLosers');
+            loadMoversAndLosersBarChart('usedMoversAndLosersChartContainer', '/api/MoversAndLosers/', 'usedMoversAndLosers');
 
             loadSalesByWeekdayBarChart('salesByWeekdayChartContainer', '/Api/WeekdaySalesData/');
 
             loadProductsTable('productTableContainer', '/api/ProductsInCategory/')
-        }
-
-        function chartLoaded(tag, chart, data, options) {
-            console.log(tag + ' chart loaded');
-
-            // Add the loaded chart data to the cache
-            chartCache[tag] = {chart: chart, data: data, options: options};
         }
 
         $(function () {
@@ -39,8 +33,7 @@
                 var target = $(e.target).attr("href").substring(1);
 
                 // Redraw the chart
-                var chartData = chartCache[target];
-                chartData.chart.draw(chartData.data, chartData.options);
+                redrawChart(target + 'MoversAndLosers');
             })
         })
     </script>

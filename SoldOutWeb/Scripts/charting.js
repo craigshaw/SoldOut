@@ -1,6 +1,9 @@
 ﻿//(function () {
 //    var conditions = { 2: "New", 7: "Used" };
 
+    // Will store chart data for each chart loaded so we can easily redraw, etc
+    var chartCache = {};
+
     // Courtesy of Jack Moore, http://www.jacklmoore.com/notes/rounding-in-javascript/
     function round(value, decimals) {
         return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
@@ -21,6 +24,14 @@
         url = protocol + '//' + host;
 
         return url;
+    }
+
+    function redrawChart(chartName) {
+        // Get the chart data for the given chart, then redraw
+        if (!!chartCache[chartName]) {
+            var chartData = chartCache[chartName];
+            chartData.chart.draw(chartData.data, chartData.options);
+        }
     }
 
     function loadSalesByWeekdayBarChart(productContainer, apiURL) {
@@ -121,7 +132,7 @@
         });
     }
 
-    function loadMoversAndLosersBarChart(productContainer, apiURL, tag, onLoaded) {
+    function loadMoversAndLosersBarChart(productContainer, apiURL, chartName) {
         var container = $('#' + productContainer);
         var loader = container.find('#loader');
         var errorMessage = container.find('#errorMessage');
@@ -186,7 +197,8 @@
                     window.location.href = "/Product/" + pid + "/" + conditionId;
                 });
 
-                onLoaded(tag, chart, data, options);
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
                 loader.hide();
