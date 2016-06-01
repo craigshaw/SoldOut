@@ -17,8 +17,8 @@
             loadPopularProductsTable('usedTopSellersTableContainer', '/api/Popular/');
 
             // Todo: Move to convention based approach for charts?
-            loadMoversAndLosersBarChart('newMoversAndLosersChartContainer', '/api/MoversAndLosers/', 'newMoversAndLosers');
-            loadMoversAndLosersBarChart('usedMoversAndLosersChartContainer', '/api/MoversAndLosers/', 'usedMoversAndLosers');
+            charting.loadMoversAndLosersBarChart('newMoversAndLosersChartContainer', '/api/MoversAndLosers/', 'newMoversAndLosers');
+            charting.loadMoversAndLosersBarChart('usedMoversAndLosersChartContainer', '/api/MoversAndLosers/', 'usedMoversAndLosers');
 
             loadSalesByWeekdayBarChart('salesByWeekdayChartContainer', '/Api/WeekdaySalesData/');
 
@@ -26,14 +26,15 @@
         }
 
         $(function () {
-            google.charts.setOnLoadCallback(loadHomePageCharts);
+            charting.load();
+            charting.setOnLoadCallback(loadHomePageCharts);
 
             $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
                 // Which tab is selected?
                 var target = $(e.target).attr("href").substring(1);
 
                 // Redraw the chart
-                redrawChart(target + 'MoversAndLosers');
+                charting.redrawChart(target + 'MoversAndLosers');
             })
         })
     </script>

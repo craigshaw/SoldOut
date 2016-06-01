@@ -1,9 +1,6 @@
 ﻿//(function () {
 //    var conditions = { 2: "New", 7: "Used" };
 
-    // Will store chart data for each chart loaded so we can easily redraw, etc
-    var chartCache = {};
-
     // Courtesy of Jack Moore, http://www.jacklmoore.com/notes/rounding-in-javascript/
     function round(value, decimals) {
         return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
@@ -24,14 +21,6 @@
         url = protocol + '//' + host;
 
         return url;
-    }
-
-    function redrawChart(chartName) {
-        // Get the chart data for the given chart, then redraw
-        if (!!chartCache[chartName]) {
-            var chartData = chartCache[chartName];
-            chartData.chart.draw(chartData.data, chartData.options);
-        }
     }
 
     function loadSalesByWeekdayBarChart(productContainer, apiURL) {
@@ -131,82 +120,6 @@
             }
         });
     }
-
-    function loadMoversAndLosersBarChart(productContainer, apiURL, chartName) {
-        var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
-        var categoryId = container.attr('data-category-id')
-        var conditionId = container.attr('data-condition-id');
-
-        $.ajax({
-            type: 'GET',
-            dataType: 'json',
-            contentType: 'application/json',
-            url: applicationBaseURL() + apiURL + categoryId + '/' + conditionId,
-            success: function (productData) {
-
-                var data = new google.visualization.DataTable();
-
-                data.addColumn('string', 'Product Name');
-                data.addColumn('number', '% Price change');
-                //data.addColumn('number', 'Used');
-
-                // Create a table from the response data
-                for (var i = 0; i < productData.length; i++) {
-                    data.addRow([productData[i].ManufacturerCode.concat(' ', productData[i].Name),
-                                 parseInt(productData[i].PercentPriceChange)
-                    ]);
-                }
-
-                // Hide the loader
-                loader.hide();
-
-                var chart = new google.visualization.ColumnChart(container[0]);
-
-                var minhValue = productData[productData.length-1].PercentPriceChange;
-                var maxhValue = productData[0].PercentPriceChange;
-
-                var options = {
-                    chart: {
-                        title: 'Movers and losers over the last 30 days',
-                        isStacked: true
-                    },
-                    hAxis: {
-                        maxTextLines: 3
-                    },
-                    vAxis: {
-                        title: '% price change', 
-                        viewWindowMode: 'pretty',
-                        baseline: 0,
-                        minValue: minhValue,
-                        maxValue: maxhValue
-                    }                    
-                }
-
-                chart.draw(data, options);
-
-                google.visualization.events.addListener(chart, 'select', function () {
-                    var selection = chart.getSelection();
-
-                    var pid = productData[(selection[0].row * 2)].ProductId;
-                    var categoryId = productData[(selection[0].row * 2)].CategoryId;
-
-                    var conditionId = productData[(selection[0].row * 2) + (selection[0].column) - 1].ConditionId;
-
-                    window.location.href = "/Product/" + pid + "/" + conditionId;
-                });
-
-                // Add the loaded chart data to the cache
-                chartCache[chartName] = { chart: chart, data: data, options: options };
-            },
-            error: function () {
-                loader.hide();
-                errorMessage.show();
-            }
-        });
-    }
-
 
     function loadTopSellersBarChart(productContainer, apiURL) {
         var container = $('#' + productContainer);
@@ -620,8 +533,109 @@
         });
     }
 
-    $(function () {
-        google.charts.load('current', { 'packages': ['table', 'corechart', 'bar', 'scatter'] });
+    var charting = (function () {
+        // Will store chart data for each chart loaded so we can easily redraw, etc
+        var chartCache = {};
 
+        function load() {
+            google.charts.load('current', { 'packages': ['table', 'corechart', 'bar', 'scatter'] });
+        }
 
-    })
+        function setOnLoadCallback(callback) {
+            google.charts.setOnLoadCallback(callback);
+        }
+
+        function loadMoversAndLosersBarChart(productContainer, apiURL, chartName) {
+            var container = $('#' + productContainer);
+            var loader = container.find('#loader');
+            var errorMessage = container.find('#errorMessage');
+            var categoryId = container.attr('data-category-id')
+            var conditionId = container.attr('data-condition-id');
+
+            console.log('loading movers and losers ' + chartName);
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                url: applicationBaseURL() + apiURL + categoryId + '/' + conditionId,
+                success: function (productData) {
+
+                    var data = new google.visualization.DataTable();
+
+                    data.addColumn('string', 'Product Name');
+                    data.addColumn('number', '% Price change');
+                    //data.addColumn('number', 'Used');
+
+                    // Create a table from the response data
+                    for (var i = 0; i < productData.length; i++) {
+                        data.addRow([productData[i].ManufacturerCode.concat(' ', productData[i].Name),
+                                     parseInt(productData[i].PercentPriceChange)
+                        ]);
+                    }
+
+                    // Hide the loader
+                    loader.hide();
+
+                    var chart = new google.visualization.ColumnChart(container[0]);
+
+                    var minhValue = productData[productData.length - 1].PercentPriceChange;
+                    var maxhValue = productData[0].PercentPriceChange;
+
+                    var options = {
+                        chart: {
+                            title: 'Movers and losers over the last 30 days',
+                            isStacked: true
+                        },
+                        hAxis: {
+                            maxTextLines: 3
+                        },
+                        vAxis: {
+                            title: '% price change',
+                            viewWindowMode: 'pretty',
+                            baseline: 0,
+                            minValue: minhValue,
+                            maxValue: maxhValue
+                        }
+                    }
+
+                    chart.draw(data, options);
+
+                    google.visualization.events.addListener(chart, 'select', function () {
+                        var selection = chart.getSelection();
+
+                        var pid = productData[(selection[0].row * 2)].ProductId;
+                        var categoryId = productData[(selection[0].row * 2)].CategoryId;
+
+                        var conditionId = productData[(selection[0].row * 2) + (selection[0].column) - 1].ConditionId;
+
+                        window.location.href = "/Product/" + pid + "/" + conditionId;
+                    });
+
+                    // Add the loaded chart data to the cache
+                    chartCache[chartName] = { chart: chart, data: data, options: options };
+                },
+                error: function () {
+                    loader.hide();
+                    errorMessage.show();
+                }
+            });
+        }
+
+        function redrawChart(chartName) {
+            console.log('redrawing chart ' + chartName);
+
+            // Get the chart data for the given chart, then redraw
+            if (!!chartCache[chartName]) {
+                var chartData = chartCache[chartName];
+                chartData.chart.draw(chartData.data, chartData.options);
+            }
+        }
+
+        return {
+            load: load,
+            setOnLoadCallback: setOnLoadCallback,
+            loadMoversAndLosersBarChart: loadMoversAndLosersBarChart,
+            redrawChart: redrawChart
+        };
+    })();
