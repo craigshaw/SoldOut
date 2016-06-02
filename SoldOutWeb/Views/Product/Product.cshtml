@@ -7,25 +7,24 @@
 @section scripts{
     <script src="~/Scripts/charting.js" type="text/javascript"></script>
     <script>
-        function loadProductPageCharts() {
-            // New product charts
-            loadProductPricesCandlestickChart('newproductPriceChartContainer', '/Api/CandlestickData/')
-            loadProductPricesMACD('newproductPriceMACDChartContainer', '/Api/MACData/')
-            loadProductPricesForMACDBarChart('newproductPriceMACDBarChartContainer', '/Api/MACData/')
-            loadProductPriceLineChart('newproductPriceMonthlySummaryContainer', '/Api/PriceHistory/')
-
-            // Used product charts
-            loadProductPricesCandlestickChart('usedproductPriceChartContainer', '/Api/CandlestickData/')
-            loadProductPricesMACD('usedproductPriceMACDChartContainer', '/Api/MACData/')
-            loadProductPricesForMACDBarChart('usedproductPriceMACDBarChartContainer', '/Api/MACData/')
-            loadProductPriceLineChart('usedproductPriceMonthlySummaryContainer', '/Api/PriceHistory/')
-
-            // Misc data charts for the product
-            loadProductScatterGraphChart('productScatterGraphChartContainer', '/Api/Scattergraph/')
-        }
-
         $(function () {
-            google.charts.setOnLoadCallback(loadProductPageCharts);
+            charting.load();
+            charting.setOnLoadCallback(function () {
+                // New product charts
+                charting.loadProductPricesCandlestickChart('newproductPriceChartContainer', '/Api/CandlestickData/');
+                charting.loadProductPricesMACD('newproductPriceMACDChartContainer', '/Api/MACData/');
+                charting.loadProductPricesForMACDBarChart('newproductPriceMACDBarChartContainer', '/Api/MACData/');
+                charting.loadProductPriceLineChart('newproductPriceMonthlySummaryContainer', '/Api/PriceHistory/');
+
+                // Used product charts
+                charting.loadProductPricesCandlestickChart('usedproductPriceChartContainer', '/Api/CandlestickData/');
+                charting.loadProductPricesMACD('usedproductPriceMACDChartContainer', '/Api/MACData/');
+                charting.loadProductPricesForMACDBarChart('usedproductPriceMACDBarChartContainer', '/Api/MACData/');
+                charting.loadProductPriceLineChart('usedproductPriceMonthlySummaryContainer', '/Api/PriceHistory/');
+
+                // Misc data charts for the product
+                charting.loadProductScatterGraphChart('productScatterGraphChartContainer', '/Api/Scattergraph/');
+            });
         })
     </script>
 }

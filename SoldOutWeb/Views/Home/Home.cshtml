@@ -4,13 +4,12 @@
 @section scripts{
     <script src="~/Scripts/charting.js" type="text/javascript"></script>
     <script>
-        function loadHomePageCharts() {
-            loadTopSellersBarChart('topSellersByProduct', '/api/TopSellingProducts/');
-            loadTopSellersPieChart('topSellersByCategory', '/api/TopSellingCategories/');
-        }
-
-        $(function () {            
-            google.charts.setOnLoadCallback(loadHomePageCharts);
+        $(function () {
+            charting.load();
+            charting.setOnLoadCallback(function () {
+                charting.loadTopSellersBarChart('topSellersByProduct', '/api/TopSellingProducts/');
+                charting.loadTopSellersPieChart('topSellersByCategory', '/api/TopSellingCategories/');
+            });
         })
     </script>
 }

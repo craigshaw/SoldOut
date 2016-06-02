@@ -1,19 +1,26 @@
-﻿//(function () {
-//    var conditions = { 2: "New", 7: "Used" };
+﻿var charting = (function ($) {
+    // Will store chart data for each chart loaded so we can easily redraw, etc
+    var chartCache = {};
+
+    function load() {
+        google.charts.load('current', { 'packages': ['table', 'corechart', 'bar', 'scatter'] });
+    }
+
+    function setOnLoadCallback(callback) {
+        google.charts.setOnLoadCallback(callback);
+    }
 
     // Courtesy of Jack Moore, http://www.jacklmoore.com/notes/rounding-in-javascript/
     function round(value, decimals) {
         return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
     }
 
-    function formatDate(value)
-    {
+    function formatDate(value) {
         var myDate = Date.parse(value);
         return myDate.getDate() + "-" + myDate.getMonth() + "-" + myDate.getFullYear();
     }
 
-    function applicationBaseURL()
-    {
+    function applicationBaseURL() {
         // Work out the base URL to pass into the charting function so they can use the general charting API
         pathArray = location.href.split('/');
         protocol = pathArray[0];
@@ -85,7 +92,7 @@
                 var data = new google.visualization.DataTable();
 
                 data.addColumn('string', 'Name');
-                data.addColumn('number', '# Sold');             
+                data.addColumn('number', '# Sold');
 
                 // Create a table from the response data
                 for (var i = 0; i < productData.length; i += 2) {
@@ -138,7 +145,7 @@
 
                 data.addColumn('string', 'Product Name');
                 data.addColumn('number', 'New');
-                data.addColumn('number', 'Used');            
+                data.addColumn('number', 'Used');
 
                 // Create a table from the response data
                 for (var i = 0; i < productData.length; i += 2) {
@@ -240,8 +247,7 @@
         });
     }
 
-    function loadProductPricesMACD(productContainer, apiURL)
-    {
+    function loadProductPricesMACD(productContainer, apiURL) {
         var container = $('#' + productContainer);
         var loader = container.find('#loader');
         var errorMessage = container.find('#errorMessage');
@@ -283,7 +289,7 @@
 
                 var options =
                 {
-                    title: 'Moving averages'                    
+                    title: 'Moving averages'
                 };
 
                 chart.draw(data, options);
@@ -340,7 +346,7 @@
                     }
                 }
 
-                chart.draw(data,options);
+                chart.draw(data, options);
             },
             error: function () {
                 loader.hide();
@@ -403,7 +409,7 @@
         var container = $('#' + productContainer);
         var loader = container.find('#loader');
         var errorMessage = container.find('#errorMessage');
-        var productId = container.attr('data-product-id');        
+        var productId = container.attr('data-product-id');
 
         $.ajax({
             type: 'GET',
@@ -416,7 +422,7 @@
 
                 data.addColumn('string', 'Time');
                 //data.addColumn('string', 'Condition');
-                data.addColumn('number', 'Price');                
+                data.addColumn('number', 'Price');
 
                 // Create a table from the response data
                 for (var i = 0; i < productData.length; i++) {
@@ -430,7 +436,7 @@
                 loader.hide();
 
                 var chart = new google.charts.Scatter(container[0]);
-                
+
 
                 var options = {
                     title: 'End time versus price'
@@ -509,12 +515,12 @@
 
                 data.addColumn('string', '');
                 data.addColumn('string', 'Name');
-                data.addColumn('string', 'Year of release');                
+                data.addColumn('string', 'Year of release');
 
                 // Create a table from the response data
                 for (var i = 0; i < productData.length; i++) {
                     data.addRow(["<a href='/Product/" + productData[i].ProductId + "'>" + productData[i].ManufacturerCode + "</a>",
-                                    "<a href='/Product/" + productData[i].ProductId + "'>" + productData[i].Name + "</a>",                                 
+                                    "<a href='/Product/" + productData[i].ProductId + "'>" + productData[i].Name + "</a>",
                                  productData[i].YearOfRelease
                     ]);
                 }
@@ -533,109 +539,107 @@
         });
     }
 
-    var charting = (function () {
-        // Will store chart data for each chart loaded so we can easily redraw, etc
-        var chartCache = {};
+    function loadMoversAndLosersBarChart(productContainer, apiURL, chartName) {
+        var container = $('#' + productContainer);
+        var loader = container.find('#loader');
+        var errorMessage = container.find('#errorMessage');
+        var categoryId = container.attr('data-category-id')
+        var conditionId = container.attr('data-condition-id');
 
-        function load() {
-            google.charts.load('current', { 'packages': ['table', 'corechart', 'bar', 'scatter'] });
-        }
+        console.log('loading movers and losers ' + chartName);
 
-        function setOnLoadCallback(callback) {
-            google.charts.setOnLoadCallback(callback);
-        }
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json',
+            url: applicationBaseURL() + apiURL + categoryId + '/' + conditionId,
+            success: function (productData) {
 
-        function loadMoversAndLosersBarChart(productContainer, apiURL, chartName) {
-            var container = $('#' + productContainer);
-            var loader = container.find('#loader');
-            var errorMessage = container.find('#errorMessage');
-            var categoryId = container.attr('data-category-id')
-            var conditionId = container.attr('data-condition-id');
+                var data = new google.visualization.DataTable();
 
-            console.log('loading movers and losers ' + chartName);
+                data.addColumn('string', 'Product Name');
+                data.addColumn('number', '% Price change');
+                //data.addColumn('number', 'Used');
 
-            $.ajax({
-                type: 'GET',
-                dataType: 'json',
-                contentType: 'application/json',
-                url: applicationBaseURL() + apiURL + categoryId + '/' + conditionId,
-                success: function (productData) {
-
-                    var data = new google.visualization.DataTable();
-
-                    data.addColumn('string', 'Product Name');
-                    data.addColumn('number', '% Price change');
-                    //data.addColumn('number', 'Used');
-
-                    // Create a table from the response data
-                    for (var i = 0; i < productData.length; i++) {
-                        data.addRow([productData[i].ManufacturerCode.concat(' ', productData[i].Name),
-                                     parseInt(productData[i].PercentPriceChange)
-                        ]);
-                    }
-
-                    // Hide the loader
-                    loader.hide();
-
-                    var chart = new google.visualization.ColumnChart(container[0]);
-
-                    var minhValue = productData[productData.length - 1].PercentPriceChange;
-                    var maxhValue = productData[0].PercentPriceChange;
-
-                    var options = {
-                        chart: {
-                            title: 'Movers and losers over the last 30 days',
-                            isStacked: true
-                        },
-                        hAxis: {
-                            maxTextLines: 3
-                        },
-                        vAxis: {
-                            title: '% price change',
-                            viewWindowMode: 'pretty',
-                            baseline: 0,
-                            minValue: minhValue,
-                            maxValue: maxhValue
-                        }
-                    }
-
-                    chart.draw(data, options);
-
-                    google.visualization.events.addListener(chart, 'select', function () {
-                        var selection = chart.getSelection();
-
-                        var pid = productData[(selection[0].row * 2)].ProductId;
-                        var categoryId = productData[(selection[0].row * 2)].CategoryId;
-
-                        var conditionId = productData[(selection[0].row * 2) + (selection[0].column) - 1].ConditionId;
-
-                        window.location.href = "/Product/" + pid + "/" + conditionId;
-                    });
-
-                    // Add the loaded chart data to the cache
-                    chartCache[chartName] = { chart: chart, data: data, options: options };
-                },
-                error: function () {
-                    loader.hide();
-                    errorMessage.show();
+                // Create a table from the response data
+                for (var i = 0; i < productData.length; i++) {
+                    data.addRow([productData[i].ManufacturerCode.concat(' ', productData[i].Name),
+                                    parseInt(productData[i].PercentPriceChange)
+                    ]);
                 }
-            });
-        }
 
-        function redrawChart(chartName) {
-            console.log('redrawing chart ' + chartName);
+                // Hide the loader
+                loader.hide();
 
-            // Get the chart data for the given chart, then redraw
-            if (!!chartCache[chartName]) {
-                var chartData = chartCache[chartName];
-                chartData.chart.draw(chartData.data, chartData.options);
+                var chart = new google.visualization.ColumnChart(container[0]);
+
+                var minhValue = productData[productData.length - 1].PercentPriceChange;
+                var maxhValue = productData[0].PercentPriceChange;
+
+                var options = {
+                    chart: {
+                        title: 'Movers and losers over the last 30 days',
+                        isStacked: true
+                    },
+                    hAxis: {
+                        maxTextLines: 3
+                    },
+                    vAxis: {
+                        title: '% price change',
+                        viewWindowMode: 'pretty',
+                        baseline: 0,
+                        minValue: minhValue,
+                        maxValue: maxhValue
+                    }
+                }
+
+                chart.draw(data, options);
+
+                google.visualization.events.addListener(chart, 'select', function () {
+                    var selection = chart.getSelection();
+
+                    var pid = productData[(selection[0].row * 2)].ProductId;
+                    var categoryId = productData[(selection[0].row * 2)].CategoryId;
+
+                    var conditionId = productData[(selection[0].row * 2) + (selection[0].column) - 1].ConditionId;
+
+                    window.location.href = "/Product/" + pid + "/" + conditionId;
+                });
+
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
+            },
+            error: function () {
+                loader.hide();
+                errorMessage.show();
             }
-        }
+        });
+    }
 
-        return {
-            load: load,
-            setOnLoadCallback: setOnLoadCallback,
-            loadMoversAndLosersBarChart: loadMoversAndLosersBarChart,
-            redrawChart: redrawChart
-        };
-    })();
+    function redrawChart(chartName) {
+        console.log('redrawing chart ' + chartName);
+
+        // Get the chart data for the given chart, then redraw
+        if (!!chartCache[chartName]) {
+            var chartData = chartCache[chartName];
+            chartData.chart.draw(chartData.data, chartData.options);
+        }
+    }
+
+    return {
+        load: load,
+        setOnLoadCallback: setOnLoadCallback,
+        loadMoversAndLosersBarChart: loadMoversAndLosersBarChart,
+        loadProductsTable: loadProductsTable,
+        loadPopularProductsTable: loadPopularProductsTable,
+        loadProductScatterGraphChart: loadProductScatterGraphChart,
+        loadProductPriceLineChart: loadProductPriceLineChart,
+        loadProductPricesCandlestickChart: loadProductPricesCandlestickChart,
+        loadProductPricesMACD: loadProductPricesMACD,
+        loadProductPricesForMACDBarChart: loadProductPricesForMACDBarChart,
+        loadTopSellersBarChart: loadTopSellersBarChart,
+        loadTopSellersPieChart: loadTopSellersPieChart,
+        loadSalesByWeekdayBarChart: loadSalesByWeekdayBarChart,
+        redrawChart: redrawChart
+    };
+})(jQuery);
