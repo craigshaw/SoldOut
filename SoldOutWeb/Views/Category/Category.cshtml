@@ -6,24 +6,32 @@
 @section scripts{
     <script src="~/Scripts/charting.js" type="text/javascript"></script>
     <script>
-        function loadHomePageCharts() {
-            loadTopSellersBarChart('topSellersChartContainer', '/api/TopSellingProducts/');
-            //loadTopSellersPieChart('topSellersByCategory', '/api/TopSellingCategories/');
-            loadPopularProductsTable('newMostExpensiveProductTableContainer', '/api/Expensive/');
-            loadPopularProductsTable('newTopSellersTableContainer', '/api/Popular/');
-            loadPopularProductsTable('usedMostExpensiveProductTableContainer', '/api/Expensive/');
-            loadPopularProductsTable('usedTopSellersTableContainer', '/api/Popular/');
-
-            loadMoversAndLosersBarChart('newMoversAndLosersChartContainer', '/api/MoversAndLosers/');
-            loadMoversAndLosersBarChart('usedMoversAndLosersChartContainer', '/api/MoversAndLosers/');
-
-            loadSalesByWeekdayBarChart('salesByWeekdayChartContainer', '/Api/WeekdaySalesData/')
-
-            loadProductsTable('productTableContainer', '/api/ProductsInCategory/')
-        }
-
         $(function () {
-            google.charts.setOnLoadCallback(loadHomePageCharts);
+            // Bootstrap the charts on this page
+            charting.load();
+            charting.setOnLoadCallback(function () {
+                charting.loadTopSellersBarChart('topSellersChartContainer', '/api/TopSellingProducts/');
+                charting.loadPopularProductsTable('newMostExpensiveProductTableContainer', '/api/Expensive/');
+                charting.loadPopularProductsTable('newTopSellersTableContainer', '/api/Popular/');
+                charting.loadPopularProductsTable('usedMostExpensiveProductTableContainer', '/api/Expensive/');
+                charting.loadPopularProductsTable('usedTopSellersTableContainer', '/api/Popular/');
+
+                // Todo: Move to convention based approach for charts?
+                charting.loadMoversAndLosersBarChart('newMoversAndLosersChartContainer', '/api/MoversAndLosers/', 'newMoversAndLosers');
+                charting.loadMoversAndLosersBarChart('usedMoversAndLosersChartContainer', '/api/MoversAndLosers/', 'usedMoversAndLosers');
+
+                charting.loadSalesByWeekdayBarChart('salesByWeekdayChartContainer', '/Api/WeekdaySalesData/');
+
+                charting.loadProductsTable('productTableContainer', '/api/ProductsInCategory/');
+            });
+
+            $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+                // Which tab is selected?
+                var target = $(e.target).attr("href").substring(1);
+
+                // Redraw the chart
+                charting.redrawChart(target + 'MoversAndLosers');
+            })
         })
     </script>
 }
@@ -47,7 +55,7 @@
     <li><a data-toggle="tab" href="#used">Used</a></li>
 </ul>
 <div class="tab-content">
-    <div id="new" class="tab-pane fade in active">        
+    <div id="new" class="tab-pane fade in active">
         <h5>New product prices</h5>
         <div class="row">
             <div class="col-md-6">
@@ -85,7 +93,8 @@
                         <p class="text-danger">Sorry, we couldn't get your search results</p>
                     </div>
                 </div>
-            </div>            
+            </div>
+
         </div>
     </div>
 

@@ -20,7 +20,7 @@ namespace SoldOutBusiness.Repository
 
         IEnumerable<ProductSaleSummary> TopSellingCategories(int? categoryId, int daysToLookBack);
 
-        IEnumerable<ProductTimeSeriesData> GetTimeSeriesDataForProduct(int? productId, int? conditionId);
+        IEnumerable<ProductTimeSeriesData> GetTimeSeriesDataForProduct(int productId, int conditionId);
 
         IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval);
 
