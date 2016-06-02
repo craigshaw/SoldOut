@@ -36,7 +36,7 @@ namespace SoldOutWeb.Controllers
         [Route("Api/CandlestickData/{productId?}/{conditionId?}")]
         public JsonResult GetCandleStickChartDataForProduct(int? productId, int? conditionId)
         {
-            var chartData = _statsRepository.GetTimeSeriesDataForProduct(productId, conditionId == null ? conditionId : 2 );
+            var chartData = _statsRepository.GetTimeSeriesDataForProduct(productId ?? 1, conditionId ?? 2 );
             return Json(chartData, JsonRequestBehavior.AllowGet);
         }
 

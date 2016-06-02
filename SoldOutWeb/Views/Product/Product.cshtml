@@ -11,20 +11,31 @@
             charting.load();
             charting.setOnLoadCallback(function () {
                 // New product charts
-                charting.loadProductPricesCandlestickChart('newproductPriceChartContainer', '/Api/CandlestickData/');
-                charting.loadProductPricesMACD('newproductPriceMACDChartContainer', '/Api/MACData/');
-                charting.loadProductPricesForMACDBarChart('newproductPriceMACDBarChartContainer', '/Api/MACData/');
-                charting.loadProductPriceLineChart('newproductPriceMonthlySummaryContainer', '/Api/PriceHistory/');
+                charting.loadProductPricesCandlestickChart('newproductPriceChartContainer', '/Api/CandlestickData/', 'newProductPrice');
+                charting.loadProductPricesMACD('newproductPriceMACDChartContainer', '/Api/MACData/', 'newProductPriceMACD');
+                charting.loadProductPricesForMACDBarChart('newproductPriceMACDBarChartContainer', '/Api/MACData/', 'newProductPriceMACDBarChart');
+                charting.loadProductPriceLineChart('newproductPriceMonthlySummaryContainer', '/Api/PriceHistory/', 'newProductPriceMonthlySummary');
 
                 // Used product charts
-                charting.loadProductPricesCandlestickChart('usedproductPriceChartContainer', '/Api/CandlestickData/');
-                charting.loadProductPricesMACD('usedproductPriceMACDChartContainer', '/Api/MACData/');
-                charting.loadProductPricesForMACDBarChart('usedproductPriceMACDBarChartContainer', '/Api/MACData/');
-                charting.loadProductPriceLineChart('usedproductPriceMonthlySummaryContainer', '/Api/PriceHistory/');
+                charting.loadProductPricesCandlestickChart('usedproductPriceChartContainer', '/Api/CandlestickData/', 'usedProductPrice');
+                charting.loadProductPricesMACD('usedproductPriceMACDChartContainer', '/Api/MACData/', 'usedProductPriceMACD');
+                charting.loadProductPricesForMACDBarChart('usedproductPriceMACDBarChartContainer', '/Api/MACData/', 'usedProductPriceMACDBarChart');
+                charting.loadProductPriceLineChart('usedproductPriceMonthlySummaryContainer', '/Api/PriceHistory/', 'usedProductPriceMonthlySummary');
 
                 // Misc data charts for the product
                 charting.loadProductScatterGraphChart('productScatterGraphChartContainer', '/Api/Scattergraph/');
             });
+
+            $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+                // Which tab is selected?
+                var target = $(e.target).attr("href").substring(1);
+
+                // Redraw the charts
+                charting.redrawChart(target + 'ProductPrice');
+                charting.redrawChart(target + 'ProductPriceMACD');
+                charting.redrawChart(target + 'ProductPriceMACDBarChart');
+                charting.redrawChart(target + 'ProductPriceMonthlySummary');
+            })
         })
     </script>
 }
@@ -41,16 +52,8 @@
 
 
 <ul class="nav nav-tabs nav-justified">
-    @*@if (Model.ConditionID == 2)
-    {*@
     <li class="active"><a data-toggle="tab" href="#new">New</a></li>
-    <li><a data-toggle="tab" href="#used">Used</a></li>   
-    @*}
-    else
-    {*@
-    @*<li><a data-toggle="tab" href="#new">New</a></li>
-    <li class="active"><a data-toggle="tab" href="#used">Used</a></li>   
-    }*@
+    <li><a data-toggle="tab" href="#used">Used</a></li>
 </ul>
 
 <div class="tab-content">
@@ -103,7 +106,7 @@
                 </div>
             </div>
         </div>
-    </div> 
+    </div>
 
     <!-- Used tab contents -->
     <div id="used" class="tab-pane fade">
@@ -156,7 +159,7 @@
         </div>
     </div>
 </div>
-  
+
 
 <h3>Other price data</h3>
 <div class="row">

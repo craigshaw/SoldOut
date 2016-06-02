@@ -198,7 +198,7 @@
         });
     }
 
-    function loadProductPricesForMACDBarChart(productContainer, apiURL) {
+    function loadProductPricesForMACDBarChart(productContainer, apiURL, chartName) {
         var container = $('#' + productContainer);
         var loader = container.find('#loader');
         var errorMessage = container.find('#errorMessage');
@@ -239,6 +239,9 @@
                 }
 
                 chart.draw(data, options);
+
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
                 loader.hide();
@@ -247,7 +250,7 @@
         });
     }
 
-    function loadProductPricesMACD(productContainer, apiURL) {
+    function loadProductPricesMACD(productContainer, apiURL, chartName) {
         var container = $('#' + productContainer);
         var loader = container.find('#loader');
         var errorMessage = container.find('#errorMessage');
@@ -293,6 +296,9 @@
                 };
 
                 chart.draw(data, options);
+
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
                 loader.hide();
@@ -301,7 +307,7 @@
         });
     }
 
-    function loadProductPricesCandlestickChart(productContainer, apiURL) {
+    function loadProductPricesCandlestickChart(productContainer, apiURL, chartName) {
         var container = $('#' + productContainer);
         var loader = container.find('#loader');
         var errorMessage = container.find('#errorMessage');
@@ -347,6 +353,9 @@
                 }
 
                 chart.draw(data, options);
+
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
                 loader.hide();
@@ -355,8 +364,8 @@
         });
     }
 
-    function loadProductPriceLineChart(chartName, apiURL) {
-        var chartContainer = $('#' + chartName);
+    function loadProductPriceLineChart(containerName, apiURL, chartName) {
+        var chartContainer = $('#' + containerName);
         var loader = chartContainer.find('#loader');
         var errorMessage = chartContainer.find('#errorMessage');
         var searchId = chartContainer.attr('data-product-id');
@@ -397,6 +406,9 @@
                 };
 
                 chart.draw(data, options);
+
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
                 loader.hide();
@@ -546,8 +558,6 @@
         var categoryId = container.attr('data-category-id')
         var conditionId = container.attr('data-condition-id');
 
-        console.log('loading movers and losers ' + chartName);
-
         $.ajax({
             type: 'GET',
             dataType: 'json',
@@ -617,8 +627,6 @@
     }
 
     function redrawChart(chartName) {
-        console.log('redrawing chart ' + chartName);
-
         // Get the chart data for the given chart, then redraw
         if (!!chartCache[chartName]) {
             var chartData = chartCache[chartName];

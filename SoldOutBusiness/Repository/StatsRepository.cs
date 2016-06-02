@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
-using System.Data.SqlClient;
 
 namespace SoldOutBusiness.Repository
 {
@@ -37,11 +36,9 @@ namespace SoldOutBusiness.Repository
             return data;
         }
 
-        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesDataForProduct(int? productId, int? conditionId)
+        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesDataForProduct(int productId, int conditionId)
         {
-            var condition = conditionId == null ? 2 : conditionId;
-
-            var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>("exec GetTimeSeriesDataByProductID " + productId.ToString() + "," + condition.ToString());
+            var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>("exec GetTimeSeriesDataByProductID " + productId.ToString() + "," + conditionId.ToString());
             
             return timeData.Skip(Math.Max(0, timeData.Count() - 30));
         }
