@@ -79,7 +79,7 @@
         var container = $('#' + productContainer);
         var loader = container.find('#loader');
         var errorMessage = container.find('#errorMessage');
-        var categoryId = container.attr('data-category-id')
+        var categoryId = container.attr('data-category-id') || '';
 
         $.ajax({
             type: 'GET',
@@ -132,7 +132,7 @@
         var container = $('#' + productContainer);
         var loader = container.find('#loader');
         var errorMessage = container.find('#errorMessage');
-        var categoryId = container.attr('data-category-id')
+        var categoryId = container.attr('data-category-id') || '';
 
         $.ajax({
             type: 'GET',

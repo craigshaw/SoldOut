@@ -22,14 +22,14 @@ namespace SoldOutWeb.Controllers
         [Route("Api/TopSellingProducts/{categoryId?}")]        
         public JsonResult TopSellingProducts(int? categoryId)
         {
-            var topSellers = _statsRepository.TopSellingProducts(categoryId.HasValue ? categoryId.Value : 2, 10, 30);
+            var topSellers = _statsRepository.TopSellingProducts(categoryId ?? 2, 10, 30);
             return Json(topSellers, JsonRequestBehavior.AllowGet);
         }
 
         [Route("Api/TopSellingCategories/{categoryId?}")]
         public JsonResult TopSellingCategories(int? categoryId)
         {
-            var topSellers = _statsRepository.TopSellingCategories(categoryId.HasValue ? categoryId.Value : 2, 30);
+            var topSellers = _statsRepository.TopSellingCategories(categoryId ?? 2, 30);
             return Json(topSellers, JsonRequestBehavior.AllowGet);
         }
 

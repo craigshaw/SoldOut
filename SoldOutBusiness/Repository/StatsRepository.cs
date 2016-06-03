@@ -24,21 +24,21 @@ namespace SoldOutBusiness.Repository
 
         public IEnumerable<ProductSaleSummary> TopSellingProducts(int categoryId, int numberToReturn, int daysToLookBack)
         {
-            var data = _context.Database.SqlQuery<ProductSaleSummary>("exec GetTopSellingProductsByCategoryAndNumberItemsSold " + categoryId.ToString() + "," + daysToLookBack.ToString()).ToList();
+            var data = _context.Database.SqlQuery<ProductSaleSummary>($"exec GetTopSellingProductsByCategoryAndNumberItemsSold {categoryId}, {daysToLookBack}").ToList();
 
             return data;
         }
 
-        public IEnumerable<ProductSaleSummary> TopSellingCategories(int? categoryId, int daysToLookBack)
+        public IEnumerable<ProductSaleSummary> TopSellingCategories(int categoryId, int daysToLookBack)
         {            
-            var data = _context.Database.SqlQuery<ProductSaleSummary>("exec GetTopSellingCategoriesByNumberItemsSold " + categoryId.ToString() + "," + daysToLookBack.ToString()).ToList();
+            var data = _context.Database.SqlQuery<ProductSaleSummary>($"exec GetTopSellingCategoriesByNumberItemsSold {categoryId}, {daysToLookBack}").ToList();
 
             return data;
         }
 
         public IEnumerable<ProductTimeSeriesData> GetTimeSeriesDataForProduct(int productId, int conditionId)
         {
-            var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>("exec GetTimeSeriesDataByProductID " + productId.ToString() + "," + conditionId.ToString());
+            var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>($"exec GetTimeSeriesDataByProductID {productId}, {conditionId}");
             
             return timeData.Skip(Math.Max(0, timeData.Count() - 30));
         }
