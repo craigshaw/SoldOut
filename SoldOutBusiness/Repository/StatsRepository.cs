@@ -43,18 +43,12 @@ namespace SoldOutBusiness.Repository
             return timeData.Skip(Math.Max(0, timeData.Count() - 30));
         }
 
-        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval)
+        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int productId, int conditionId, int shortInterval, int longInterval)
         {
-            var condition = conditionId == null ? 2 : conditionId;
-            var sInterval = shortInterval == null ? 20 : shortInterval.Value;
-            var lInterval = longInterval == null ? 50 : longInterval.Value;
-
-            var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>("exec GetTimeSeriesMACDDataByProductID " + productId.ToString() + "," + condition.ToString() + "," + sInterval.ToString() + "," + lInterval.ToString());
+            var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>($"exec GetTimeSeriesMACDDataByProductID {productId}, {conditionId}, {shortInterval}, {longInterval}");
 
             return timeData.Skip(Math.Max(0, timeData.Count() - 50));
         }
-
-        //public IEnumerable<Pro>
 
         //public IEnumerable<ProductItemCount> MostPopularProducts(int categoryId, int numberToReturn = 10, int daysToLookBack = 7)
         //{

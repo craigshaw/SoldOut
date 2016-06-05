@@ -43,7 +43,7 @@ namespace SoldOutWeb.Controllers
         [Route("Api/MACData/{productId?}/{conditionId?}/{shortinterval?}/{longinterval?}")]
         public JsonResult GetMACDChartDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval)
         {
-            var chartData = _statsRepository.GetTimeSeriesMACDDataForProduct(productId, conditionId ?? 2, shortInterval, longInterval);
+            var chartData = _statsRepository.GetTimeSeriesMACDDataForProduct(productId ?? 1, conditionId ?? 2, shortInterval ?? 20, longInterval ?? 50);
             return Json(chartData, JsonRequestBehavior.AllowGet);
         }
 
