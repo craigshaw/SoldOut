@@ -146,27 +146,18 @@ namespace SoldOutBusiness.Repository
                         ManufacturerCode = grouped.Key.ManufacturerCode,
                         Name = grouped.Key.Name
                     }).Take(numberToReturn);
-
-
-            //(from sr in _context.SearchResults
-            //        where DbFunctions.AddDays(sr.DateOfMatch, daysToLookBack) > DateTime.Now
-            //              //&& sr.ConditionId == conditionId
-            //        group sr by sr.ProductId into grouped
-            //        from g in grouped
-            //        orderby g.Price descending
-            //        select g).Take(numberToReturn);
         }
 
         public IEnumerable<ProductPriceScatterGraphData> GetScatterGraphDataForProduct(int productId, int interval)
         {
-            var scatterGraphData = _context.Database.SqlQuery<ProductPriceScatterGraphData>("exec GetSalesDataByPeriodAndIntervalForProductScatterGraph " + productId.ToString() + "," + interval.ToString()).ToList();
+            var scatterGraphData = _context.Database.SqlQuery<ProductPriceScatterGraphData>($"exec GetSalesDataByPeriodAndIntervalForProductScatterGraph {productId}, {interval}").ToList();
 
             return scatterGraphData;
         }
 
-        public IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int? categoryId, int daysToLookBack = 7)
+        public IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int categoryId, int daysToLookBack = 7)
         {   
-            var _salesData = _context.Database.SqlQuery<WeekdaySalesData>("exec GetPriceStatisticsForCategoryByDayOfWeek " + categoryId.ToString() + ",7," + daysToLookBack.ToString()).ToList();
+            var _salesData = _context.Database.SqlQuery<WeekdaySalesData>($"exec GetPriceStatisticsForCategoryByDayOfWeek {categoryId}, 7, {daysToLookBack}").ToList();
 
             return _salesData;
         }

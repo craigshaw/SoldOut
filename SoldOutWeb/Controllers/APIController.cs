@@ -79,9 +79,9 @@ namespace SoldOutWeb.Controllers
         }
 
         [Route("Api/MoversAndLosers/{categoryId}/{conditionId?}")]
-        public JsonResult GetMoversAndLosersByCategoryAndCondition(int categoryId, int conditionId)
+        public JsonResult GetMoversAndLosersByCategoryAndCondition(int categoryId, int? conditionId)
         {
-            var mostExpensiveProducts = _statsRepository.GetMoversAndLosersByCategoryAndCondition(categoryId, conditionId, 30, 10);
+            var mostExpensiveProducts = _statsRepository.GetMoversAndLosersByCategoryAndCondition(categoryId, conditionId ?? 2, 30, 10);
             return Json(mostExpensiveProducts, JsonRequestBehavior.AllowGet);
         }
 
@@ -95,7 +95,7 @@ namespace SoldOutWeb.Controllers
         [Route("Api/TopSellersInCategoryByNumberOfBuyers/{categoryId}")]
         public JsonResult TopSellersInCategoryByNumberOfBuyers(int? categoryId)
         {
-            var _categorySales = _statsRepository.GetTopSellingProductsForCategoryByNumberOfBuyers(categoryId.HasValue ? categoryId.Value : 2, 7);
+            var _categorySales = _statsRepository.GetTopSellingProductsForCategoryByNumberOfBuyers(categoryId ?? 2, 7);
             return Json(_categorySales, JsonRequestBehavior.AllowGet);
         }
 
@@ -120,7 +120,7 @@ namespace SoldOutWeb.Controllers
         [Route("Api/WeekdaySalesData/{categoryId?}")]
         public JsonResult GetWeeklySalesData(int? categoryId)
         {
-            var salesData = _statsRepository.GetWeeklySalesDataByCategory(categoryId.HasValue ? categoryId.Value : 2);
+            var salesData = _statsRepository.GetWeeklySalesDataByCategory(categoryId ?? 2);
             return Json(salesData, JsonRequestBehavior.AllowGet);
         }
     }
