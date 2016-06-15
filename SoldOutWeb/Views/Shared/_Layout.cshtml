@@ -24,19 +24,21 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.RouteLink(linkText: "Home",
-                        routeName: "Home",
-                        routeValues: new { controller = "Home", action = "Home"})</li>
                     <li>
+                        @Html.RouteLink(linkText: "Home",
+     routeName: "Home",
+     routeValues: new { controller = "Home", action = "Home" })
+                    </li>
+                    @*<li>
                         @Html.RouteLink(linkText: "Search",
-                        routeName: "Searches",
-                        routeValues: new { controller = "Search", action = "All" })
-                </li>
+         routeName: "Searches",
+         routeValues: new { controller = "Search", action = "All" })
+                    </li>*@
                 </ul>
             </div>
         </div>
     </div>
-    <div class="container body-content" >
+    <div class="container body-content">
         @RenderBody()
         <hr />
         <footer>
@@ -46,5 +48,7 @@
 
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+
+    <!-- v @typeof(SoldOutWeb.MvcApplication).Assembly.GetName().Version -->
 </body>
 </html>

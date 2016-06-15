@@ -32,8 +32,6 @@
 
     function loadSalesByWeekdayBarChart(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var categoryId = container.attr('data-category-id')
 
         $.ajax({
@@ -42,7 +40,6 @@
             contentType: 'application/json',
             url: applicationBaseURL() + apiURL + categoryId,
             success: function (productData) {
-
                 var data = new google.visualization.DataTable();
 
                 data.addColumn('string', 'Day');
@@ -57,9 +54,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var chart = new google.visualization.AreaChart(container[0]);
 
                 var options = {
@@ -69,16 +63,12 @@
                 chart.draw(data, options);
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
     function loadTopSellersPieChart(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var categoryId = container.attr('data-category-id') || '';
 
         $.ajax({
@@ -88,7 +78,6 @@
             url: applicationBaseURL() + apiURL + categoryId,
             success: function (productData) {
                 // Create the chart data from the API response                
-
                 var data = new google.visualization.DataTable();
 
                 data.addColumn('string', 'Name');
@@ -100,9 +89,6 @@
                                  parseInt(productData[i].NumberSold) + parseInt(productData[i + 1].NumberSold)
                     ]);
                 }
-
-                // Hide the loader
-                loader.hide();
 
                 var chart = new google.visualization.PieChart(container[0]);
 
@@ -122,16 +108,13 @@
                 });
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
+                // ?
             }
         });
     }
 
     function loadTopSellersBarChart(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var categoryId = container.attr('data-category-id') || '';
 
         $.ajax({
@@ -140,7 +123,6 @@
             contentType: 'application/json',
             url: applicationBaseURL() + apiURL + categoryId,
             success: function (productData) {
-
                 var data = new google.visualization.DataTable();
 
                 data.addColumn('string', 'Product Name');
@@ -155,14 +137,11 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var chart = new google.charts.Bar(container[0]);
 
                 var options = {
                     chart: {
-                        title: 'Most popular products being bought over the last 30 days'
+                        title: 'Best selling products over the last 30 days'
                     },
                     series: {
                         0: { axis: 'product' },
@@ -192,16 +171,13 @@
                 });
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
+                // ??
             }
         });
     }
 
     function loadProductPricesForMACDBarChart(productContainer, apiURL, chartName) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var productId = container.attr('data-product-id');
         var conditionId = container.attr('data-product-condition-id');
         var shortInterval = container.attr('data-short-interval');
@@ -229,9 +205,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var chart = new google.visualization.ColumnChart(container[0]);
 
                 var options = {
@@ -244,16 +217,12 @@
                 chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
     function loadProductPricesMACD(productContainer, apiURL, chartName) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var productId = container.attr('data-product-id');
         var conditionId = container.attr('data-product-condition-id');
 
@@ -285,9 +254,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var chart = new google.visualization.LineChart(container[0]);
 
                 var options =
@@ -301,16 +267,12 @@
                 chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
     function loadProductPricesCandlestickChart(productContainer, apiURL, chartName) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var productId = container.attr('data-product-id');
         var conditionId = container.attr('data-product-condition-id');
 
@@ -339,9 +301,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var chart = new google.visualization.CandlestickChart(container[0]);
 
                 var options = {
@@ -358,16 +317,12 @@
                 chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
     function loadProductPriceLineChart(containerName, apiURL, chartName) {
         var chartContainer = $('#' + containerName);
-        var loader = chartContainer.find('#loader');
-        var errorMessage = chartContainer.find('#errorMessage');
         var searchId = chartContainer.attr('data-product-id');
         var conditionId = chartContainer.attr('data-product-condition-id');
 
@@ -393,9 +348,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 // Create and draw the chart
                 var chart = new google.visualization.LineChart(chartContainer[0]);
 
@@ -411,16 +363,12 @@
                 chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
     function loadProductScatterGraphChart(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var productId = container.attr('data-product-id');
 
         $.ajax({
@@ -444,9 +392,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var chart = new google.charts.Scatter(container[0]);
 
 
@@ -457,16 +402,12 @@
                 chart.draw(data, google.charts.Scatter.convertOptions(options));
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
     function loadPopularProductsTable(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var categoryId = container.attr('data-category-id');
         var conditionId = container.attr('data-condition-id');
 
@@ -493,9 +434,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var table = new google.visualization.Table(container[0]);
 
                 var formatter = new google.visualization.NumberFormat({ prefix: '£' });
@@ -504,16 +442,12 @@
                 table.draw(data, { showRowNumber: false, allowHtml: true, width: '100%', height: '100%' });
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
     function loadProductsTable(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var categoryId = container.attr('data-category-id');
 
         $.ajax({
@@ -537,24 +471,17 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var table = new google.visualization.Table(container[0]);
 
                 table.draw(data, { showRowNumber: false, allowHtml: true, width: '100%', height: '100%' });
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
     function loadMoversAndLosersBarChart(productContainer, apiURL, chartName) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var categoryId = container.attr('data-category-id')
         var conditionId = container.attr('data-condition-id');
 
@@ -564,12 +491,10 @@
             contentType: 'application/json',
             url: applicationBaseURL() + apiURL + categoryId + '/' + conditionId,
             success: function (productData) {
-
                 var data = new google.visualization.DataTable();
 
                 data.addColumn('string', 'Product Name');
                 data.addColumn('number', '% Price change');
-                //data.addColumn('number', 'Used');
 
                 // Create a table from the response data
                 for (var i = 0; i < productData.length; i++) {
@@ -577,9 +502,6 @@
                                     parseInt(productData[i].PercentPriceChange)
                     ]);
                 }
-
-                // Hide the loader
-                loader.hide();
 
                 var chart = new google.visualization.ColumnChart(container[0]);
 
@@ -620,8 +542,6 @@
                 chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
