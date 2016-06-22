@@ -25,6 +25,12 @@ namespace SoldOutSearchMonkey.Services
         public int Suspicious { get; set; }
     }
 
+    class SearchMetrics
+    {
+        public long ExecutionTime { get; set; }
+        public int ApiCallsMade { get; set; }
+    }
+
     class SearchSummary
     {
         public SearchSummary()
@@ -84,16 +90,20 @@ namespace SoldOutSearchMonkey.Services
 
             _searchTask = t =>
             {
-                // Execute current search
-                var executionTime = ExecuteSearch();
+                try
+                {
+                    // Execute current search
+                    var searchMetrics = ExecuteSearch();
 
-#if DEBUG
-                executionTime = 0;
-#endif
-
-                // Schedule the next search
-                Task.Delay(TimeSpan.FromMilliseconds(SearchScheduleInterval - executionTime), _cts.Token)
-                            .ContinueWith(ta => _searchTask(t), _cts.Token);
+                    // Schedule the next search
+                    var nextSearchInterval = (SearchScheduleInterval * ((searchMetrics.ApiCallsMade) == 0 ? 1 : searchMetrics.ApiCallsMade)) - searchMetrics.ExecutionTime;
+                    Task.Delay(TimeSpan.FromMilliseconds(nextSearchInterval >= 0 ? nextSearchInterval : 0), _cts.Token)
+                                .ContinueWith(ta => _searchTask(t), _cts.Token);
+                }
+                catch(Exception ex)
+                {
+                    _log.Fatal(ex);
+                }
             };
 
             InstallInstrumentation();
@@ -116,10 +126,11 @@ namespace SoldOutSearchMonkey.Services
         public double SearchScheduleInterval { get; set; }
         #endregion
 
-        private long ExecuteSearch()
+        private SearchMetrics ExecuteSearch()
         {
             Stopwatch executionTimer = Stopwatch.StartNew();
             FindCompletedItemsResponse response;
+            SearchMetrics searchMetrics = new SearchMetrics();
 
             try
             {
@@ -147,6 +158,7 @@ namespace SoldOutSearchMonkey.Services
                             using (_serviceRequestTimer.NewContext())
                             {
                                 response = _finder.GetCompletedItems(search, pageNumber++);
+                                searchMetrics.ApiCallsMade++;
                             }
 
                             if (response.ack == AckValue.Success || response.ack == AckValue.Warning)
@@ -221,7 +233,9 @@ namespace SoldOutSearchMonkey.Services
 
             executionTimer.Stop();
 
-            return executionTimer.ElapsedMilliseconds;
+            searchMetrics.ExecutionTime = executionTimer.ElapsedMilliseconds;
+
+            return searchMetrics;
         }
 
         private SearchSummary CreateSearchSummary(Search search)
