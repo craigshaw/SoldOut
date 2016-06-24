@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - NoLonga</title>
+    <title>@ViewBag.Title - Nolonga.com</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/modernizr")
@@ -28,11 +28,13 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - Sid n Whal</p>
+            <p>&copy; @DateTime.Now.Year - Nolonga.com</p>
         </footer>
     </div>
 
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+
+    <!-- v @typeof(SoldOutWeb.MvcApplication).Assembly.GetName().Version -->
 </body>
 </html>

@@ -1,19 +1,26 @@
-﻿//(function () {
-//    var conditions = { 2: "New", 7: "Used" };
+﻿var charting = (function ($) {
+    // Will store chart data for each chart loaded so we can easily redraw, etc
+    var chartCache = {};
+
+    function load() {
+        google.charts.load('current', { 'packages': ['table', 'corechart', 'bar', 'scatter'] });
+    }
+
+    function setOnLoadCallback(callback) {
+        google.charts.setOnLoadCallback(callback);
+    }
 
     // Courtesy of Jack Moore, http://www.jacklmoore.com/notes/rounding-in-javascript/
     function round(value, decimals) {
         return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
     }
 
-    function formatDate(value)
-    {
+    function formatDate(value) {
         var myDate = Date.parse(value);
         return myDate.getDate() + "-" + myDate.getMonth() + "-" + myDate.getFullYear();
     }
 
-    function applicationBaseURL()
-    {
+    function applicationBaseURL() {
         // Work out the base URL to pass into the charting function so they can use the general charting API
         pathArray = location.href.split('/');
         protocol = pathArray[0];
@@ -25,8 +32,6 @@
 
     function loadSalesByWeekdayAreaChart(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var categoryId = container.attr('data-category-id')
 
         $.ajax({ 
@@ -35,7 +40,6 @@
             contentType: 'application/json',
             url: applicationBaseURL() + apiURL + categoryId,
             success: function (productData) {
-
                 var data = new google.visualization.DataTable();
 
                 data.addColumn('string', 'Day');
@@ -50,9 +54,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var chart = new google.visualization.AreaChart(container[0]);
 
                 var options = {
@@ -64,18 +65,13 @@
                 chart.draw(data, options);
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
-
     function loadTopSellersPieChart(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
-        var categoryId = container.attr('data-category-id')
+        var categoryId = container.attr('data-category-id') || '';
 
         $.ajax({
             type: 'GET',
@@ -84,11 +80,10 @@
             url: applicationBaseURL() + apiURL + categoryId,
             success: function (productData) {
                 // Create the chart data from the API response                
-
                 var data = new google.visualization.DataTable();
 
                 data.addColumn('string', 'Name');
-                data.addColumn('number', '# Sold');             
+                data.addColumn('number', '# Sold');
 
                 // Create a table from the response data
                 for (var i = 0; i < productData.length; i += 2) {
@@ -96,9 +91,6 @@
                                  parseInt(productData[i].NumberSold) + parseInt(productData[i + 1].NumberSold)
                     ]);
                 }
-
-                // Hide the loader
-                loader.hide();
 
                 var chart = new google.visualization.PieChart(container[0]);
 
@@ -118,16 +110,13 @@
                 });
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
+                // ?
             }
         });
     }
 
     function loadMoversAndLosersBarChart(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var categoryId = container.attr('data-category-id')
         var conditionId = container.attr('data-condition-id');
 
@@ -150,9 +139,6 @@
                                  parseInt(productData[i].PercentPriceChange)
                     ]);
                 }
-
-                // Hide the loader
-                loader.hide();
 
                 var chart = new google.visualization.ColumnChart(container[0]);
 
@@ -188,18 +174,14 @@
                 });
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
+                // ?
             }
         });
     }
 
-
     function loadTopSellersBarChart(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
-        var categoryId = container.attr('data-category-id')
+        var categoryId = container.attr('data-category-id') || '';
 
         $.ajax({
             type: 'GET',
@@ -207,12 +189,11 @@
             contentType: 'application/json',
             url: applicationBaseURL() + apiURL + categoryId,
             success: function (productData) {
-
                 var data = new google.visualization.DataTable();
 
                 data.addColumn('string', 'Product Name');
                 data.addColumn('number', 'New');
-                data.addColumn('number', 'Used');            
+                data.addColumn('number', 'Used');
 
                 // Create a table from the response data
                 for (var i = 0; i < productData.length; i += 2) {
@@ -222,14 +203,11 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var chart = new google.charts.Bar(container[0]);
 
                 var options = {
                     chart: {
-                        title: 'Most popular products being bought over the last 30 days'
+                        title: 'Best selling products over the last 30 days'
                     },
                     series: {
                         0: { axis: 'product' },
@@ -259,16 +237,13 @@
                 });
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
+                // ??
             }
         });
     }
 
-    function loadProductPricesForMACDBarChart(productContainer, apiURL) {
+    function loadProductPricesForMACDBarChart(productContainer, apiURL, chartName) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var productId = container.attr('data-product-id');
         var conditionId = container.attr('data-product-condition-id');
         var shortInterval = container.attr('data-short-interval');
@@ -298,10 +273,7 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
-                var chart = new google.visualization.ComboChart(container[0]);
+                var chart = new google.visualization.ColumnChart(container[0]);
 
                 var options = {
                     isStacked: true,
@@ -314,19 +286,17 @@
                 }
 
                 chart.draw(data, options);
+
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
-    function loadProductPricesMACD(productContainer, apiURL)
-    {
+    function loadProductPricesMACD(productContainer, apiURL, chartName) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var productId = container.attr('data-product-id');
         var conditionId = container.attr('data-product-condition-id');
 
@@ -356,33 +326,25 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var chart = new google.visualization.LineChart(container[0]);
 
                 var options =
                 {
-                    title: 'Moving averages',
-                    series: {
-                        1: { curveType: 'function' },
-                        2: { curveType: 'function' }
-                    }
+                    title: 'Moving averages'
                 };
 
                 chart.draw(data, options);
+
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
-    function loadProductPricesCandlestickChart(productContainer, apiURL) {
+    function loadProductPricesCandlestickChart(productContainer, apiURL, chartName) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var productId = container.attr('data-product-id');
         var conditionId = container.attr('data-product-condition-id');
 
@@ -411,9 +373,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var chart = new google.visualization.CandlestickChart(container[0]);
 
                 var options = {
@@ -424,19 +383,18 @@
                     }
                 }
 
-                chart.draw(data,options);
+                chart.draw(data, options);
+
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
-    function loadProductPriceLineChart(chartName, apiURL) {
-        var chartContainer = $('#' + chartName);
-        var loader = chartContainer.find('#loader');
-        var errorMessage = chartContainer.find('#errorMessage');
+    function loadProductPriceLineChart(containerName, apiURL, chartName) {
+        var chartContainer = $('#' + containerName);
         var searchId = chartContainer.attr('data-product-id');
         var conditionId = chartContainer.attr('data-product-condition-id');
 
@@ -462,9 +420,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 // Create and draw the chart
                 var chart = new google.visualization.LineChart(chartContainer[0]);
 
@@ -475,18 +430,17 @@
                 };
 
                 chart.draw(data, options);
+
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
     function loadSellersByCategoryLineChart(chartName, apiURL) {
         var chartContainer = $('#' + chartName);
-        var loader = chartContainer.find('#loader');
-        var errorMessage = chartContainer.find('#errorMessage');
         var categoryId = chartContainer.attr('data-category-id');
         var interval = chartContainer.attr('data-interval');
 
@@ -514,9 +468,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 // Create and draw the chart
                 var chart = new google.visualization.LineChart(chartContainer[0]);
 
@@ -529,16 +480,12 @@
                 chart.draw(data, options);
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
     function loadDailyProductPriceLineChart(chartName, apiURL) {
         var chartContainer = $('#' + chartName);
-        var loader = chartContainer.find('#loader');
-        var errorMessage = chartContainer.find('#errorMessage');
         var searchId = chartContainer.attr('data-product-id');
         var conditionId = chartContainer.attr('data-product-condition-id');
         var shortInterval = chartContainer.attr('data-short-interval');
@@ -583,25 +530,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
-                // Create and draw the chart
-                //var chart = new google.visualization.LineChart(chartContainer[0]);
-
-                //var options =
-                //{
-                //    title: 'Daily average prices (previous ' + daysToLookBack + ' days)',
-                //    series: {
-                //        1: { curveType: 'function' },
-                //        2: { curveType: 'function' },
-                //        3: { curveType: 'function'},
-                //        4: { curveType: 'function'},
-                //        5: { curveType: 'function'}
-                //    },
-                //    hAxis: { showTextEvery: 5}
-                //};
-
                 var chart = new google.visualization.ComboChart(chartContainer[0]);
 
                 var options = {
@@ -619,68 +547,13 @@
                 chart.draw(data, options);
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
-    //function loadTopSellersLineChart(chartName, apiURL) {
-    //    var chartContainer = $('#' + chartName);
-    //    var loader = chartContainer.find('#loader');
-    //    var errorMessage = chartContainer.find('#errorMessage');
-    //    var categoryId = chartContainer.attr('data-category-id');
-
-    //    $.ajax({
-    //        type: 'GET',
-    //        dataType: 'json',
-    //        contentType: 'application/json',
-    //        url: apiURL + '/' + categoryId,
-    //        success: function (chartsdata) {
-    //            // Create the chart data from the API response
-    //            var data = new google.visualization.DataTable();
-
-    //            data.addColumn('string', 'Date');
-    //            data.addColumn('string', 'Category');
-    //            data.addColumn('string', 'Name');
-    //            data.addColumn('string', 'NumberOfBidders');
-    //            data.addColumn('string', 'AvgPrice');                
-
-    //            for (var i = 0; i < chartsdata.length; i++) {
-    //                data.addRow([chartsdata[i].AsOfDate,
-    //                            chartsdata[i].Category,
-    //                            chartsdata[i].Name,
-    //                             chartsdata[i].NumberOfBidders.toString(),
-    //                             chartsdata[i].AvgPrice.toString()
-    //                ]);
-    //            }
-
-    //            // Hide the loader
-    //            loader.hide();
-
-    //            // Create and draw the chart
-    //            var chart = new google.visualization.LineChart(chartContainer[0]);
-
-    //            var options =
-    //            {
-    //                title: 'Prices for the last 30 days',
-    //                curveType: 'function'
-    //            };
-
-    //            chart.draw(data, options);
-    //        },
-    //        error: function () {
-    //            loader.hide();
-    //            errorMessage.show();
-    //        }
-    //    });
-    //}
-
     function loadProductScatterGraphChart(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
-        var productId = container.attr('data-product-id');        
+        var productId = container.attr('data-product-id');
 
         $.ajax({
             type: 'GET',
@@ -703,11 +576,7 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var chart = new google.charts.Scatter(container[0]);
-                
 
                 var options = {
                     title: 'End time versus price',
@@ -717,16 +586,12 @@
                 chart.draw(data, google.charts.Scatter.convertOptions(options));
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
     function loadPopularProductsTable(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var categoryId = container.attr('data-category-id');
         var conditionId = container.attr('data-condition-id');
 
@@ -753,9 +618,6 @@
                     ]);
                 }
 
-                // Hide the loader
-                loader.hide();
-
                 var table = new google.visualization.Table(container[0]);
 
                 var formatter = new google.visualization.NumberFormat({ prefix: '£' });
@@ -764,16 +626,12 @@
                 table.draw(data, { showRowNumber: false, allowHtml: true, width: '100%', height: '100%' });
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
     function loadProductsTable(productContainer, apiURL) {
         var container = $('#' + productContainer);
-        var loader = container.find('#loader');
-        var errorMessage = container.find('#errorMessage');
         var categoryId = container.attr('data-category-id');
 
         $.ajax({
@@ -787,31 +645,151 @@
 
                 data.addColumn('string', '');
                 data.addColumn('string', 'Name');
-                data.addColumn('string', 'Year of release');                
+                data.addColumn('string', 'Year of release');
 
                 // Create a table from the response data
                 for (var i = 0; i < productData.length; i++) {
                     data.addRow(["<a href='/Product/" + productData[i].ProductId + "'>" + productData[i].ManufacturerCode + "</a>",
-                                    "<a href='/Product/" + productData[i].ProductId + "'>" + productData[i].Name + "</a>",                                 
+                                    "<a href='/Product/" + productData[i].ProductId + "'>" + productData[i].Name + "</a>",
                                  productData[i].YearOfRelease
                     ]);
                 }
-
-                // Hide the loader
-                loader.hide();
 
                 var table = new google.visualization.Table(container[0]);
 
                 table.draw(data, { showRowNumber: false, allowHtml: true, width: '100%', height: '100%' });
             },
             error: function () {
-                loader.hide();
-                errorMessage.show();
             }
         });
     }
 
-    $(function () {
-        google.charts.load('current', { 'packages': ['table', 'corechart', 'bar', 'scatter'] });
+    function loadMoversAndLosersBarChart(productContainer, apiURL, chartName) {
+        var container = $('#' + productContainer);
+        var categoryId = container.attr('data-category-id')
+        var conditionId = container.attr('data-condition-id');
 
-    })
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json',
+            url: applicationBaseURL() + apiURL + categoryId + '/' + conditionId,
+            success: function (productData) {
+                var data = new google.visualization.DataTable();
+
+                data.addColumn('string', 'Product Name');
+                data.addColumn('number', '% Price change');
+
+                // Create a table from the response data
+                for (var i = 0; i < productData.length; i++) {
+                    data.addRow([productData[i].ManufacturerCode.concat(' ', productData[i].Name),
+                                    parseInt(productData[i].PercentPriceChange)
+                    ]);
+                }
+
+                var chart = new google.visualization.ColumnChart(container[0]);
+
+                var minhValue = productData[productData.length - 1].PercentPriceChange;
+                var maxhValue = productData[0].PercentPriceChange;
+
+                var options = {
+                    chart: {
+                        title: 'Movers and losers over the last 30 days',
+                        isStacked: true
+                    },
+                    hAxis: {
+                        maxTextLines: 3
+                    },
+                    vAxis: {
+                        title: '% price change',
+                        viewWindowMode: 'pretty',
+                        baseline: 0,
+                        minValue: minhValue,
+                        maxValue: maxhValue
+                    }
+                }
+
+                chart.draw(data, options);
+
+                google.visualization.events.addListener(chart, 'select', function () {
+                    var selection = chart.getSelection();
+
+                    var pid = productData[(selection[0].row * 2)].ProductId;
+                    var categoryId = productData[(selection[0].row * 2)].CategoryId;
+
+                    var conditionId = productData[(selection[0].row * 2) + (selection[0].column) - 1].ConditionId;
+
+                    window.location.href = "/Product/" + pid + "/" + conditionId;
+                });
+
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
+            },
+            error: function () {
+            }
+        });
+    }
+
+
+    function loadSalesByWeekdayBarChart(productContainer, apiURL) {
+        var container = $('#' + productContainer);
+        var categoryId = container.attr('data-category-id')
+
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json',
+            url: applicationBaseURL() + apiURL + categoryId,
+            success: function (productData) {
+                var data = new google.visualization.DataTable();
+
+                data.addColumn('string', 'Day');
+                data.addColumn('number', 'Number of Bidders');
+                data.addColumn('number', 'Number of sales');
+
+                // Create a table from the response data
+                for (var i = 0; i < productData.length; i++) {
+                    data.addRow([productData[i].DayName,
+                                 parseInt(productData[i].NumberOfBidders),
+                                 parseInt(productData[i].NumberOfItemsSold)
+                    ]);
+                }
+
+                var chart = new google.visualization.AreaChart(container[0]);
+
+                var options = {
+                    title: ''
+                }
+
+                chart.draw(data, options);
+            },
+            error: function () {
+            }
+        });
+    }
+
+    function redrawChart(chartName) {
+        // Get the chart data for the given chart, then redraw
+        if (!!chartCache[chartName]) {
+            var chartData = chartCache[chartName];
+            chartData.chart.draw(chartData.data, chartData.options);
+        }
+    }
+
+    return {
+        load: load,
+        setOnLoadCallback: setOnLoadCallback,
+        loadMoversAndLosersBarChart: loadMoversAndLosersBarChart,
+        loadProductsTable: loadProductsTable,
+        loadPopularProductsTable: loadPopularProductsTable,
+        loadProductScatterGraphChart: loadProductScatterGraphChart,
+        loadProductPriceLineChart: loadProductPriceLineChart,
+        loadProductPricesCandlestickChart: loadProductPricesCandlestickChart,
+        loadProductPricesMACD: loadProductPricesMACD,
+        loadProductPricesForMACDBarChart: loadProductPricesForMACDBarChart,
+        loadTopSellersBarChart: loadTopSellersBarChart,
+        loadTopSellersPieChart: loadTopSellersPieChart,
+        loadSalesByWeekdayBarChart: loadSalesByWeekdayBarChart,
+        redrawChart: redrawChart
+    };
+})(jQuery);

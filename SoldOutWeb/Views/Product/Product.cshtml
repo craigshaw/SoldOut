@@ -7,28 +7,35 @@
 @section scripts{
     <script src="~/Scripts/charting.js" type="text/javascript"></script>
     <script>
-        function loadProductPageCharts() {
-            // New product charts
-            loadProductPricesCandlestickChart('newproductPriceChartContainer', '/Api/CandlestickData/')
-            loadProductPricesMACD('newproductPriceMACDChartContainer', '/Api/MACData/')
-            loadProductPricesForMACDBarChart('newproductPriceMACDBarChartContainer', '/Api/MACData/')
-            loadProductPriceLineChart('newproductPriceMonthlySummaryContainer', '/Api/PriceHistory/')
-            loadDailyProductPriceLineChart('newproductPriceDailyContainer', '/Api/MACData/')
-
-            // Used product charts
-            loadProductPricesCandlestickChart('usedproductPriceChartContainer', '/Api/CandlestickData/')
-            loadProductPricesMACD('usedproductPriceMACDChartContainer', '/Api/MACData/')
-            loadProductPricesForMACDBarChart('usedproductPriceMACDBarChartContainer', '/Api/MACData/')
-            loadProductPriceLineChart('usedproductPriceMonthlySummaryContainer', '/Api/PriceHistory/')
-
-            
-
-            // Misc data charts for the product
-            loadProductScatterGraphChart('productScatterGraphChartContainer', '/Api/Scattergraph/')
-        }
-
         $(function () {
-            google.charts.setOnLoadCallback(loadProductPageCharts);
+            charting.load();
+            charting.setOnLoadCallback(function () {
+                // New product charts
+                charting.loadProductPricesCandlestickChart('newproductPriceChartContainer', '/Api/CandlestickData/', 'newProductPrice');
+                charting.loadProductPricesMACD('newproductPriceMACDChartContainer', '/Api/MACData/', 'newProductPriceMACD');
+                charting.loadProductPricesForMACDBarChart('newproductPriceMACDBarChartContainer', '/Api/MACData/', 'newProductPriceMACDBarChart');
+                charting.loadProductPriceLineChart('newproductPriceMonthlySummaryContainer', '/Api/PriceHistory/', 'newProductPriceMonthlySummary');
+
+                // Used product charts
+                charting.loadProductPricesCandlestickChart('usedproductPriceChartContainer', '/Api/CandlestickData/', 'usedProductPrice');
+                charting.loadProductPricesMACD('usedproductPriceMACDChartContainer', '/Api/MACData/', 'usedProductPriceMACD');
+                charting.loadProductPricesForMACDBarChart('usedproductPriceMACDBarChartContainer', '/Api/MACData/', 'usedProductPriceMACDBarChart');
+                charting.loadProductPriceLineChart('usedproductPriceMonthlySummaryContainer', '/Api/PriceHistory/', 'usedProductPriceMonthlySummary');
+
+                // Misc data charts for the product
+                charting.loadProductScatterGraphChart('productScatterGraphChartContainer', '/Api/Scattergraph/');
+            });
+
+            $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+                // Which tab is selected?
+                var target = $(e.target).attr("href").substring(1);
+
+                // Redraw the charts
+                charting.redrawChart(target + 'ProductPrice');
+                charting.redrawChart(target + 'ProductPriceMACD');
+                charting.redrawChart(target + 'ProductPriceMACDBarChart');
+                charting.redrawChart(target + 'ProductPriceMonthlySummary');
+            })
         })
     </script>
 }
@@ -45,16 +52,8 @@
 
 
 <ul class="nav nav-tabs nav-justified">
-    @*@if (Model.ConditionID == 2)
-    {*@
     <li class="active"><a data-toggle="tab" href="#new">New</a></li>
-    <li><a data-toggle="tab" href="#used">Used</a></li>   
-    @*}
-    else
-    {*@
-    @*<li><a data-toggle="tab" href="#new">New</a></li>
-    <li class="active"><a data-toggle="tab" href="#used">Used</a></li>   
-    }*@
+    <li><a data-toggle="tab" href="#used">Used</a></li>
 </ul>
 
 <div class="tab-content">
@@ -65,35 +64,15 @@
             <div class="col-lg-12">
                 <a href="http://stockcharts.com/school/doku.php?st=candlestick+chart&id=chart_school:chart_analysis:candlesticks_and_traditional_chart_analysis" target="new">What are Candlestick charts?</a>
                 <div id="newproductPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2">
-                    <div id="loader" class="loader">
-                        <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
-                    </div>
-                    <div id="errorMessage" class="loader" style="display: none">
-                        <p class="text-danger">Sorry, we couldn't get your search results</p>
-                    </div>
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-lg-12 nopadding">                                
-                <div id="newproductPriceDailyContainer" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="2" data-short-interval="20" data-long-interval="50" data-daystolookback="30">
-                    <div id="loader" class="loader">
-                        <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
-                    </div>
-                    <div id="errorMessage" class="loader" style="display: none">
-                        <p class="text-danger">Sorry, we couldn't get your search results</p>
-                    </div>
-                </div>                
-            </div>
-            <div class="col-lg-12 nopadding">
-                <div class="nopadding" id="newproductPriceMACDBarChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2" data-short-interval="12" data-long-interval="26">
-                    <div id="loader" class="loader">
-                        <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
-                    </div>
-                    <div id="errorMessage" class="loader" style="display: none">
-                        <p class="text-danger">Sorry, we couldn't get your search results</p>
-                    </div>
+            <div>
+                <div id="newproductPriceMACDChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2">
+                </div>
+                <div id="newproductPriceMACDBarChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2" data-short-interval="12" data-long-interval="26">
                 </div>
             </div>
         </div>
@@ -101,24 +80,12 @@
         <div class="row">
             <div class="col-lg-6">
                 <div id="newproductPriceMonthlySummaryContainer" class="chart-container" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="2">
-                    <div id="loader" class="loader">
-                        <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
-                    </div>
-                    <div id="errorMessage" class="loader" style="display: none">
-                        <p class="text-danger">Sorry, we couldn't get your search results</p>
-                    </div>
                 </div>
             </div>
             <div class="nopadding" id="newproductPriceMACDChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2">
-                <div id="loader" class="loader">
-                    <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
-                </div>
-                <div id="errorMessage" class="loader" style="display: none">
-                    <p class="text-danger">Sorry, we couldn't get your search results</p>
-                </div>
             </div>
         </div>
-    </div> 
+    </div>
 
     <!-- Used tab contents -->
     <div id="used" class="tab-pane fade">
@@ -126,12 +93,6 @@
         <div class="row">
             <div>
                 <div id="usedproductPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="0">
-                    <div id="loader" class="loader">
-                        <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
-                    </div>
-                    <div id="errorMessage" class="loader" style="display: none">
-                        <p class="text-danger">Sorry, we couldn't get your search results</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -139,20 +100,8 @@
         <div class="row">
             <div>
                 <div id="usedproductPriceMACDChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="0">
-                    <div id="loader" class="loader">
-                        <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
-                    </div>
-                    <div id="errorMessage" class="loader" style="display: none">
-                        <p class="text-danger">Sorry, we couldn't get your search results</p>
-                    </div>
                 </div>
                 <div id="usedproductPriceMACDBarChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2" data-short-interval="12" data-long-interval="26">
-                    <div id="loader" class="loader">
-                        <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
-                    </div>
-                    <div id="errorMessage" class="loader" style="display: none">
-                        <p class="text-danger">Sorry, we couldn't get your search results</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -160,38 +109,20 @@
         <div class="row">
             <div>
                 <div id="usedproductPriceMonthlySummaryContainer" class="chart-container" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="0">
-                    <div id="loader" class="loader">
-                        <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
-                    </div>
-                    <div id="errorMessage" class="loader" style="display: none">
-                        <p class="text-danger">Sorry, we couldn't get your search results</p>
-                    </div>
                 </div>
 
                 <div id="usedproductPriceDailyContainer" class="chart-container" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="0">
-                    <div id="loader" class="loader">
-                        <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
-                    </div>
-                    <div id="errorMessage" class="loader" style="display: none">
-                        <p class="text-danger">Sorry, we couldn't get your search results</p>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-  
+
 
 <h3>Other price data</h3>
 <div class="row">
     <div class="col-lg-12">
         <div id="productScatterGraphChartContainer" class="chart-container" data-product-id="@Model.ProductID">
-            <div id="loader" class="loader">
-                <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
-            </div>
-            <div id="errorMessage" class="loader" style="display: none">
-                <p class="text-danger">Sorry, we couldn't get your search results</p>
-            </div>
         </div>
     </div>
 </div>

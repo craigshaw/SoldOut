@@ -18,11 +18,11 @@ namespace SoldOutBusiness.Repository
 
         //IEnumerable<ProductSaleSummary> TopSellingProducts(int categoryId, int conditionId, int numberToReturn, int daysToLookBack);
 
-        IEnumerable<ProductSaleSummary> TopSellingCategories(int? categoryId, int daysToLookBack);
+        IEnumerable<ProductSaleSummary> TopSellingCategories(int categoryId, int daysToLookBack);
 
-        IEnumerable<ProductTimeSeriesData> GetTimeSeriesDataForProduct(int? productId, int? conditionId);
+        IEnumerable<ProductTimeSeriesData> GetTimeSeriesDataForProduct(int productId, int conditionId);
 
-        IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval, int? daysToLookBack = 100);
+        IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int productId, int conditionId, int shortInterval, int longInterval);
 
         IEnumerable<ProductPriceScatterGraphData> GetScatterGraphDataForProduct(int productId, int interval);
 
@@ -32,7 +32,7 @@ namespace SoldOutBusiness.Repository
 
         IEnumerable<CategorySales> GetTopSellingProductsForCategoryByNumberOfBuyers(int categoryId, int daysToLookBack = 7);
 
-        IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int? categoryId, int daysToLookBack = 7);
+        IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int categoryId, int daysToLookBack = 7);
 
         IEnumerable<Categories> GetCategories();
 

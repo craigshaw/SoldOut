@@ -1,6 +1,5 @@
 ﻿using SoldOutBusiness.Repository;
 using SoldOutWeb.Models;
-using System.Collections.Generic;
 using System.Web.Mvc;
 using SoldOutWeb.Services;
 
@@ -32,6 +31,9 @@ namespace SoldOutWeb.Controllers
 
             var search = _repository.GetSearchByProductID(productId);
 
+            if (search == null)
+                return new HttpNotFoundResult();
+
             SearchSummary summary = new SearchSummary()
             {
                 Name = search.Name,
@@ -44,7 +46,6 @@ namespace SoldOutWeb.Controllers
             };
 
             return View(summary);
-            // return View();
         }
 
         [Route("Product/{productId?}/{categoryId?}")]

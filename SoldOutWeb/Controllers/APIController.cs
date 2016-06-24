@@ -23,28 +23,28 @@ namespace SoldOutWeb.Controllers
         [Route("Api/TopSellingProducts/{categoryId?}")]        
         public JsonResult TopSellingProducts(int? categoryId)
         {
-            var topSellers = _statsRepository.TopSellingProducts(categoryId.HasValue ? categoryId.Value : 2, 10, 30);
+            var topSellers = _statsRepository.TopSellingProducts(categoryId ?? 2, 10, 30);
             return Json(topSellers, JsonRequestBehavior.AllowGet);
         }
 
         [Route("Api/TopSellingCategories/{categoryId?}")]
         public JsonResult TopSellingCategories(int? categoryId)
         {
-            var topSellers = _statsRepository.TopSellingCategories(categoryId.HasValue ? categoryId.Value : 2, 30);
+            var topSellers = _statsRepository.TopSellingCategories(categoryId ?? 2, 30);
             return Json(topSellers, JsonRequestBehavior.AllowGet);
         }
 
         [Route("Api/CandlestickData/{productId?}/{conditionId?}")]
         public JsonResult GetCandleStickChartDataForProduct(int? productId, int? conditionId)
         {
-            var chartData = _statsRepository.GetTimeSeriesDataForProduct(productId, conditionId == null ? conditionId : 2 );
+            var chartData = _statsRepository.GetTimeSeriesDataForProduct(productId ?? 1, conditionId ?? 2 );
             return Json(chartData, JsonRequestBehavior.AllowGet);
         }
 
         [Route("Api/MACData/{productId?}/{conditionId?}/{shortinterval?}/{longinterval?}/{daysToLookBack?}")]
         public JsonResult GetMACDChartDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval, int? daysToLookBack)
         {
-            var chartData = _statsRepository.GetTimeSeriesMACDDataForProduct(productId, conditionId == null ? conditionId : 2, shortInterval, longInterval, daysToLookBack);                        
+            var chartData = _statsRepository.GetTimeSeriesMACDDataForProduct(productId ?? 1, conditionId ?? 2, shortInterval ?? 20, longInterval ?? 50);
 
             return Json(chartData, JsonRequestBehavior.AllowGet);
         }
@@ -81,9 +81,9 @@ namespace SoldOutWeb.Controllers
         }
 
         [Route("Api/MoversAndLosers/{categoryId}/{conditionId?}")]
-        public JsonResult GetMoversAndLosersByCategoryAndCondition(int categoryId, int conditionId)
+        public JsonResult GetMoversAndLosersByCategoryAndCondition(int categoryId, int? conditionId)
         {
-            var mostExpensiveProducts = _statsRepository.GetMoversAndLosersByCategoryAndCondition(categoryId, conditionId, 30, 10);
+            var mostExpensiveProducts = _statsRepository.GetMoversAndLosersByCategoryAndCondition(categoryId, conditionId ?? 2, 30, 10);
             return Json(mostExpensiveProducts, JsonRequestBehavior.AllowGet);
         }
 
@@ -97,7 +97,8 @@ namespace SoldOutWeb.Controllers
         [Route("Api/TopSellersInCategoryByNumberOfBuyers/{categoryId?}/{interval?}")]
         public JsonResult TopSellersInCategoryByNumberOfBuyers(int? categoryId, int? interval)
         {
-            var _categorySales = _statsRepository.GetTopSellingProductsForCategoryByNumberOfBuyers(categoryId.HasValue ? categoryId.Value : 2, interval.HasValue ? interval.Value : 7);
+            var _categorySales = _statsRepository.GetTopSellingProductsForCategoryByNumberOfBuyers(categoryId ?? 2, 7);
+
             return Json(_categorySales, JsonRequestBehavior.AllowGet);
         }
 
@@ -128,7 +129,7 @@ namespace SoldOutWeb.Controllers
         [Route("Api/WeekdaySalesData/{categoryId?}")]
         public JsonResult GetWeeklySalesData(int? categoryId)
         {
-            var salesData = _statsRepository.GetWeeklySalesDataByCategory(categoryId.HasValue ? categoryId.Value : 2);
+            var salesData = _statsRepository.GetWeeklySalesDataByCategory(categoryId ?? 2);
             return Json(salesData, JsonRequestBehavior.AllowGet);
         }
     }

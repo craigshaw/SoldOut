@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
-using System.Data.SqlClient;
 
 namespace SoldOutBusiness.Repository
 {
@@ -25,39 +24,28 @@ namespace SoldOutBusiness.Repository
 
         public IEnumerable<ProductSaleSummary> TopSellingProducts(int categoryId, int numberToReturn, int daysToLookBack)
         {
-            var data = _context.Database.SqlQuery<ProductSaleSummary>("exec GetTopSellingProductsByCategoryAndNumberItemsSold " + categoryId.ToString() + "," + daysToLookBack.ToString()).ToList();
+            var data = _context.Database.SqlQuery<ProductSaleSummary>($"exec GetTopSellingProductsByCategoryAndNumberItemsSold {categoryId}, {daysToLookBack}").ToList();
 
             return data;
         }
 
-        public IEnumerable<ProductSaleSummary> TopSellingCategories(int? categoryId, int daysToLookBack)
+        public IEnumerable<ProductSaleSummary> TopSellingCategories(int categoryId, int daysToLookBack)
         {            
-            var data = _context.Database.SqlQuery<ProductSaleSummary>("exec GetTopSellingCategoriesByNumberItemsSold " + categoryId.ToString() + "," + daysToLookBack.ToString()).ToList();
+            var data = _context.Database.SqlQuery<ProductSaleSummary>($"exec GetTopSellingCategoriesByNumberItemsSold {categoryId}, {daysToLookBack}").ToList();
 
             return data;
         }
 
-        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesDataForProduct(int? productId, int? conditionId)
+        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesDataForProduct(int productId, int conditionId)
         {
-            var condition = conditionId == null ? 2 : conditionId;
-
-            var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>("exec GetTimeSeriesDataByProductID " + productId.ToString() + "," + condition.ToString());
+            var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>($"exec GetTimeSeriesDataByProductID {productId}, {conditionId}");
             
             return timeData.Skip(Math.Max(0, timeData.Count() - 60));
         }
 
-        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval, int? daysToLookBack = 100)
+        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int productId, int conditionId, int shortInterval, int longInterval)
         {
-            var condition = conditionId == null ? 2 : conditionId;
-            var sInterval = shortInterval == null ? 20 : shortInterval.Value;
-            var lInterval = longInterval == null ? 50 : longInterval.Value;
-
-            var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>("exec GetTimeSeriesMACDDataByProductID " + productId.ToString() + "," + condition.ToString() + "," + sInterval.ToString() + "," + lInterval.ToString());
-            
-            if (daysToLookBack.HasValue)
-                return timeData.Skip(Math.Max(0, timeData.Count() - daysToLookBack.Value));
-            else
-                return timeData;
+            return _context.Database.SqlQuery<ProductTimeSeriesData>($"exec GetTimeSeriesMACDDataByProductID {productId}, {conditionId}, {shortInterval}, {longInterval}");
         }
 
         public IEnumerable<Categories> GetCategories()
@@ -65,8 +53,6 @@ namespace SoldOutBusiness.Repository
                 return _context.Database.SqlQuery<Categories>("exec GetCategoryList");         
         }
         
-
-        //public IEnumerable<Pro>
 
         //public IEnumerable<ProductItemCount> MostPopularProducts(int categoryId, int numberToReturn = 10, int daysToLookBack = 7)
         //{
@@ -167,27 +153,18 @@ namespace SoldOutBusiness.Repository
                         ManufacturerCode = grouped.Key.ManufacturerCode,
                         Name = grouped.Key.Name
                     }).Take(numberToReturn);
-
-
-            //(from sr in _context.SearchResults
-            //        where DbFunctions.AddDays(sr.DateOfMatch, daysToLookBack) > DateTime.Now
-            //              //&& sr.ConditionId == conditionId
-            //        group sr by sr.ProductId into grouped
-            //        from g in grouped
-            //        orderby g.Price descending
-            //        select g).Take(numberToReturn);
         }
 
         public IEnumerable<ProductPriceScatterGraphData> GetScatterGraphDataForProduct(int productId, int interval)
         {
-            var scatterGraphData = _context.Database.SqlQuery<ProductPriceScatterGraphData>("exec GetSalesDataByPeriodAndIntervalForProductScatterGraph " + productId.ToString() + "," + interval.ToString()).ToList();
+            var scatterGraphData = _context.Database.SqlQuery<ProductPriceScatterGraphData>($"exec GetSalesDataByPeriodAndIntervalForProductScatterGraph {productId}, {interval}").ToList();
 
             return scatterGraphData;
         }
 
-        public IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int? categoryId, int daysToLookBack = 7)
+        public IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int categoryId, int daysToLookBack = 7)
         {   
-            var _salesData = _context.Database.SqlQuery<WeekdaySalesData>("exec GetPriceStatisticsForCategoryByDayOfWeek " + categoryId.ToString() + ",7," + daysToLookBack.ToString()).ToList();
+            var _salesData = _context.Database.SqlQuery<WeekdaySalesData>($"exec GetPriceStatisticsForCategoryByDayOfWeek {categoryId}, 7, {daysToLookBack}").ToList();
 
             return _salesData;
         }
