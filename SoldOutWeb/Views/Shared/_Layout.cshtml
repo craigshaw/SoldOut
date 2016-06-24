@@ -32,7 +32,7 @@
 
 <body>
 
-    <div class="navbar navbar-default navbar-fixed-top">
+    <div class="navbar navbar-default navbar-fixed-top navbar-nolonga">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -40,36 +40,20 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("NoLonga", "Home", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                <a class="navbar-brand logo-nolonga" href="#">
+                    <img src="@Url.Content("~/Content/Images/NoLongaLogo.png")" class="img-logo" />
+                </a>
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>
-                        @Html.RouteLink(linkText: "Home",
-                                routeName: "Home",
-                                routeValues: new { controller = "Home", action = "Home" })
-                    </li>
-                </ul>
-
-                <form id="searchForm" class="navbar-form navbar-right" role="search" method="get" action="/Search">
+                <form id="searchForm" class="navbar-form navbar-brand navbar-form-nolonga navbar-right" role="search" method="get" action="/Search">
                     <div class="form-group">
-                        <input id="searchText" type="text" class="form-control" placeholder="Search">
+                        <input id="searchText" type="text" class="form-control" placeholder="Set name or number...">
                     </div>
                     <button type="submit" class="btn btn-default">Search</button>
                 </form>
             </div>
         </div>
     </div>
-
-    @*<div class="navbar-static-top  col-lg-offset-10">
-        <form id="searchForm" class="form-inline" role="form" method="get" action="/Search">
-            <input type="text" class="form-control search-form" id="searchText" placeholder="Search" onkeyup="">
-        </form>
-    </div>*@
-
-    @*<div class="container">
-        <a href="Home"><img src="@Url.Content("~/Content/Images/NoLongaLogo_RedBar.png")" height="100" /></a>
-    </div>*@
 
     <div class="container body-content">
         @RenderBody()
