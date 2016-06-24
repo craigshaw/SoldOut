@@ -3,6 +3,7 @@ using SoldOutWeb.Models;
 using SoldOutWeb.Services;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using System;
 
 namespace SoldOutWeb.Controllers
 {
@@ -40,10 +41,11 @@ namespace SoldOutWeb.Controllers
             return Json(chartData, JsonRequestBehavior.AllowGet);
         }
 
-        [Route("Api/MACData/{productId?}/{conditionId?}/{shortinterval?}/{longinterval?}")]
-        public JsonResult GetMACDChartDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval)
+        [Route("Api/MACData/{productId?}/{conditionId?}/{shortinterval?}/{longinterval?}/{daysToLookBack?}")]
+        public JsonResult GetMACDChartDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval, int? daysToLookBack)
         {
             var chartData = _statsRepository.GetTimeSeriesMACDDataForProduct(productId ?? 1, conditionId ?? 2, shortInterval ?? 20, longInterval ?? 50);
+
             return Json(chartData, JsonRequestBehavior.AllowGet);
         }
 
@@ -92,13 +94,20 @@ namespace SoldOutWeb.Controllers
             return Json(productsInCategory, JsonRequestBehavior.AllowGet);
         }
 
-        [Route("Api/TopSellersInCategoryByNumberOfBuyers/{categoryId}")]
-        public JsonResult TopSellersInCategoryByNumberOfBuyers(int? categoryId)
+        [Route("Api/TopSellersInCategoryByNumberOfBuyers/{categoryId?}/{interval?}")]
+        public JsonResult TopSellersInCategoryByNumberOfBuyers(int? categoryId, int? interval)
         {
             var _categorySales = _statsRepository.GetTopSellingProductsForCategoryByNumberOfBuyers(categoryId ?? 2, 7);
+
             return Json(_categorySales, JsonRequestBehavior.AllowGet);
         }
 
+        [Route("Api/Menu")]
+        public JsonResult GetMenu()
+        {
+            var _menuitems = _statsRepository.GetCategories();
+            return Json(_menuitems, JsonRequestBehavior.AllowGet);
+        }
 
         private IEnumerable<PriceHistory> CreatePriceHistory(int productId)
         {

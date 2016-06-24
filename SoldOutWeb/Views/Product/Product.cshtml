@@ -61,7 +61,8 @@
         <!-- New tab contents -->
         <h5>New price data</h5>
         <div class="row">
-            <div>
+            <div class="col-lg-12">
+                <a href="http://stockcharts.com/school/doku.php?st=candlestick+chart&id=chart_school:chart_analysis:candlesticks_and_traditional_chart_analysis" target="new">What are Candlestick charts?</a>
                 <div id="newproductPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2">
                 </div>
             </div>
@@ -77,9 +78,11 @@
         </div>
 
         <div class="row">
-            <div>
+            <div class="col-lg-6">
                 <div id="newproductPriceMonthlySummaryContainer" class="chart-container" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="2">
                 </div>
+            </div>
+            <div class="nopadding" id="newproductPriceMACDChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2">
             </div>
         </div>
     </div>
@@ -106,6 +109,9 @@
         <div class="row">
             <div>
                 <div id="usedproductPriceMonthlySummaryContainer" class="chart-container" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="0">
+                </div>
+
+                <div id="usedproductPriceDailyContainer" class="chart-container" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="0">
                 </div>
             </div>
         </div>
