@@ -16,7 +16,6 @@ namespace SoldOutWeb.Controllers
         // GET: Home
         public ActionResult Home()
         {
-            int interval = 30;
             return View();
         }
     }

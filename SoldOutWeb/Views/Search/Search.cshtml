@@ -1,0 +1,30 @@
+﻿@model IEnumerable<SoldOutBusiness.Models.Product>
+@{
+    ViewBag.Title = "Search";
+}
+<div class="row">
+    <div class="col-md-12">
+        <h1>Searches</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Year Released</th>
+                    <th>Year Retired</th>
+                    <th>Set #</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <td><a href="~/Product/@product.ProductId">@product.Name</a></td>
+                        <td>@product.YearOfRelease</td>
+                        <td>@product.YearOfRetirement</td>
+                        <td>@product.ManufacturerCode</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
