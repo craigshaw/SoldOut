@@ -43,19 +43,28 @@ namespace SoldOutBusiness.Repository
 
             var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>("exec GetTimeSeriesDataByProductID " + productId.ToString() + "," + condition.ToString());
             
-            return timeData.Skip(Math.Max(0, timeData.Count() - 30));
+            return timeData.Skip(Math.Max(0, timeData.Count() - 60));
         }
 
-        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval)
+        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval, int? daysToLookBack = 100)
         {
             var condition = conditionId == null ? 2 : conditionId;
             var sInterval = shortInterval == null ? 20 : shortInterval.Value;
             var lInterval = longInterval == null ? 50 : longInterval.Value;
 
             var timeData = _context.Database.SqlQuery<ProductTimeSeriesData>("exec GetTimeSeriesMACDDataByProductID " + productId.ToString() + "," + condition.ToString() + "," + sInterval.ToString() + "," + lInterval.ToString());
-
-            return timeData.Skip(Math.Max(0, timeData.Count() - 50));
+            
+            if (daysToLookBack.HasValue)
+                return timeData.Skip(Math.Max(0, timeData.Count() - daysToLookBack.Value));
+            else
+                return timeData;
         }
+
+        public IEnumerable<Categories> GetCategories()
+        {            
+                return _context.Database.SqlQuery<Categories>("exec GetCategoryList");         
+        }
+        
 
         //public IEnumerable<Pro>
 
@@ -116,9 +125,12 @@ namespace SoldOutBusiness.Repository
         {
             
             var _priceChangeData = _context.Database.SqlQuery<CategoryMoversAndLosersData>("exec GetPriceChangesOverPeriodByCategoryAndCondition " + categoryId.ToString() + "," + conditionId.ToString() + "," + daysToLookBack.ToString());
-            
+
             // return the top n movers and bottom n losers
-            return _priceChangeData.Take(numberToTake).ToList().Union(_priceChangeData.Skip(Math.Max(0, _priceChangeData.Count() - numberToTake)));           
+            if (_priceChangeData.Count() < (numberToTake * 2))
+                return _priceChangeData;
+            else            
+                return _priceChangeData.Take(numberToTake).ToList().Union(_priceChangeData.Skip(Math.Max(0, _priceChangeData.Count() - numberToTake)));           
         }
 
         public IEnumerable<CategoryProducts> GetProductsInCategory(int categoryId)

@@ -22,7 +22,7 @@ namespace SoldOutBusiness.Repository
 
         IEnumerable<ProductTimeSeriesData> GetTimeSeriesDataForProduct(int? productId, int? conditionId);
 
-        IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval);
+        IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval, int? daysToLookBack = 100);
 
         IEnumerable<ProductPriceScatterGraphData> GetScatterGraphDataForProduct(int productId, int interval);
 
@@ -33,6 +33,8 @@ namespace SoldOutBusiness.Repository
         IEnumerable<CategorySales> GetTopSellingProductsForCategoryByNumberOfBuyers(int categoryId, int daysToLookBack = 7);
 
         IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int? categoryId, int daysToLookBack = 7);
+
+        IEnumerable<Categories> GetCategories();
 
     }
 
@@ -106,16 +108,25 @@ namespace SoldOutBusiness.Repository
         public double? SignalLine { get; set; }
         public double? HistogramData { get; set; }
         public double? AvgPrice { get; set; }
+
+        public double? LowerBand { get; set; }
+        public double? MidBand { get; set; }
+        public double? UpperBand { get; set; }
+
+        public int? NumBidders { get; set; }
+        public int? NumSales { get; set; }
+
     }
 
     public class ProductPriceScatterGraphData
     {
         public int ProductId { get; set; }
-        public string Condition { get; set; }
 
         public string EndTime { get; set; }
 
-        public double Price { get; set; }
+        public double? NewPrice { get; set; }
+
+        public double? UsedPrice { get; set; }
     }
 
     public class CategoryMoversAndLosersData
@@ -168,5 +179,30 @@ namespace SoldOutBusiness.Repository
 
         public int NumberOfBidders { get; set; }
         public int NumberOfItemsSold { get; set; }
+    }
+
+    public class Categories
+    {
+        public int categoryId { get; set; }
+
+        public int? ParentCategoryId { get; set; }
+
+        public int? MyParentsParentCategoryId { get; set; }
+
+        public int? TopLevelCategoryId { get; set; }
+
+        public string Level1Name { get; set; }
+
+        public string Level2Name { get; set; }
+
+        public string Level3Name { get; set; }
+
+        public string Level4Name { get; set; }
+
+
+        public string Name { get; set; }
+
+        public int? HasChildren { get; set; }
+
     }
 }

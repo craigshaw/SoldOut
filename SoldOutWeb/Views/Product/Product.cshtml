@@ -13,12 +13,15 @@
             loadProductPricesMACD('newproductPriceMACDChartContainer', '/Api/MACData/')
             loadProductPricesForMACDBarChart('newproductPriceMACDBarChartContainer', '/Api/MACData/')
             loadProductPriceLineChart('newproductPriceMonthlySummaryContainer', '/Api/PriceHistory/')
+            loadDailyProductPriceLineChart('newproductPriceDailyContainer', '/Api/MACData/')
 
             // Used product charts
             loadProductPricesCandlestickChart('usedproductPriceChartContainer', '/Api/CandlestickData/')
             loadProductPricesMACD('usedproductPriceMACDChartContainer', '/Api/MACData/')
             loadProductPricesForMACDBarChart('usedproductPriceMACDBarChartContainer', '/Api/MACData/')
             loadProductPriceLineChart('usedproductPriceMonthlySummaryContainer', '/Api/PriceHistory/')
+
+            
 
             // Misc data charts for the product
             loadProductScatterGraphChart('productScatterGraphChartContainer', '/Api/Scattergraph/')
@@ -59,7 +62,8 @@
         <!-- New tab contents -->
         <h5>New price data</h5>
         <div class="row">
-            <div>
+            <div class="col-lg-12">
+                <a href="http://stockcharts.com/school/doku.php?st=candlestick+chart&id=chart_school:chart_analysis:candlesticks_and_traditional_chart_analysis" target="new">What are Candlestick charts?</a>
                 <div id="newproductPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2">
                     <div id="loader" class="loader">
                         <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
@@ -72,16 +76,18 @@
         </div>
 
         <div class="row">
-            <div>
-                <div id="newproductPriceMACDChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2">
+            <div class="col-lg-12 nopadding">                                
+                <div id="newproductPriceDailyContainer" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="2" data-short-interval="20" data-long-interval="50" data-daystolookback="30">
                     <div id="loader" class="loader">
                         <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
                     </div>
                     <div id="errorMessage" class="loader" style="display: none">
                         <p class="text-danger">Sorry, we couldn't get your search results</p>
                     </div>
-                </div>
-                <div id="newproductPriceMACDBarChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2" data-short-interval="12" data-long-interval="26">
+                </div>                
+            </div>
+            <div class="col-lg-12 nopadding">
+                <div class="nopadding" id="newproductPriceMACDBarChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2" data-short-interval="12" data-long-interval="26">
                     <div id="loader" class="loader">
                         <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
                     </div>
@@ -93,7 +99,7 @@
         </div>
 
         <div class="row">
-            <div>
+            <div class="col-lg-6">
                 <div id="newproductPriceMonthlySummaryContainer" class="chart-container" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="2">
                     <div id="loader" class="loader">
                         <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
@@ -101,6 +107,14 @@
                     <div id="errorMessage" class="loader" style="display: none">
                         <p class="text-danger">Sorry, we couldn't get your search results</p>
                     </div>
+                </div>
+            </div>
+            <div class="nopadding" id="newproductPriceMACDChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2">
+                <div id="loader" class="loader">
+                    <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
+                </div>
+                <div id="errorMessage" class="loader" style="display: none">
+                    <p class="text-danger">Sorry, we couldn't get your search results</p>
                 </div>
             </div>
         </div>
@@ -146,6 +160,15 @@
         <div class="row">
             <div>
                 <div id="usedproductPriceMonthlySummaryContainer" class="chart-container" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="0">
+                    <div id="loader" class="loader">
+                        <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
+                    </div>
+                    <div id="errorMessage" class="loader" style="display: none">
+                        <p class="text-danger">Sorry, we couldn't get your search results</p>
+                    </div>
+                </div>
+
+                <div id="usedproductPriceDailyContainer" class="chart-container" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="0">
                     <div id="loader" class="loader">
                         <i class="fa fa-spinner fa-spin fa-4x"></i> Loading...
                     </div>

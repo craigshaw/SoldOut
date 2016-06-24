@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - SoldOut</title>
+    <title>@ViewBag.Title - NoLonga</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/modernizr")
@@ -11,31 +11,19 @@
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <meta name="description" content="Commodity valuation analyser" />
 </head>
-<body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("NoLonga", "Home", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.RouteLink(linkText: "Home",
-                        routeName: "Home",
-                        routeValues: new { controller = "Home", action = "Home"})</li>
-                    <li>
-                        @Html.RouteLink(linkText: "Search",
-                        routeName: "Searches",
-                        routeValues: new { controller = "Search", action = "All" })
-                </li>
-                </ul>
-            </div>
-        </div>
+
+<body> 
+
+    <div class="navbar-static-top  col-lg-offset-10">    
+        <form id="search-form" class="form-inline" role="form" method="post" target="_blank">            
+            <input type="text" class="form-control search-form" id="txtSearchInput" placeholder="Search" onkeyup="">            
+        </form>    
     </div>
+
+    <div class="container">
+        <a href="Home"><img src="@Url.Content("~/Content/Images/NoLongaLogo_RedBar.png")" height="100" /></a>
+    </div>
+
     <div class="container body-content" >
         @RenderBody()
         <hr />
