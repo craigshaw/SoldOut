@@ -53,22 +53,7 @@ namespace SoldOutWeb.Controllers
         {
             int pId = 1;
             int cId = 0;
-
-            string newTabContentClassString;
-            string usedTabContentClassString;
-
-            if (cId == 2)
-            {
-                newTabContentClassString = "tab-pane fade in active";
-                usedTabContentClassString = "tab-pane fade";
-            }
-            else
-            {
-                newTabContentClassString = "tab-pane fade";
-                usedTabContentClassString = "tab-pane fade in active";
-            }
-
-
+            
             if (productId.HasValue)
                 pId = productId.Value;
 

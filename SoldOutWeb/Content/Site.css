@@ -1,5 +1,5 @@
 ﻿body {
-    padding-top: 50px;
+    padding-top: 115px;
     padding-bottom: 20px;
 }
 
@@ -24,19 +24,39 @@ textarea {
 }
 
 .chart-container {
-    width: 600px; 
+    width: 600px;
     height: 400px;
 }
 
 .top-margin {
-    margin-top:20px;
+    margin-top: 20px;
 }
 
 .loader {
-    position:absolute;
-    top:50%;
+    position: absolute;
+    top: 50%;
     left: 50%;
-    height:10em;
-    margin-top:-2em;
+    height: 10em;
+    margin-top: -2em;
     margin-left: -3em;
+}
+
+.navbar-brand,
+.navbar-nav li a {
+    line-height: 95px;
+    height: 95px;
+    padding-top: 0;
+}
+
+.navbar-form-nolonga {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.logo-nolonga { 
+    padding: 10px; 
+}
+
+.img-logo {
+    margin-top: -20px;
 }

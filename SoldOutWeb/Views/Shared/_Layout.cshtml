@@ -10,21 +10,51 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <meta name="description" content="Commodity valuation analyser" />
+
+    <script type="text/javascript" language="javascript">
+        $(function () {
+            $("#searchForm").submit(function () {
+                // prevent the default GET form behavior (name-value pairs)
+                event.preventDefault();
+
+                // Get the action attribute
+                var action = $("#searchForm").attr("action").toLowerCase();
+
+                // Get the search text
+                var searchText = $("#searchText").val();
+
+                // Send the user off to the URL w/ template elements replaced
+                window.location.href = action + '/' + searchText;
+            });
+        });
+    </script>
 </head>
 
-<body> 
-
-    <div class="navbar-static-top  col-lg-offset-10">    
-        <form id="search-form" class="form-inline" role="form" method="post" target="_blank">            
-            <input type="text" class="form-control search-form" id="txtSearchInput" placeholder="Search" onkeyup="">            
-        </form>    
+<body>
+    <div class="navbar navbar-default navbar-fixed-top navbar-nolonga">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand logo-nolonga" href="#">
+                    <img src="@Url.Content("~/Content/Images/NoLongaLogo.png")" class="img-logo" />
+                </a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <form id="searchForm" class="navbar-form navbar-brand navbar-form-nolonga navbar-right" role="search" method="get" action="/Search">
+                    <div class="form-group">
+                        <input id="searchText" type="text" class="form-control" placeholder="Set name or number...">
+                    </div>
+                    <button type="submit" class="btn btn-default">Search</button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div class="container">
-        <a href="@Url.Action("Home", "Home")"><img src="@Url.Content("~/Content/Images/NoLongaLogo_RedBar.png")" height="100" /></a>
-    </div>
-
-    <div class="container body-content" >
+    <div class="container body-content">
         @RenderBody()
         <hr />
         <footer>
