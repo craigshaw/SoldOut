@@ -22,7 +22,7 @@ namespace SoldOutBusiness.Repository
 
         IEnumerable<ProductTimeSeriesData> GetTimeSeriesDataForProduct(int productId, int conditionId);
 
-        IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int productId, int conditionId, int shortInterval, int longInterval);
+        IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int productId, int conditionId, int shortInterval, int longInterval, int daysToLookBack);
 
         IEnumerable<ProductPriceScatterGraphData> GetScatterGraphDataForProduct(int productId, int interval);
 

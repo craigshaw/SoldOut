@@ -20,7 +20,7 @@
                 charting.loadMoversAndLosersBarChart('newMoversAndLosersChartContainer', '/api/MoversAndLosers/', 'newMoversAndLosers');
                 charting.loadMoversAndLosersBarChart('usedMoversAndLosersChartContainer', '/api/MoversAndLosers/', 'usedMoversAndLosers');
 
-                loadSalesByWeekdayAreaChart('salesByWeekdayChartContainer', '/Api/WeekdaySalesData/')
+                charting.loadSalesByWeekdayAreaChart('salesByWeekdayChartContainer', '/Api/WeekdaySalesData/')
 
                 charting.loadProductsTable('productTableContainer', '/api/ProductsInCategory/');
             });
@@ -45,12 +45,11 @@
 </div>
 
 <ul class="nav nav-tabs nav-justified">
-    <li class="active"><a data-toggle="tab" href="#new">New</a></li>
-    <li><a data-toggle="tab" href="#used">Used</a></li>
+    <li class="active"><a data-toggle="tab" href="#new">New Prices</a></li>
+    <li><a data-toggle="tab" href="#used">Used Prices</a></li>
 </ul>
 <div class="tab-content">
     <div id="new" class="tab-pane fade in active">
-        <h5>New product prices</h5>
         <div class="row">
             <div class="col-md-6">
                 <h6>Most Expensive Products</h6>
@@ -76,7 +75,6 @@
 
     <!-- Used tab contents -->
     <div id="used" class="tab-pane fade">
-        <h5>Used product prices</h5>
         <div class="row">
             <div class="col-md-6">
                 <h6>Most Expensive Products</h6>

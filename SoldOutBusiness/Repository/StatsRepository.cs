@@ -43,9 +43,11 @@ namespace SoldOutBusiness.Repository
             return timeData.Skip(Math.Max(0, timeData.Count() - 60));
         }
 
-        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int productId, int conditionId, int shortInterval, int longInterval)
+        public IEnumerable<ProductTimeSeriesData> GetTimeSeriesMACDDataForProduct(int productId, int conditionId, int shortInterval, int longInterval, int daysToLookBack)
         {
-            return _context.Database.SqlQuery<ProductTimeSeriesData>($"exec GetTimeSeriesMACDDataByProductID {productId}, {conditionId}, {shortInterval}, {longInterval}");
+            var _priceData =  _context.Database.SqlQuery<ProductTimeSeriesData>($"exec GetTimeSeriesMACDDataByProductID {productId}, {conditionId}, {shortInterval}, {longInterval}");
+
+            return _priceData.Skip(Math.Max(0, _priceData.Count() - daysToLookBack));
         }
 
         public IEnumerable<Categories> GetCategories()

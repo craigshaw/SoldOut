@@ -11,16 +11,18 @@
             charting.load();
             charting.setOnLoadCallback(function () {
                 // New product charts
-                charting.loadProductPricesCandlestickChart('newproductPriceChartContainer', '/Api/CandlestickData/', 'newProductPrice');
-                charting.loadProductPricesMACD('newproductPriceMACDChartContainer', '/Api/MACData/', 'newProductPriceMACD');
-                charting.loadProductPricesForMACDBarChart('newproductPriceMACDBarChartContainer', '/Api/MACData/', 'newProductPriceMACDBarChart');
-                charting.loadProductPriceLineChart('newproductPriceMonthlySummaryContainer', '/Api/PriceHistory/', 'newProductPriceMonthlySummary');
+                //charting.loadProductPricesCandlestickChart('newproductPriceChartContainer', '/Api/CandlestickData/', 'newProductPrice');
+                //charting.loadProductPricesMACD('newproductPriceMACDChartContainer', '/Api/MACData/', 'newProductPriceMACD');
+                //charting.loadProductPricesForMACDBarChart('newproductPriceMACDBarChartContainer', '/Api/MACData/', 'newProductPriceMACDBarChart');
+                charting.loadDailyProductPriceLineChart('newproductDailyPriceChartContainer', '/Api/MACData/', 'newProductDailyPrice');
+                //charting.loadProductPriceLineChart('newproductPriceMonthlySummaryContainer', '/Api/PriceHistory/', 'newProductPriceMonthlySummary');
 
                 // Used product charts
-                charting.loadProductPricesCandlestickChart('usedproductPriceChartContainer', '/Api/CandlestickData/', 'usedProductPrice');
-                charting.loadProductPricesMACD('usedproductPriceMACDChartContainer', '/Api/MACData/', 'usedProductPriceMACD');
-                charting.loadProductPricesForMACDBarChart('usedproductPriceMACDBarChartContainer', '/Api/MACData/', 'usedProductPriceMACDBarChart');
-                charting.loadProductPriceLineChart('usedproductPriceMonthlySummaryContainer', '/Api/PriceHistory/', 'usedProductPriceMonthlySummary');
+                //charting.loadProductPricesCandlestickChart('usedproductPriceChartContainer', '/Api/CandlestickData/', 'usedProductPrice');
+                //charting.loadProductPricesMACD('usedproductPriceMACDChartContainer', '/Api/MACData/', 'usedProductPriceMACD');
+                //charting.loadProductPricesForMACDBarChart('usedproductPriceMACDBarChartContainer', '/Api/MACData/', 'usedProductPriceMACDBarChart');
+                charting.loadDailyProductPriceLineChart('usedproductDailyPriceChartContainer', '/Api/MACData/', 'usedProductDailyPrice');
+                //charting.loadProductPriceLineChart('usedproductPriceMonthlySummaryContainer', '/Api/PriceHistory/', 'usedProductPriceMonthlySummary');
 
                 // Misc data charts for the product
                 charting.loadProductScatterGraphChart('productScatterGraphChartContainer', '/Api/Scattergraph/');
@@ -31,10 +33,11 @@
                 var target = $(e.target).attr("href").substring(1);
 
                 // Redraw the charts
-                charting.redrawChart(target + 'ProductPrice');
-                charting.redrawChart(target + 'ProductPriceMACD');
-                charting.redrawChart(target + 'ProductPriceMACDBarChart');
-                charting.redrawChart(target + 'ProductPriceMonthlySummary');
+                //charting.redrawChart(target + 'ProductPrice');
+                //charting.redrawChart(target + 'ProductPriceMACD');
+                //charting.redrawChart(target + 'ProductPriceMACDBarChart');
+                charting.redrawChart(target + 'ProductDailyPrice');
+                //charting.redrawChart(target + 'ProductPriceMonthlySummary');
             })
         })
     </script>
@@ -48,70 +51,27 @@
     </div>
 </div>
 
-<h5>General Information about this product</h5>
-
-
 <ul class="nav nav-tabs nav-justified">
-    <li class="active"><a data-toggle="tab" href="#new">New</a></li>
-    <li><a data-toggle="tab" href="#used">Used</a></li>
+    <li class="active"><a data-toggle="tab" href="#new">New Prices</a></li>
+    <li><a data-toggle="tab" href="#used">Used Prices</a></li>
 </ul>
 
 <div class="tab-content">
     <div id="new" class="tab-pane fade in active">
         <!-- New tab contents -->
-        <h5>New price data</h5>
         <div class="row">
             <div class="col-lg-12">
-                <a href="http://stockcharts.com/school/doku.php?st=candlestick+chart&id=chart_school:chart_analysis:candlesticks_and_traditional_chart_analysis" target="new">What are Candlestick charts?</a>
-                <div id="newproductPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2">
+                <div id="newproductDailyPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2" data-short-interval="12" data-long-interval="26" data-daysToLookBack="30">
                 </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div>
-                <div id="newproductPriceMACDChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2">
-                </div>
-                <div id="newproductPriceMACDBarChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2" data-short-interval="12" data-long-interval="26">
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-lg-6">
-                <div id="newproductPriceMonthlySummaryContainer" class="chart-container" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="2">
-                </div>
-            </div>
-            <div class="nopadding" id="newproductPriceMACDChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2">
             </div>
         </div>
     </div>
 
     <!-- Used tab contents -->
     <div id="used" class="tab-pane fade">
-        <h5>Used product prices</h5>
         <div class="row">
-            <div>
-                <div id="usedproductPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="0">
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div>
-                <div id="usedproductPriceMACDChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="0">
-                </div>
-                <div id="usedproductPriceMACDBarChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2" data-short-interval="12" data-long-interval="26">
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div>
-                <div id="usedproductPriceMonthlySummaryContainer" class="chart-container" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="0">
-                </div>
-
-                <div id="usedproductPriceDailyContainer" class="chart-container" data-product-id="@Model.ProductID" data-search-title="@Model.Description" data-product-condition-id="0">
+            <div class="col-lg-12">
+                <div id="usedproductDailyPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="0" data-short-interval="12" data-long-interval="26" data-daysToLookBack="30">
                 </div>
             </div>
         </div>

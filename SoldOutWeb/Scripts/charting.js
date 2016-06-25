@@ -57,7 +57,11 @@
                 var chart = new google.visualization.AreaChart(container[0]);
 
                 var options = {
-                    title: '# Bidders vs. # Sales',
+                    legend: {
+                        alignment: 'center',
+                        position: 'in'
+                    },
+                    title: 'No. of Bidders Vs. No. of Sales',
                     colors: ['#ff9900', '#28d72d'],
                     vAxis: { title: '# of sales'}
                 };
@@ -207,16 +211,21 @@
 
                 var options = {
                     chart: {
-                        title: 'Best selling products over the last 30 days'
+                        title: 'Best selling products over the last 30 days',
                     },
+                    legend: {
+                        position: 'in',
+                        alignment: 'center',
+                    },
+                    hAxis: {
+                        textPosition: 'in',
+                        maxTextLines: 3,
+                    },                  
                     series: {
                         0: { axis: 'product' },
                         1: { axis: 'sales' }
                     },
                     axes: {
-                        x: {
-                            product: { label: 'Product Name' }
-                        },
                         y: {
                             sales: { label: '# Sales' }
                         }
@@ -312,17 +321,15 @@
 
                 data.addColumn('string', 'Date');
                 data.addColumn('number', 'Average Price');
-                data.addColumn('number', '12-day EMA');
-                data.addColumn('number', '26-day EMA');
-
-
+                data.addColumn('number', 'Lower Bollinger Band');
+                data.addColumn('number', 'Upper Bollinger Band');
 
                 // Create a table from the response data
                 for (var i = 0; i < productData.length; i++) {
                     data.addRow([productData[i].representativeDate,
                                  parseFloat(productData[i].AvgPrice),
-                                 parseFloat(productData[i].ShortEMA),
-                                 parseFloat(productData[i].LongEMA)
+                                 parseFloat(productData[i].LowerBand),
+                                 parseFloat(productData[i].UpperBand)
                     ]);
                 }
 
@@ -330,7 +337,15 @@
 
                 var options =
                 {
-                    title: 'Moving averages'
+                    title: 'Daily Average Price',
+                    legend: {
+                        position: 'top',
+                        alignment: 'center',
+                    },
+                    series: {
+                        1: { type: 'line', curveType: 'function' },
+                        2: { type: 'line', curveType: 'function' },
+                    }
                 };
 
                 chart.draw(data, options);
@@ -484,8 +499,8 @@
         });
     }
 
-    function loadDailyProductPriceLineChart(chartName, apiURL) {
-        var chartContainer = $('#' + chartName);
+    function loadDailyProductPriceLineChart(containerName, apiURL, chartName) {
+        var chartContainer = $('#' + containerName);
         var searchId = chartContainer.attr('data-product-id');
         var conditionId = chartContainer.attr('data-product-condition-id');
         var shortInterval = chartContainer.attr('data-short-interval');
@@ -503,48 +518,55 @@
 
                 data.addColumn('string', 'Date');
                 data.addColumn('number', 'Avg Price');
-                data.addColumn('number', '20 day EMA');
-                data.addColumn('number', '50 day EMA');
+                //data.addColumn('number', '20 day EMA');
+                //data.addColumn('number', '50 day EMA');
                 data.addColumn('number', 'Lower Bollinger Band');
-                data.addColumn('number', 'Mid Bollinger Band');
+                //data.addColumn('number', 'Mid Bollinger Band');
                 data.addColumn('number', 'Upper Bollinger Band');
-                data.addColumn('number', 'Histogram');
-                data.addColumn('number', 'MACD');
-                data.addColumn('number', 'Signal line');
-                data.addColumn({ type: 'string', role: 'tooltip' });
+                //data.addColumn('number', 'Histogram');
+                //data.addColumn('number', 'MACD');
+                //data.addColumn('number', 'Signal line');
+                //data.addColumn({ type: 'string', role: 'tooltip' });
 
 
                 // Create a table from the response data                                 
                 for (var i = 0; i < chartsdata.length; i++) {
-                    data.addRow([chartsdata[i].PricePeriod,
+                    data.addRow([chartsdata[i].RepresentativeDate,
                                  round(chartsdata[i].AvgPrice, 2),
-                                 round(chartsdata[i].ShortEMA, 2),
-                                 round(chartsdata[i].LongEMA, 2),
+                                 //round(chartsdata[i].ShortEMA, 2),
+                                 //round(chartsdata[i].LongEMA, 2),
                                  parseFloat(chartsdata[i].LowerBand),
-                                 parseFloat(chartsdata[i].MidBand),
-                                 parseFloat(chartsdata[i].UpperBand),
-                                 parseFloat(chartsdata[i].HistogramData),
-                                 parseFloat(chartsdata[i].MACD),
-                                 parseFloat(chartsdata[i].SignalLine),
-                                 chartsdata[i].NumBidders + ' bidders'
+                                 //parseFloat(chartsdata[i].MidBand),
+                                 parseFloat(chartsdata[i].UpperBand)
+                                 //parseFloat(chartsdata[i].HistogramData),
+                                 //parseFloat(chartsdata[i].MACD),
+                                 //parseFloat(chartsdata[i].SignalLine),
+                                 //chartsdata[i].NumBidders + ' bidders'
                     ]);
                 }
 
                 var chart = new google.visualization.ComboChart(chartContainer[0]);
 
                 var options = {
+                    legend: {
+                        alignment: 'center',
+                        position: 'top',
+                    },
                     isStacked: true,
                     series: {
                         1: { type: 'line', curveType: 'function' },
                         2: { type: 'line', curveType: 'function' },
-                        3: { type: 'line', curveType: 'function' },
-                        4: { type: 'line', curveType: 'function' },
-                        5: { type: 'line', curveType: 'function' },
-                        6: { type: 'bar' }
+                        //3: { type: 'line', curveType: 'function' },
+                        //4: { type: 'line', curveType: 'function' },
+                        //5: { type: 'line', curveType: 'function' },
+                        //6: { type: 'bar' }
                     }
                 }
 
                 chart.draw(data, options);
+
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
             }
@@ -693,16 +715,16 @@
                 var maxhValue = productData[0].PercentPriceChange;
 
                 var options = {
-                    chart: {
-                        title: 'Movers and losers over the last 30 days',
-                        isStacked: true
-                    },
+                    title: 'Movers and losers over the last 30 days',
+                    //chart: {
+                        isStacked: true,
+                        legend: { position: 'none' },
+                    //},
                     hAxis: {
-                        maxTextLines: 3
+                        textPosition: 'none',
                     },
                     vAxis: {
                         title: '% price change',
-                        viewWindowMode: 'pretty',
                         baseline: 0,
                         minValue: minhValue,
                         maxValue: maxhValue
@@ -758,7 +780,8 @@
                 var chart = new google.visualization.AreaChart(container[0]);
 
                 var options = {
-                    title: ''
+                    title: '',
+                    legend: { alignment: 'center', position: 'in' },
                 }
 
                 chart.draw(data, options);
@@ -789,7 +812,8 @@
         loadProductPricesForMACDBarChart: loadProductPricesForMACDBarChart,
         loadTopSellersBarChart: loadTopSellersBarChart,
         loadTopSellersPieChart: loadTopSellersPieChart,
-        loadSalesByWeekdayBarChart: loadSalesByWeekdayBarChart,
+        loadSalesByWeekdayAreaChart: loadSalesByWeekdayAreaChart,
+        loadDailyProductPriceLineChart: loadDailyProductPriceLineChart,
         redrawChart: redrawChart
     };
 })(jQuery);

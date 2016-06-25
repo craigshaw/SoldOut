@@ -44,7 +44,7 @@ namespace SoldOutWeb.Controllers
         [Route("Api/MACData/{productId?}/{conditionId?}/{shortinterval?}/{longinterval?}/{daysToLookBack?}")]
         public JsonResult GetMACDChartDataForProduct(int? productId, int? conditionId, int? shortInterval, int? longInterval, int? daysToLookBack)
         {
-            var chartData = _statsRepository.GetTimeSeriesMACDDataForProduct(productId ?? 1, conditionId ?? 2, shortInterval ?? 20, longInterval ?? 50);
+            var chartData = _statsRepository.GetTimeSeriesMACDDataForProduct(productId ?? 1, conditionId ?? 2, shortInterval ?? 20, longInterval ?? 50, daysToLookBack ?? 60);
 
             return Json(chartData, JsonRequestBehavior.AllowGet);
         }
@@ -60,7 +60,7 @@ namespace SoldOutWeb.Controllers
         [Route("Api/Scattergraph/{productId}")]
         public JsonResult ScattergraphDataForProduct(int productId)
         {
-            var scatterGraphData = _statsRepository.GetScatterGraphDataForProduct(productId, 7);
+            var scatterGraphData = _statsRepository.GetScatterGraphDataForProduct(productId, 30);
 
             return Json(scatterGraphData, JsonRequestBehavior.AllowGet);
         }
