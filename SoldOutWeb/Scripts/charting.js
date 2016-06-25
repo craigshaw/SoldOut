@@ -30,15 +30,16 @@
         return url;
     }
 
-    function loadSalesByWeekdayAreaChart(productContainer, apiURL) {
+    function loadSalesByWeekdayAreaChart(productContainer, apiURL, chartName, dataItemAttributeName) {
         var container = $('#' + productContainer);
-        var categoryId = container.attr('data-category-id')
+        var dataItemId = container.attr(dataItemAttributeName)
+        var conditionId = container.attr('data-condition-id');
 
         $.ajax({ 
             type: 'GET',
             dataType: 'json',
             contentType: 'application/json',
-            url: applicationBaseURL() + apiURL + categoryId,
+            url: applicationBaseURL() + apiURL + dataItemId + '/' + conditionId,
             success: function (productData) {
                 var data = new google.visualization.DataTable();
 
@@ -57,16 +58,24 @@
                 var chart = new google.visualization.AreaChart(container[0]);
 
                 var options = {
+                    height: '100%',
+                    width: '100%',
+                    chartArea: {
+                        height: '75%',
+                        width: '85%',
+                    },
                     legend: {
                         alignment: 'center',
                         position: 'in'
                     },
                     title: 'No. of Bidders Vs. No. of Sales',
-                    colors: ['#ff9900', '#28d72d'],
-                    vAxis: { title: '# of sales'}
+                    colors: ['#ff9900', '#28d72d'],                    
                 };
 
                 chart.draw(data, options);
+
+                // Add the loaded chart data to the cache
+                chartCache[chartName] = { chart: chart, data: data, options: options };
             },
             error: function () {
             }
@@ -101,6 +110,12 @@
                 var options = {
                     title: 'Best selling categories over the last 30 days',
                     is3D: true,
+                    height: '100%',
+                    width: '100%',
+                    chartArea: {
+                        height: '85%',
+                        width: '85%',
+                    },
                 }
 
                 chart.draw(data, options);
@@ -207,29 +222,32 @@
                     ]);
                 }
 
-                var chart = new google.charts.Bar(container[0]);
+                var chart = new google.visualization.ColumnChart(container[0]);
 
-                var options = {
-                    chart: {
-                        title: 'Best selling products over the last 30 days',
+                var options = {                    
+                    title: 'Best selling products over the last 30 days',
+                    height: '100%',
+                    width: '100%',
+                    chartArea: {
+                        height: '80%',
+                        width: '85%',
                     },
                     legend: {
                         position: 'in',
                         alignment: 'center',
                     },
                     hAxis: {
-                        textPosition: 'in',
-                        maxTextLines: 3,
-                    },                  
-                    series: {
-                        0: { axis: 'product' },
-                        1: { axis: 'sales' }
+                        title: 'Product (New & Used)',
+                        textStyle: {
+                            fontSize: 12,
+                        },
                     },
-                    axes: {
-                        y: {
-                            sales: { label: '# Sales' }
-                        }
-                    }
+                    vAxis: {
+                        textStyle: {
+                            fontSize: 12,
+                        },
+                        title: 'Number of Sales',
+                    },
                 }
 
                 chart.draw(data, options);
@@ -410,14 +428,14 @@
 
     function loadProductPriceLineChart(containerName, apiURL, chartName) {
         var chartContainer = $('#' + containerName);
-        var searchId = chartContainer.attr('data-product-id');
+        var productId = chartContainer.attr('data-product-id');
         var conditionId = chartContainer.attr('data-product-condition-id');
 
         $.ajax({
             type: 'GET',
             dataType: 'json',
             contentType: 'application/json',
-            url: apiURL + searchId + '/' + conditionId,
+            url: apiURL + productId + '/' + conditionId,
             success: function (chartsdata) {
                 // Create the chart data from the API response
                 var data = new google.visualization.DataTable();
@@ -441,7 +459,22 @@
                 var options =
                 {
                     title: 'Monthly price summary',
-                    curveType: 'function'
+                    curveType: 'function',
+                    chartArea: { width: '90%', height: '63%' },
+                    legend: {
+                        alignment: 'center',
+                        position: 'top',
+                        },
+                    hAxis: {
+                        textStyle: {
+                            fontSize: 12,
+                        },
+                    },
+                    vAxis: {
+                        textStyle: {
+                            fontSize: 12,         
+                        },
+                    },                                   
                 };
 
                 chart.draw(data, options);
@@ -518,48 +551,46 @@
 
                 data.addColumn('string', 'Date');
                 data.addColumn('number', 'Avg Price');
-                //data.addColumn('number', '20 day EMA');
-                //data.addColumn('number', '50 day EMA');
                 data.addColumn('number', 'Lower Bollinger Band');
-                //data.addColumn('number', 'Mid Bollinger Band');
                 data.addColumn('number', 'Upper Bollinger Band');
-                //data.addColumn('number', 'Histogram');
-                //data.addColumn('number', 'MACD');
-                //data.addColumn('number', 'Signal line');
-                //data.addColumn({ type: 'string', role: 'tooltip' });
 
 
                 // Create a table from the response data                                 
                 for (var i = 0; i < chartsdata.length; i++) {
                     data.addRow([chartsdata[i].RepresentativeDate,
                                  round(chartsdata[i].AvgPrice, 2),
-                                 //round(chartsdata[i].ShortEMA, 2),
-                                 //round(chartsdata[i].LongEMA, 2),
                                  parseFloat(chartsdata[i].LowerBand),
-                                 //parseFloat(chartsdata[i].MidBand),
                                  parseFloat(chartsdata[i].UpperBand)
-                                 //parseFloat(chartsdata[i].HistogramData),
-                                 //parseFloat(chartsdata[i].MACD),
-                                 //parseFloat(chartsdata[i].SignalLine),
-                                 //chartsdata[i].NumBidders + ' bidders'
                     ]);
                 }
 
                 var chart = new google.visualization.ComboChart(chartContainer[0]);
 
                 var options = {
+                    title: 'Daily average price for the last ' + daysToLookBack + ' days',
+                    titlePosition: 'out',
+                    chartArea: { width: '90%', height: '63%' },
                     legend: {
                         alignment: 'center',
                         position: 'top',
                     },
+                    hAxis: {
+                        slantedText: true,
+                        slantedTextAngle: 30,
+                        textStyle: {
+                            fontSize: 12,
+                        },
+                    },
+                    vAxis: {
+                        textStyle: {
+                            fontSize: 12,         
+                        },
+                    },
                     isStacked: true,
                     series: {
-                        1: { type: 'line', curveType: 'function' },
-                        2: { type: 'line', curveType: 'function' },
-                        //3: { type: 'line', curveType: 'function' },
-                        //4: { type: 'line', curveType: 'function' },
-                        //5: { type: 'line', curveType: 'function' },
-                        //6: { type: 'bar' }
+                        0: { color: '#0066ff' },
+                        1: { type: 'line', curveType: 'function', color: '#009900' },
+                        2: { type: 'line', curveType: 'function', color: '#ff3300' },
                     }
                 }
 
@@ -586,7 +617,7 @@
                 // Create the chart data from the API response                                
                 var data = new google.visualization.DataTable();
 
-                data.addColumn('string', 'Time');
+                data.addColumn('string', 'Sale time (to the nearest 15 minute interval)');
                 data.addColumn('number', 'New');
                 data.addColumn('number', 'Used');                
 
@@ -601,8 +632,34 @@
                 var chart = new google.charts.Scatter(container[0]);
 
                 var options = {
-                    title: 'End time versus price',
-                    colors: ['#ff3300', '#ff9900']
+                    title: 'End time versus price',                    
+                    titleTextStyle: {
+                        fontName: 'Arial',
+                        fontSize: 14,
+                        bold: true,
+                        color: 'Black',
+                    },
+                    colors: ['#ff66cc', '#6600ff'],
+                    height: '100%',
+                    width: '100%',
+                    chartArea: {
+                        width: '90%',
+                        height: '63%'
+                    },                    
+                    legend: {
+                        alignment: 'center',
+                        position: 'top',
+                    },                    
+                    hAxis: {
+                        textStyle: {
+                            fontSize: 12,
+                        },                        
+                    },
+                    vAxis: {
+                        textStyle: {
+                            fontSize: 12,
+                        },                        
+                    },
                 }
 
                 chart.draw(data, google.charts.Scatter.convertOptions(options));
@@ -701,11 +758,13 @@
 
                 data.addColumn('string', 'Product Name');
                 data.addColumn('number', '% Price change');
+                data.addColumn('number', '% Price change');
 
                 // Create a table from the response data
                 for (var i = 0; i < productData.length; i++) {
                     data.addRow([productData[i].ManufacturerCode.concat(' ', productData[i].Name),
-                                    parseInt(productData[i].PercentPriceChange)
+                                    parseInt(productData[i].PlusPriceChange),
+                                    parseInt(productData[i].NegativePriceChange)
                     ]);
                 }
 
@@ -715,6 +774,7 @@
                 var maxhValue = productData[0].PercentPriceChange;
 
                 var options = {
+                    chartArea: { width: '85%', height: '63%' },
                     title: 'Movers and losers over the last 30 days',
                     //chart: {
                         isStacked: true,
@@ -722,13 +782,24 @@
                     //},
                     hAxis: {
                         textPosition: 'none',
+                        title: 'Price change (hightest to lowest)',
+                        textStyle: {
+                            fontSize: 8,
+                        },
                     },
-                    vAxis: {
+                    vAxis: {                        
                         title: '% price change',
                         baseline: 0,
                         minValue: minhValue,
-                        maxValue: maxhValue
-                    }
+                        maxValue: maxhValue,
+                        textStyle: {
+                          fontSize: 12,
+                        },
+                    },
+                    series: {
+                        0: { color: '#009900' },
+                        1: { color: '#ff3300' },
+                    },
                 }
 
                 chart.draw(data, options);
@@ -736,12 +807,9 @@
                 google.visualization.events.addListener(chart, 'select', function () {
                     var selection = chart.getSelection();
 
-                    var pid = productData[(selection[0].row * 2)].ProductId;
-                    var categoryId = productData[(selection[0].row * 2)].CategoryId;
+                    var pid = productData[(selection[0].row)].ProductId;
 
-                    var conditionId = productData[(selection[0].row * 2) + (selection[0].column) - 1].ConditionId;
-
-                    window.location.href = "/Product/" + pid + "/" + conditionId;
+                    window.location.href = "/Product/" + pid;
                 });
 
                 // Add the loaded chart data to the cache

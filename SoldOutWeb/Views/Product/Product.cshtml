@@ -11,21 +11,18 @@
             charting.load();
             charting.setOnLoadCallback(function () {
                 // New product charts
-                //charting.loadProductPricesCandlestickChart('newproductPriceChartContainer', '/Api/CandlestickData/', 'newProductPrice');
-                //charting.loadProductPricesMACD('newproductPriceMACDChartContainer', '/Api/MACData/', 'newProductPriceMACD');
-                //charting.loadProductPricesForMACDBarChart('newproductPriceMACDBarChartContainer', '/Api/MACData/', 'newProductPriceMACDBarChart');
                 charting.loadDailyProductPriceLineChart('newproductDailyPriceChartContainer', '/Api/MACData/', 'newProductDailyPrice');
-                //charting.loadProductPriceLineChart('newproductPriceMonthlySummaryContainer', '/Api/PriceHistory/', 'newProductPriceMonthlySummary');
+                charting.loadProductPriceLineChart('newproductMonthlyPriceChartContainer', '/Api/PriceHistory/', 'newProductPriceMonthlySummary');
+                charting.loadSalesByWeekdayAreaChart('newsalesByWeekdayChartContainer', '/Api/WeekdaySalesDataForProduct/', 'newWeekdayAreaChart','data-product-id');
 
                 // Used product charts
-                //charting.loadProductPricesCandlestickChart('usedproductPriceChartContainer', '/Api/CandlestickData/', 'usedProductPrice');
-                //charting.loadProductPricesMACD('usedproductPriceMACDChartContainer', '/Api/MACData/', 'usedProductPriceMACD');
-                //charting.loadProductPricesForMACDBarChart('usedproductPriceMACDBarChartContainer', '/Api/MACData/', 'usedProductPriceMACDBarChart');
                 charting.loadDailyProductPriceLineChart('usedproductDailyPriceChartContainer', '/Api/MACData/', 'usedProductDailyPrice');
-                //charting.loadProductPriceLineChart('usedproductPriceMonthlySummaryContainer', '/Api/PriceHistory/', 'usedProductPriceMonthlySummary');
+                charting.loadProductPriceLineChart('usedproductMonthlyPriceChartContainer', '/Api/PriceHistory/', 'usedProductPriceMonthlySummary');
+                charting.loadSalesByWeekdayAreaChart('usedsalesByWeekdayChartContainer', '/Api/WeekdaySalesDataForProduct/', 'usedWeekdayAreaChart', 'data-product-id');
 
                 // Misc data charts for the product
                 charting.loadProductScatterGraphChart('productScatterGraphChartContainer', '/Api/Scattergraph/');
+                
             });
 
             $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
@@ -33,11 +30,9 @@
                 var target = $(e.target).attr("href").substring(1);
 
                 // Redraw the charts
-                //charting.redrawChart(target + 'ProductPrice');
-                //charting.redrawChart(target + 'ProductPriceMACD');
-                //charting.redrawChart(target + 'ProductPriceMACDBarChart');
                 charting.redrawChart(target + 'ProductDailyPrice');
-                //charting.redrawChart(target + 'ProductPriceMonthlySummary');
+                charting.redrawChart(target + 'ProductPriceMonthlySummary');
+                charting.redrawChart(target + 'WeekdayAreaChart');
             })
         })
     </script>
@@ -46,12 +41,13 @@
 <div class="row">
     <div class="col-md-12">
         <h2>@Model.Name (<a href="@Model.Link">@Model.Description</a>)</h2>
-        <div>Product price data correct as of: @Model.LastRun</div>
+        <div>Price data correct as of: @Model.LastRun</div>
         <div>Total Prices tracked: @Model.TotalResults</div>
     </div>
 </div>
 
-<div class="row">&nbsp;</div>
+<div class="row" style="height:50px;">
+</div>
 
 <ul class="nav nav-tabs nav-justified">
     <li class="active"><a data-toggle="tab" href="#new">New Prices</a></li>
@@ -61,9 +57,30 @@
 <div class="tab-content">
     <div id="new" class="tab-pane fade in active">
         <!-- New tab contents -->
-        <div class="row">
+        <div class="row" style="height:50px;">
+        </div>
+            
+        <div class="row nopadding">
             <div class="col-lg-12">
-                <div id="newproductDailyPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2" data-short-interval="12" data-long-interval="26" data-daysToLookBack="30">
+                <div class="" id="newproductDailyPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2" data-short-interval="12" data-long-interval="26" data-daysToLookBack="30">
+                </div>
+            </div>
+        </div>
+        <div class="row" style="height:50px;">
+        </div>
+        <div class="row nopadding">
+            <div class="col-lg-12">
+                <div class="" id="newproductMonthlyPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="2">
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="height:50px;">
+        </div>
+
+        <div class="row nopadding">
+            <div class="col-lg-12">
+                <div id="newsalesByWeekdayChartContainer" data-product-id="@Model.ProductID" data-condition-id="2">
                 </div>
             </div>
         </div>
@@ -71,20 +88,43 @@
 
     <!-- Used tab contents -->
     <div id="used" class="tab-pane fade">
+        <div class="row" style="height:50px;">
+        </div>
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-12 nopadding">
                 <div id="usedproductDailyPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="0" data-short-interval="12" data-long-interval="26" data-daysToLookBack="30">
+                </div>
+            </div>
+        </div>
+        <div class="row" style="height:50px;">            
+        </div>
+        <div class="row nopadding">
+            <div class="col-lg-12">
+                <div id="usedproductMonthlyPriceChartContainer" data-product-id="@Model.ProductID" data-product-condition-id="0">
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="height:50px;">
+        </div>
+
+        <div class="row nopadding">
+            <div class="col-lg-12">
+                <div id="usedsalesByWeekdayChartContainer" data-product-id="@Model.ProductID" data-condition-id="0">
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<div class="row" style="height:50px;">
+</div>
 
-<h3>Other price data</h3>
-<div class="row">
+<h4>Miscellaneous price and sale data</h4>
+<div class="row nopadding">
     <div class="col-lg-12">
-        <div id="productScatterGraphChartContainer" class="chart-container" data-product-id="@Model.ProductID">
+        <div id="productScatterGraphChartContainer" data-product-id="@Model.ProductID">
         </div>
     </div>
 </div>
+

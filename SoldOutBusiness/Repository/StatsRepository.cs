@@ -112,7 +112,7 @@ namespace SoldOutBusiness.Repository
         public IEnumerable<CategoryMoversAndLosersData> GetMoversAndLosersByCategoryAndCondition(int categoryId, int conditionId, int daysToLookBack = 7, int numberToTake = 10)
         {
             
-            var _priceChangeData = _context.Database.SqlQuery<CategoryMoversAndLosersData>("exec GetPriceChangesOverPeriodByCategoryAndCondition " + categoryId.ToString() + "," + conditionId.ToString() + "," + daysToLookBack.ToString());
+            var _priceChangeData = _context.Database.SqlQuery<CategoryMoversAndLosersData>("exec GetPriceChangesOverPeriodByCategoryAndConditionForDualAxis " + categoryId.ToString() + "," + conditionId.ToString() + "," + daysToLookBack.ToString());
 
             // return the top n movers and bottom n losers
             if (_priceChangeData.Count() < (numberToTake * 2))
@@ -164,9 +164,16 @@ namespace SoldOutBusiness.Repository
             return scatterGraphData;
         }
 
-        public IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int categoryId, int daysToLookBack = 7)
+        public IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int categoryId, int conditionId, int daysToLookBack = 30)
         {   
-            var _salesData = _context.Database.SqlQuery<WeekdaySalesData>($"exec GetPriceStatisticsForCategoryByDayOfWeek {categoryId}, 7, {daysToLookBack}").ToList();
+            var _salesData = _context.Database.SqlQuery<WeekdaySalesData>($"exec GetPriceStatisticsForCategoryByDayOfWeek {categoryId}, {conditionId}, {daysToLookBack}").ToList();
+
+            return _salesData;
+        }
+
+        public IEnumerable<WeekdaySalesData> GetWeeklySalesDataByProduct(int productId, int conditionId, int daysToLookBack = 30)
+        {
+            var _salesData = _context.Database.SqlQuery<WeekdaySalesData>($"exec GetPriceStatisticsForProductByDayOfWeek {productId}, {conditionId}, {daysToLookBack}").ToList();
 
             return _salesData;
         }

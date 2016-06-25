@@ -32,7 +32,9 @@ namespace SoldOutBusiness.Repository
 
         IEnumerable<CategorySales> GetTopSellingProductsForCategoryByNumberOfBuyers(int categoryId, int daysToLookBack = 7);
 
-        IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int categoryId, int daysToLookBack = 7);
+        IEnumerable<WeekdaySalesData> GetWeeklySalesDataByCategory(int categoryId, int conditionId, int daysToLookBack = 30);
+
+        IEnumerable<WeekdaySalesData> GetWeeklySalesDataByProduct(int productId, int conditionId, int daysToLookBack = 30);
 
         IEnumerable<Categories> GetCategories();
 
@@ -144,7 +146,9 @@ namespace SoldOutBusiness.Repository
         public DateTime MaxSearchDate { get; set; }
         public double MaxAvgPrice { get; set; }
 
-        public double PercentPriceChange { get; set; }
+        public double? PlusPriceChange { get; set; }
+
+        public double? NegativePriceChange { get; set; }
 
     }
 

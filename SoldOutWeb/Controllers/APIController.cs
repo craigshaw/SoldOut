@@ -126,10 +126,17 @@ namespace SoldOutWeb.Controllers
 
             return allPriceHistory;
         }
-        [Route("Api/WeekdaySalesData/{categoryId?}")]
-        public JsonResult GetWeeklySalesData(int? categoryId)
+        [Route("Api/WeekdaySalesData/{categoryId?}/{conditionId}")]
+        public JsonResult GetWeeklySalesData(int? categoryId, int conditionId)
         {
-            var salesData = _statsRepository.GetWeeklySalesDataByCategory(categoryId ?? 2);
+            var salesData = _statsRepository.GetWeeklySalesDataByCategory(categoryId ?? 2, conditionId);
+            return Json(salesData, JsonRequestBehavior.AllowGet);
+        }
+
+        [Route("Api/WeekdaySalesDataForProduct/{productId}/{conditionId}")]
+        public JsonResult GetWeeklySalesDataforProduct(int productId, int conditionId)
+        {
+            var salesData = _statsRepository.GetWeeklySalesDataByProduct(productId, conditionId);
             return Json(salesData, JsonRequestBehavior.AllowGet);
         }
     }
