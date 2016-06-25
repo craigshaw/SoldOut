@@ -15,6 +15,7 @@ using System.Linq;
 using SoldOutSearchMonkey.Factories;
 using SoldOutBusiness.Utilities.Conditions;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace SoldOutSearchMonkey.Services
 {
@@ -46,7 +47,8 @@ namespace SoldOutSearchMonkey.Services
 
     internal class SearchMonkeyService
     {
-        private const int ApiDailyRateLimit = 5000;
+        private readonly int _apiDailyRateLimit;
+        private readonly double _apiRateThreshold;
         private static readonly ILog _log = LogManager.GetLogger(typeof(SearchMonkeyService));
 
         private readonly CancellationTokenSource _cts;
@@ -78,7 +80,11 @@ namespace SoldOutSearchMonkey.Services
                 throw new ArgumentNullException(nameof(completedItemReviewer));
 
             if (resultAggregator == null)
-                throw new ArgumentNullException(nameof(resultAggregator)); 
+                throw new ArgumentNullException(nameof(resultAggregator));
+
+            // Config settings
+            _apiDailyRateLimit = Int32.Parse(ConfigurationManager.AppSettings["ApiDailyRateLimit"]);
+            _apiRateThreshold = double.Parse(ConfigurationManager.AppSettings["ApiRateThreshold"]);
 
             _finder = finder;
             _notifier = notifier;
@@ -320,8 +326,8 @@ namespace SoldOutSearchMonkey.Services
 
         private double CalculateScheduleInterval()
         {
-            // The interval that would allow us 99% of our daily allowance (in milliseconds)
-            return ((24 * 60 * 60) / (ApiDailyRateLimit * 0.99)) * 1000;
+            // The interval that would allow us a percentage (defined by _apiRateThreshold) of our daily allowance (in milliseconds)
+            return ((24 * 60 * 60) / (_apiDailyRateLimit * _apiRateThreshold)) * 1000;
         }
 
         public void Stop()
