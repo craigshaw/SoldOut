@@ -25,6 +25,8 @@ namespace SoldOutBusiness.Repository
         int ResultCount(long searchID);
         IDictionary<long, int> GetUncleansedCounts();
         PriceStats GetPriceStatsForSearch(long searchId, int conditionId);
+        PriceStats GetPriceStatsForSearchMonkeySuspiciousItemReviewer(long searchId, int conditionId);
+
         IEnumerable<SuspiciousPhrase> GetBasicSuspiciousPhrases();
         IEnumerable<SearchSuspiciousPhrase> GetSuspiciousPhrasesForSearch(long searchId);
         bool ResetSuspiciousSearchResults(IEnumerable<SearchResult> results);

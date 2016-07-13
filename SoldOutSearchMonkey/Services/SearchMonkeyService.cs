@@ -200,7 +200,7 @@ namespace SoldOutSearchMonkey.Services
                                     var filteredItems = foundItems.Where(i => i.ConditionId == condition);
 
                                     // Review for any suspicous results
-                                    var reviewSummary = _completedItemReviewer.ReviewCompletedItems(filteredItems, repo.GetPriceStatsForSearch(search.SearchId, condition), search.SuspiciousPhrases);
+                                    var reviewSummary = _completedItemReviewer.ReviewCompletedItems(filteredItems, repo.GetPriceStatsForSearchMonkeySuspiciousItemReviewer(search.SearchId, condition), search.SuspiciousPhrases);
 
                                     searchSummary.Summary.Add(new ConditionalSummary()
                                     {

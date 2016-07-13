@@ -238,6 +238,14 @@ namespace SoldOutBusiness.Repository
                 ).Single();
         }
 
+        public PriceStats GetPriceStatsForSearchMonkeySuspiciousItemReviewer(long searchId, int conditionId)
+        {
+            return _context.Database.SqlQuery<PriceStats>("dbo.GetPriceStatsForSearchMonkeySuspiciousItemReviewer @SearchId, @ConditionId",
+                new SqlParameter("SearchId", searchId),
+                new SqlParameter("ConditionId", conditionId)
+                ).Single();
+        }
+
         public IEnumerable<SuspiciousPhrase> GetBasicSuspiciousPhrases()
         {
             return _context.SuspiciousPhrases.Select(p => p);
