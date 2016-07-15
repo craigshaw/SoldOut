@@ -271,6 +271,11 @@ namespace SoldOutBusiness.Repository
             return _context.Products.Where(p => p.ProductId == productID).FirstOrDefault();
         }
 
+        public Product GetProductByManufacturerCode(string manufacturerCode)
+        {
+            return _context.Products.Where(p => p.ManufacturerCode == manufacturerCode).FirstOrDefault();
+        }
+
         public Category GetCategoryByID(int categoryId)
         {
             return _context.Categories.Where(c => c.CategoryID == categoryId).FirstOrDefault();

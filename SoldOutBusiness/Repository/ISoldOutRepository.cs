@@ -39,5 +39,6 @@ namespace SoldOutBusiness.Repository
         IEnumerable<Product> GetProductsByCategoryId(int categoryId);
         IEnumerable<Product> GetProductsByParentProductId(int parentProductId);
         Product GetProductByID(int productID);
+        Product GetProductByManufacturerCode(string manufacturerCode);
     }
 }

@@ -20,7 +20,16 @@ namespace SoldOutWeb.Controllers
             _priceHistoryService = new PriceHistoryService(_repository);
         }
 
-        [Route("Api/TopSellingProducts/{categoryId?}")]        
+        [Route("Api/PriceHistory/{manufacturerCode}/{conditionId?}")]
+        public JsonResult PriceHistory(string manufacturerCode, int? conditionId)
+        {
+            var product = _repository.GetProductByManufacturerCode(manufacturerCode);
+            var search = _repository.GetSearchByProductID(product.ProductId);
+            var priceHistory = _repository.GetPriceStatsForSearchMonkeySuspiciousItemReviewer(search.SearchId, conditionId ?? 2);
+            return Json(priceHistory, JsonRequestBehavior.AllowGet);
+        }
+
+        [Route("Api/TopSellingProducts/{categoryId?}")]
         public JsonResult TopSellingProducts(int? categoryId)
         {
             var topSellers = _statsRepository.TopSellingProducts(categoryId ?? 2, 10, 30);
