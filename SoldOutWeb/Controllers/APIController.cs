@@ -4,9 +4,16 @@ using SoldOutWeb.Services;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using System;
+using SoldOutBusiness.Models;
 
 namespace SoldOutWeb.Controllers
 {
+    class ProductPriceStats
+    {
+        public PriceStats PriceStats { get; set; }
+        public int ProductId { get; set; }
+    }
+
     public class APIController : Controller
     {
         private IStatsRepository _statsRepository;
@@ -30,7 +37,14 @@ namespace SoldOutWeb.Controllers
 
             var search = _repository.GetSearchByProductID(product.ProductId);
             var priceHistory = _repository.GetPriceStatsForSearchMonkeySuspiciousItemReviewer(search.SearchId, conditionId ?? 2);
-            return Json(priceHistory, JsonRequestBehavior.AllowGet);
+
+            var stats = new ProductPriceStats()
+            {
+                PriceStats = priceHistory,
+                ProductId = product.ProductId
+            };
+
+            return Json(stats, JsonRequestBehavior.AllowGet);
         }
 
         [Route("Api/TopSellingProducts/{categoryId?}")]
