@@ -21,9 +21,13 @@ namespace SoldOutWeb.Controllers
         }
 
         [Route("Api/PriceHistory/{manufacturerCode}/{conditionId?}")]
-        public JsonResult PriceHistory(string manufacturerCode, int? conditionId)
+        public ActionResult PriceHistory(string manufacturerCode, int? conditionId)
         {
             var product = _repository.GetProductByManufacturerCode(manufacturerCode);
+
+            if( product == null)
+                return new HttpNotFoundResult();
+
             var search = _repository.GetSearchByProductID(product.ProductId);
             var priceHistory = _repository.GetPriceStatsForSearchMonkeySuspiciousItemReviewer(search.SearchId, conditionId ?? 2);
             return Json(priceHistory, JsonRequestBehavior.AllowGet);
